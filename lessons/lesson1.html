@@ -47,8 +47,6 @@
     <!-- 2 -->
     <section class="part" data-title="Give back the result">
       <h2>Give back the result</h2>
-      <p class="say">The program writes the result into the text, on a <code>LOOK:</code> line. Then the LLM carries on guessing words, and now the answer is right there to read.</p>
-
       <div class="activity">
         <div class="do"><span data-peek="The LLM's lines here are written out for you, so you can step through them. In Lesson 3, a real LLM writes them.">Step through it.</span> Watch who writes each line.</div>
         <div class="tx" id="p2Tx"></div>
@@ -59,31 +57,7 @@
           <button id="p2Again" hidden>↺ Start again</button>
         </div>
       </div>
-      <p class="say">The LLM wrote once before the tool and once after. Each extra tool adds <span data-peek="In our agent the LLM asks for one tool at a time. Real LLMs can also ask for several tools in one write, so they need fewer writes.">one more write</span>:<br><b class="eqbox">LLM writes = tools used + 1</b><br>1 tool used → 1 + 1 = 2 writes.</p>
-      <p class="hook">Try it on new numbers.</p>
-    </section>
-
-    <section class="part" data-nonum data-title="✏️ Practice 1.1">
-      <h2>✏️ Practice 1.1</h2>
-      <p class="say">Remember:<br>Every <code>ACT:</code> line gets one <code>LOOK:</code> line back from the program.<br><b class="eqbox">LLM writes = tools used + 1</b></p>
-      <div class="activity">
-        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
-        <div class="pq" data-ans="3" data-tol="0.1" data-hint="The program writes one LOOK line for every ACT line." data-work="3 ACT lines → 3 LOOK lines.">
-          <div class="pq-q">The LLM writes <b>3</b> <code>ACT:</code> lines in one task. How many <code>LOOK:</code> lines does the program add?</div>
-          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
-          <div class="pq-fb" aria-live="polite"></div>
-        </div>
-        <div class="pq" data-ans="3" data-tol="0.1" data-hint="Use the box: LLM writes = tools used + 1." data-work="2 tools used → 2 + 1 = 3 writes.">
-          <div class="pq-q">An agent uses <b>2 tools</b>, then answers. How many times does the LLM write?</div>
-          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
-          <div class="pq-fb" aria-live="polite"></div>
-        </div>
-        <div class="pq" data-ans="5" data-tol="0.01" data-hint="First count the LLM's writes for 1 tool. Then add the time for the tool itself." data-work="1 tool → 1 + 1 = 2 writes.<br>2 writes × 2 s = 4 s.<br>4 s + 1 s for the tool = 5 seconds.">
-          <div class="pq-q">Each LLM write takes <b>2 seconds</b>. The calculator takes <b>1 second</b>. The agent uses the calculator once. How many seconds in total?</div>
-          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
-          <div class="pq-fb" aria-live="polite"></div>
-        </div>
-      </div>
+      <p class="say">The program writes the result into the text, on a <code>LOOK:</code> line. The LLM reads all the text before it writes, so now it can use the result instead of guessing.<br><b class="eqbox">result → LOOK: line → the LLM reads it</b><br><code>LOOK: 1266871</code> → <code>ANSWER: 4,817 × 263 = 1,266,871.</code></p>
       <p class="hook">One tool was enough here. What if a task needs more?</p>
     </section>
 
@@ -121,8 +95,37 @@
           <button id="p3Again" hidden>↺ Start again</button>
         </div>
       </div>
-      <p class="say">The loop stops when the LLM writes <code>ANSWER:</code>. Here: 2 rounds, so 2 tools, so the LLM wrote 2 + 1 = 3 times.<br><b class="eqbox">LLM writes = rounds + 1</b></p>
+      <p class="say">The loop stops when the LLM writes <code>ANSWER:</code>. The LLM writes once in each round, then once more for the answer. Here: 2 rounds, so the LLM wrote 2 + 1 = 3 times.<br><b class="eqbox">times the LLM writes = rounds + 1</b></p>
       <p class="say">In case it never answers, the program also stops after a set number of rounds, called the <mark>step limit</mark>.</p>
+      <p class="hook">Try it on new numbers.</p>
+    </section>
+
+    <section class="part" data-nonum data-title="✏️ Practice 1.1">
+      <h2>✏️ Practice 1.1</h2>
+      <p class="say">Remember:<br>One round = think, act, look: one tool, and one <code>LOOK:</code> line back.<br><b class="eqbox">times the LLM writes = rounds + 1</b><br>The program stops at the <b>step limit</b>, even if the task isn't done.</p>
+      <div class="activity">
+        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
+        <div class="pq" data-ans="3" data-tol="0.1" data-hint="Each thing to look up or work out is one tool use, so one round." data-work="Weather in Delhi: 1 round.<br>Weather in Kochi: 1 round.<br>The difference, on the calculator: 1 round.<br>3 rounds.">
+          <div class="pq-q">“How much warmer is Kochi than Delhi?” The agent checks the weather in <b>both</b> cities, then uses the calculator. How many rounds?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="4" data-tol="0.1" data-hint="Use the box: times the LLM writes = rounds + 1." data-work="3 rounds → 3 + 1 = 4 writes. The last one is the ANSWER.">
+          <div class="pq-q">Same task. How many times does the LLM write?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="7" data-tol="0.01" data-hint="Count the LLM's writes first (rounds + 1). Then add the time for the tools: one per round." data-work="3 rounds → 3 + 1 = 4 writes.<br>4 writes × 1 s = 4 s.<br>3 tools × 1 s = 3 s.<br>4 + 3 = 7 seconds.">
+          <div class="pq-q">Same task. Each LLM write takes <b>1 second</b>, and each tool takes <b>1 second</b>. How many seconds in total?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="4" data-tol="0.1" data-hint="The program stops at the step limit, even if the task needs more rounds." data-work="The task needs 6 rounds, but the limit is 4. The program stops after 4 tool uses, before an answer.">
+          <div class="pq-q">The step limit is <b>4</b> rounds. A task needs <b>6</b> tool uses. How many tools does the agent get to use?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+      </div>
       <p class="hook">Lots of lines now. Who wrote which?</p>
     </section>
 
@@ -138,32 +141,9 @@
         </div>
       </div>
       <p class="say">The program only writes <code>LOOK:</code> lines. Everything else, the thinking and the asking, comes from the LLM. Together, they're an <mark>agent</mark>:<br><b class="eqbox">agent = LLM + a program running the loop</b></p>
-      <p class="hook">Try it on new numbers.</p>
-    </section>
-
-    <section class="part" data-nonum data-title="✏️ Practice 1.2">
-      <h2>✏️ Practice 1.2</h2>
-      <p class="say">Remember:<br>One round = think, act, look. One tool used per round.<br><b class="eqbox">LLM writes = rounds + 1</b><br>The program stops at the <b>step limit</b>, even if the task isn't done.</p>
-      <div class="activity">
-        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
-        <div class="pq" data-ans="3" data-tol="0.1" data-hint="Each thing to look up or work out is one tool use, so one round." data-work="Weather in Delhi: 1 round.<br>Weather in Kochi: 1 round.<br>The difference, on the calculator: 1 round.<br>3 rounds.">
-          <div class="pq-q">“How much warmer is Kochi than Delhi?” The agent checks the weather in <b>both</b> cities, then uses the calculator. How many rounds?</div>
-          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
-          <div class="pq-fb" aria-live="polite"></div>
-        </div>
-        <div class="pq" data-ans="4" data-tol="0.1" data-hint="Use the box: LLM writes = rounds + 1." data-work="3 rounds → 3 + 1 = 4 writes. The last one is the ANSWER.">
-          <div class="pq-q">Same task. How many times does the LLM write?</div>
-          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
-          <div class="pq-fb" aria-live="polite"></div>
-        </div>
-        <div class="pq" data-ans="4" data-tol="0.1" data-hint="The program stops at the step limit, even if the task needs more rounds." data-work="The task needs 6 rounds, but the limit is 4. The program stops after 4 tool uses, before an answer.">
-          <div class="pq-q">The step limit is <b>4</b> rounds. A task needs <b>6</b> tool uses. How many tools does the agent get to use?</div>
-          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
-          <div class="pq-fb" aria-live="polite"></div>
-        </div>
-      </div>
       <p class="hook">Quick check: did it all make sense?</p>
     </section>
+
 
     <!-- 5 -->
     <section class="part" data-title="Lesson test">
@@ -188,16 +168,16 @@
           </div>
           <div class="feedback"></div>
         </div>
-        <div class="quiz" data-page="lesson1.html#2" data-topic="Give back the result" data-right="Right. 4 tools + 1 = 5 writes.">
-          <div class="q"><small>3. Count</small>An agent uses <b>4 tools</b>, then answers. How many times does the LLM write?</div>
+        <div class="quiz" data-page="lesson1.html#3" data-topic="The loop" data-right="Right. 4 rounds + 1 = 5 writes: one per round, then the answer.">
+          <div class="q"><small>3. Count</small>An agent takes <b>4 rounds</b>, then answers. How many times does the LLM write?</div>
           <div class="options">
-            <button data-why="It writes once before each tool, and once more after the last one, for the answer.">4</button>
+            <button data-why="It writes once in each round, and once more for the answer.">4</button>
             <button data-right>5</button>
-            <button data-why="The LOOK lines come from the program, not the LLM. Count only the LLM's writes: tools + 1.">8</button>
+            <button data-why="The LOOK lines come from the program, not the LLM. Count only the LLM's writes: rounds + 1.">8</button>
           </div>
           <div class="feedback"></div>
         </div>
-        <div class="quiz" data-page="lesson1.html#4" data-topic="The loop" data-right="Right. ANSWER: ends it, or the step limit if the LLM never gets there.">
+        <div class="quiz" data-page="lesson1.html#3" data-topic="The loop" data-right="Right. ANSWER: ends it, or the step limit if the LLM never gets there.">
           <div class="q"><small>4. Loop</small>When does the loop stop?</div>
           <div class="options">
             <button data-why="Some tasks take 1 round, some take 5. It isn't a fixed number.">Always after 3 rounds</button>
@@ -285,9 +265,9 @@ const line = ([who, text], opts = {}) =>
 (function giveBack() {
   const STEPS = [
     { add: [["you", "What is 4,817 × 263?"]], say: "Your question. Press Next step." },
-    { add: [["llm", "THINK: Exact math. I'll use the calculator."], ["llm", "ACT: calculator(4817 * 263)"]], say: "The LLM writes (1st time). It stops at the ACT: line." },
+    { add: [["llm", "THINK: Exact math. I'll use the calculator."], ["llm", "ACT: calculator(4817 * 263)"]], say: "The LLM writes. It stops at the ACT: line." },
     { add: [["prog", "LOOK: 1266871"]], say: "The program runs the calculator and writes the result on a LOOK: line." },
-    { add: [["llm", "ANSWER: 4,817 × 263 = 1,266,871."]], say: "The LLM writes again (2nd time). The result is in the text, so it copies it. Right this time!" },
+    { add: [["llm", "ANSWER: 4,817 × 263 = 1,266,871."]], say: "The LLM writes again. The result is in the text now, so it uses it. The answer is right." },
   ];
   const tx = document.getElementById("p2Tx"), say = document.getElementById("p2Say");
   const next = document.getElementById("p2Next"), back = document.getElementById("p2Back"), again = document.getElementById("p2Again");
@@ -296,8 +276,7 @@ const line = ([who, text], opts = {}) =>
     let html = "";
     STEPS.slice(0, at + 1).forEach((s, i) => s.add.forEach(l => html += line(l, { isNew: i === at && at > 0 })));
     tx.innerHTML = html;
-    const writes = Math.min(at, 1) + (at >= 3 ? 1 : 0), tools = at >= 2 ? 1 : 0;
-    say.innerHTML = STEPS[at].say + `<br>LLM writes: <b>${writes}</b> · tools used: <b>${tools}</b>`;
+    say.textContent = STEPS[at].say;
     const end = at === STEPS.length - 1;
     next.hidden = end; back.hidden = at === 0 || end; again.hidden = !end;
   }

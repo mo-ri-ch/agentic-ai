@@ -7,7 +7,7 @@ const COURSE_LESSONS = [
   { n: 1, label: "0", step: "basics", title: "What an LLM does", file: "lesson0.html", ready: true, test: 5,
     summary: "A next-word guesser. It reads text and writes text, one word at a time.",
     leaves: "An LLM can only write text. How can writing text make something happen?" },
-  { n: 2, label: "1", step: "the loop", title: "From chatbot to agent", file: "lesson1.html", ready: true, test: 7,
+  { n: 2, label: "1", step: "the loop", title: "From chatbot to agent", file: "lesson1.html", ready: true, test: 6,
     summary: "Put the LLM in a loop: think, act, look at what happened, repeat.",
     leaves: "The agent wants to act. But what can it actually do?" },
   { n: 3, label: "2", step: "tools", title: "Tools", file: "lesson2.html", ready: true, test: 8,
