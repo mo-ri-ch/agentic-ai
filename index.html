@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build an AI Agent</title>
+<meta name="description" content="Build an AI agent from scratch, one question at a time. Interactive lessons for beginners and teachers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Kalam:wght@400&family=Patrick+Hand&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem("notebook-theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
+<link rel="stylesheet" href="https://mo-ri-ch.github.io/study-notebook-design/v1/style.css">
+<link rel="stylesheet" href="https://mo-ri-ch.github.io/study-notebook-design/v1/home.css">
+<link rel="stylesheet" href="assets/course.css">
+<style>
+  .modes { display: flex; margin: 0 0 14px; border: 2px solid var(--ink); border-radius: 10px; overflow: hidden; width: fit-content; max-width: 100%; }
+  .mode { border: 0; border-radius: 0; padding: 6px 14px; font-size: 0.85rem; background: var(--card); }
+  .mode + .mode { border-left: 2px solid var(--ink); }
+  .mode.on { background: var(--ink); color: var(--paper); }
+  .mode:hover:not(.on) { background: var(--hl-yellow); }
+  .demo { padding: 46px 24px 24px; margin-top: 18px; }
+  .demo .written { min-height: 4.6em; }
+  .demo-why { margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <a class="home" href="./">Build an AI Agent</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h1>Build an AI agent <span class="swash">from scratch</span>.</h1>
+        <p class="say">A chatbot can only talk. An agent <b>thinks, uses tools and gets things done.</b> You'll build one yourself, one question at a time.</p>
+        <div class="actions">
+          <a class="btn primary" href="lessons/lesson0.html">Start Lesson 0</a>
+          <button data-note="needNote" aria-expanded="false" aria-controls="needNote">What you need</button>
+          <button data-note="howNote" aria-expanded="false" aria-controls="howNote">How to use</button>
+        </div>
+        <div class="need" id="needNote" hidden>
+          <button class="close" aria-label="Close">×</button>
+          <div class="cols">
+            <div>
+              <h3>Helps to know</h3>
+              <ul>
+                <li><span class="yes">✓</span> Basic Python: lists, loops, <code>if</code>, functions (from Lesson 3)</li>
+                <li><span class="yes">✓</span> A Google account, to run the code free in Colab</li>
+              </ul>
+            </div>
+            <div>
+              <h3>You don't need</h3>
+              <ul>
+                <li><span class="no">✗</span> AI experience</li>
+                <li><span class="no">✗</span> Any other course first</li>
+                <li><span class="no">✗</span> A GPU</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="need blue" id="howNote" hidden>
+          <button class="close" aria-label="Close">×</button>
+          <div class="cols">
+            <div>
+              <h3>Learning</h3>
+              <ul>
+                <li><span class="yes">1</span> Go in order.</li>
+                <li><span class="yes">2</span> Guess before you click.</li>
+                <li><span class="yes">3</span> Play with every demo.</li>
+                <li><span class="yes">4</span> Take your own notes with the pen (P).</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Shortcuts</h3>
+              <ul>
+                <li><span class="yes">G</span> Guide me</li>
+                <li><span class="yes">P</span> Pen for notes</li>
+                <li><span class="yes">← →</span> Back / next</li>
+                <li><span class="yes">T</span> Big text</li>
+                <li><span class="yes">Esc</span> Stop pen / guide</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-side">
+        <p class="agent-say" id="agentLine">Ask me something. Then ask the agent I'll become.</p>
+        <div class="activity demo" id="demo">
+          <div class="modes" role="tablist" aria-label="Who answers">
+            <button class="mode on" data-mode="chat" role="tab" aria-selected="true">Chatbot</button>
+            <button class="mode" data-mode="agent" role="tab" aria-selected="false">Agent</button>
+          </div>
+          <div class="chips" id="asks" role="group" aria-label="Pick a question"></div>
+          <div class="written" id="reply" aria-live="polite"></div>
+          <ul class="steps" id="steps" hidden></ul>
+          <p class="redcheck" id="check" hidden></p>
+          <div class="btnrow">
+            <button class="primary" id="go">▶ Ask</button>
+            <button id="back" hidden>← Back</button>
+          </div>
+        </div>
+        <p class="note demo-why">The agent here is a picture of what you'll build. In Lesson 3 you write a real one, in Python.</p>
+      </div>
+    </section>
+
+    <h2 id="path">The path</h2>
+    <p class="path-intro">Each lesson ends with a question. The next lesson answers it.</p>
+    <ol class="path" id="pathList"></ol>
+  </main>
+  <footer class="site">Your progress is saved in this browser only.</footer>
+</div>
+
+<script src="assets/course.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/common.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/pen.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/home.js"></script>
+<script>
+// ---------- Chatbot vs agent: the same question, two very different results ----------
+(function demo() {
+  const ASKS = [
+    { label: "4,817 × 263 = ?", q: "What is 4,817 × 263?",
+      chat: "4,817 × 263 is 1,264,871.",
+      chatCheck: "✗ Wrong. The real answer is 1,266,871. It wrote digits that <b>look</b> right.",
+      agent: [
+        ["💭 Think", "Exact math. I should use the calculator."],
+        ["🔧 Act", "calculator(\"4817 * 263\")"],
+        ["👀 Look", "1266871"],
+        ["💬 Answer", "4,817 × 263 = 1,266,871."]],
+      agentCheck: "✓ Right, because it used a tool instead of guessing." },
+    { label: "Weather now?", q: "What's the weather in Kochi right now?",
+      chat: "It's warm and sunny in Kochi today, around 31°C.",
+      chatCheck: "✗ Just a guess. It can't see today's weather. It only knows text it read before.",
+      agent: [
+        ["💭 Think", "I can't know this. I'll check the weather."],
+        ["🔧 Act", "weather(\"Kochi\")"],
+        ["👀 Look", "27°C, light rain"],
+        ["💬 Answer", "It's 27°C in Kochi, with light rain. Take an umbrella!"]],
+      agentCheck: "✓ Fresh, because it looked it up." },
+    { label: "Remind me at 6", q: "Remind me to call Mom at 6 pm.",
+      chat: "Sure! I'll remind you to call Mom at 6 pm.",
+      chatCheck: "✗ Nothing happened. It wrote “I'll remind you”, but it can't set reminders.",
+      agent: [
+        ["💭 Think", "I need to save a reminder."],
+        ["🔧 Act", "add_reminder(\"Call Mom\", \"6:00 pm\")"],
+        ["👀 Look", "Saved ✓"],
+        ["💬 Answer", "Done. I'll remind you to call Mom at 6 pm."]],
+      agentCheck: "✓ Done for real: the reminder is saved." },
+  ];
+  const asksBox = document.getElementById("asks"), reply = document.getElementById("reply");
+  const steps = document.getElementById("steps"), check = document.getElementById("check");
+  const go = document.getElementById("go"), back = document.getElementById("back");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let ask = 0, mode = "chat", shown = 0, timer = null;
+
+  function stop() { clearTimeout(timer); timer = null; }
+  function draw() {
+    stop();
+    const a = ASKS[ask];
+    asksBox.querySelectorAll(".chip").forEach((c, i) => c.classList.toggle("on", i === ask));
+    reply.innerHTML = `<span class="prompt">You: ${a.q}</span>`;
+    check.hidden = true; check.classList.toggle("good", mode === "agent"); steps.hidden = mode !== "agent"; steps.innerHTML = "";
+    if (mode === "chat") {
+      go.hidden = shown > 0; go.textContent = "▶ Ask"; back.hidden = true;
+      if (shown > 0) reply.innerHTML += `\n${a.chat}`, check.innerHTML = a.chatCheck, check.hidden = false;
+    } else {
+      steps.innerHTML = a.agent.slice(0, shown).map(([k, v], i) =>
+        `<li class="${i === shown - 1 ? "new" : ""}"><span class="k">${k}</span><span class="v">${v}</span></li>`).join("");
+      const done = shown === a.agent.length;
+      go.hidden = done; go.textContent = shown === 0 ? "▶ Ask" : "Next step →";
+      back.hidden = shown === 0;
+      if (done) check.innerHTML = a.agentCheck, check.hidden = false;
+    }
+  }
+  // The chatbot writes its reply one word at a time
+  function typeChat() {
+    const a = ASKS[ask], words = a.chat.split(" ");
+    go.hidden = true;
+    let i = 0;
+    const tick = () => {
+      i++;
+      reply.innerHTML = `<span class="prompt">You: ${a.q}</span>\n` + words.slice(0, i).join(" ");
+      if (i < words.length) timer = setTimeout(tick, reduce ? 0 : 140);
+      else { shown = 1; draw(); }
+    };
+    tick();
+  }
+  ASKS.forEach((a, i) => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.type = "button"; b.textContent = a.label;
+    b.onclick = () => { ask = i; shown = 0; draw(); };
+    asksBox.appendChild(b);
+  });
+  document.querySelectorAll(".mode").forEach(m => m.onclick = () => {
+    mode = m.dataset.mode; shown = 0;
+    document.querySelectorAll(".mode").forEach(x => { x.classList.toggle("on", x === m); x.setAttribute("aria-selected", x === m); });
+    document.getElementById("agentLine").querySelector(".neo-bubble").lastChild.textContent = mode === "chat"
+      ? "Right now I'm a chatbot: I can only write text."
+      : "This is me after the course. I think, use a tool, look at the result, then answer.";
+    draw();
+  });
+  go.onclick = () => { if (mode === "chat") typeChat(); else { shown++; draw(); } };
+  back.onclick = () => { shown = Math.max(0, shown - 1); draw(); };
+  addReset(go, () => {
+    ask = 0; shown = 0; mode = "chat";
+    document.querySelectorAll(".mode").forEach(x => { const on = x.dataset.mode === "chat"; x.classList.toggle("on", on); x.setAttribute("aria-selected", on); });
+    document.getElementById("agentLine").querySelector(".neo-bubble").lastChild.textContent = "Ask me something. Then ask the agent I'll become.";
+    draw();
+  });
+  draw();
+})();
+</script>
+</body>
+</html>

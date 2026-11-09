@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What an LLM does</title>
+<meta name="description" content="Lesson 0 of Build an AI Agent: what an LLM does. It guesses the next word, one word at a time, and it can only write text.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Kalam:wght@400&family=Patrick+Hand&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem("notebook-theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
+<link rel="stylesheet" href="https://mo-ri-ch.github.io/study-notebook-design/v1/style.css">
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body data-pen="blue">
+<div class="wrap">
+  <header class="topbar">
+    <a class="home" href="../">← Build an AI Agent</a>
+    <span class="where">Lesson 0 of 8</span>
+  </header>
+
+  <main data-paged>
+    <div class="paged-head">
+      <h1>What an LLM does</h1>
+      <div class="progress" aria-label="Lesson parts"></div>
+    </div>
+
+    <!-- 1 -->
+    <section class="part" data-title="Guess the next word">
+      <h2>Guess the next word</h2>
+      <p class="agent-say">Hi, I'm your agent. Well, I will be! Right now I'm just an LLM. Let's see what that means.</p>
+      <p class="say">An <mark><span data-peek="Large Language Model. “Large” because it learned from a huge amount of text: books, websites, code.">LLM</span></mark> is a program that has read a huge amount of text. It does one thing: <b>guess the next word.</b></p>
+
+      <div class="activity">
+        <div class="do">Which word comes next? Guess first.</div>
+        <div class="written"><span class="prompt">The cat sat on the</span> <span class="blank" id="g1Blank"></span></div>
+        <div class="chips" id="g1Chips" role="group" aria-label="Pick the next word" style="margin-top:12px"></div>
+        <div id="g1After" hidden>
+          <div class="count">The LLM's chances for the next word:</div>
+          <div class="bars" id="g1Bars"></div>
+          <div class="count" id="g1Say"></div>
+        </div>
+      </div>
+      <p class="say" id="g1Rule" hidden>Every word gets a <b>chance</b>. Together they make 100%:<br>52 + 21 + 15 + 9 + 3 = 100</p>
+      <p class="hook">One guess gives one word. How does it write a whole answer?</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="part" data-title="One word at a time">
+      <h2>One word at a time</h2>
+      <p class="say" style="position:relative">The LLM guesses a <span data-peek="Real LLMs guess pieces of words, called tokens: “sleeping” might be “sleep” + “ing”. We say “words” to keep it simple.">word</span>, adds it to the text, then guesses again. Here it picks the word with the <b>biggest chance</b>.<button class="doubt" type="button" data-peek-from="pickPeek" aria-label="Does it always pick the biggest chance?">🤔</button></p>
+      <div hidden id="pickPeek"><b>🤔 Does it always pick the biggest chance?</b>
+        <div style="margin-top:6px">Ours does, to keep things simple. Real chatbots sometimes pick a less likely word on purpose. That's why the same question can get different answers.</div>
+      </div>
+
+      <div class="activity">
+        <div class="do">Watch it write its answer, one guess at a time.</div>
+        <div class="written" id="w2"></div>
+        <div class="count" id="w2Count" style="margin-top:8px"></div>
+        <div class="bars" id="w2Bars"></div>
+        <div class="btnrow">
+          <button class="primary" id="w2Next">▶ Next word</button>
+          <button id="w2Play">▶ Play</button>
+          <button id="w2Back" hidden>← Back</button>
+          <button id="w2Again" hidden>↺ Start again</button>
+        </div>
+      </div>
+      <p class="say">One guess, one word. A 7-word answer takes 7 guesses.<br><b class="eqbox">words written = guesses made</b></p>
+      <p class="hook">Try it on new numbers.</p>
+    </section>
+
+    <section class="part" data-nonum data-title="✏️ Practice 0.1">
+      <h2>✏️ Practice 0.1</h2>
+      <p class="say">Remember:<br><b class="eqbox">all the chances = 100%</b><br>Our LLM picks the word with the <b>biggest chance</b>.<br><b class="eqbox">words written = guesses made</b></p>
+      <div class="activity">
+        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
+        <div class="pq" data-ans="25" data-tol="0.1" data-hint="All the chances together make 100%. Take away the two you know." data-work="40 + 35 = 75. 100 − 75 = 25%.">
+          <div class="pq-q">“I walked my ___”: <b>dog</b> 40%, <b>cat</b> 35%. What is the chance of <b>all the other words</b> together, in %?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="45" data-tol="0.1" data-hint="Our LLM always picks the word with the biggest chance. Which one is it?" data-work="The biggest chance is sun, 45%. So it writes “sun”.">
+          <div class="pq-q">“Tomorrow there will be ___”: <b>rain</b> 30%, <b>sun</b> 45%, <b>snow</b> 25%. What is the chance of the word our LLM writes, in %?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="12" data-tol="0.1" data-hint="Each guess writes exactly one word." data-work="12 words written = 12 guesses made.">
+          <div class="pq-q">An answer is <b>12 words</b> long. How many guesses did the LLM make?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="2" data-tol="0.01" data-hint="First find how many guesses a 40-word answer takes. Then multiply by the time for one guess." data-work="40 words = 40 guesses.<br>40 × 0.05 = 2 seconds.">
+          <div class="pq-q">One guess takes <b>0.05 seconds</b>. How many seconds does a <b>40-word</b> answer take?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="hook">An LLM writes very well. But what can't it do?</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="part" data-title="Only words">
+      <h2>Only words</h2>
+      <p class="say">An LLM reads text and writes text. Nothing else.</p>
+      <div class="activity">
+        <div class="do">Ask the LLM. Then check its answer.</div>
+        <div class="chips" id="a3Chips" role="group" aria-label="Pick a question"></div>
+        <div class="written" id="a3Reply" aria-live="polite"></div>
+        <p class="redcheck" id="a3Check" hidden></p>
+        <div class="btnrow">
+          <button class="primary" id="a3Ask">▶ Ask</button>
+          <button id="a3Verify" hidden>✓ Check the answer</button>
+        </div>
+      </div>
+      <p class="say near" id="a3Say" style="position:relative">It writes words that <b>sound</b> right. But on its own it can't calculate exactly, can't look up anything new, and can't <b>do</b> anything.<button class="doubt" type="button" data-peek-from="chatgptPeek" aria-label="But ChatGPT can search the web!">🤔</button></p>
+      <div hidden id="chatgptPeek"><b>🤔 But ChatGPT can search the web!</b>
+        <div style="margin-top:6px">Yes, because it isn't just an LLM. It's an LLM <b>plus tools</b>, like a search. That's an agent, and it's what you'll build in this course.</div>
+      </div>
+      <p class="hook">Quick check: did it all make sense?</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="part" data-title="Lesson test">
+      <h2>Lesson 0 test</h2>
+      <p class="say">5 questions, one for each idea in this lesson. Answer them all right to pass. A wrong answer tells you why, and which page to look at again.</p>
+      <div class="test" data-test="1">
+        <div class="quiz" data-page="lesson0.html#1" data-topic="Guess the next word" data-right="Right. 70 + 20 = 90, and all the chances make 100%, so the rest share 10%.">
+          <div class="q"><small>1. Chances</small>“The sky is ___”: <b>blue</b> 70%, <b>grey</b> 20%. What's the chance of all the other words together?</div>
+          <div class="options">
+            <button data-right>10%</button>
+            <button data-why="90% is blue and grey together. The other words get what's left of 100%.">90%</button>
+            <button data-why="Other words still get a little chance. All the chances must make 100%, and 70 + 20 is only 90.">0%</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson0.html#2" data-topic="One word at a time" data-right="Right. One guess writes one word, so 20 words take 20 guesses.">
+          <div class="q"><small>2. Predict</small>An LLM writes a 20-word answer. How many guesses does it make?</div>
+          <div class="options">
+            <button data-why="One guess gives only one word. Then it adds the word and guesses again.">1</button>
+            <button data-right>20</button>
+            <button data-why="It doesn't guess letter by letter here. One guess = one word.">About 100, one per letter</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson0.html#2" data-topic="One word at a time" data-right="Right. Our LLM picks the biggest chance: sun, 45%.">
+          <div class="q"><small>3. Apply</small>Next-word chances: <b>rain</b> 30%, <b>sun</b> 45%, <b>snow</b> 25%. What does our LLM write?</div>
+          <div class="options">
+            <button data-why="Rain has 30%, but sun has more. Our LLM picks the biggest chance.">rain</button>
+            <button data-right>sun</button>
+            <button data-why="Some real chatbots do pick at random sometimes. Ours always picks the biggest chance.">Any of the three, at random</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson0.html#4" data-topic="Only words" data-right="Right. An LLM alone only writes text from what it read before. It can't look anything up.">
+          <div class="q"><small>4. Spot the mistake</small>A friend says: “The LLM read today's news to answer me.” What's wrong?</div>
+          <div class="options">
+            <button data-why="An LLM doesn't read anything while it answers. It only guesses words from what it read before.">Nothing. LLMs read the internet as they answer.</button>
+            <button data-right>An LLM alone can't look anything up. It only writes text.</button>
+            <button data-why="It can write about news: words that sound right. It just can't check today's news.">LLMs can't write about news at all.</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson0.html#4" data-topic="Only words" data-right="Right. It guessed digits that look right. This time they happen to be right (97 × 86 = 8,342), but it didn't calculate.">
+          <div class="q"><small>5. Think</small>You ask an LLM “What is 97 × 86?” It answers <b>8,342</b>. Should you trust it?</div>
+          <div class="options">
+            <button data-why="It doesn't calculate. It guesses digits that look right, like it did with 4,817 × 263.">Yes. LLMs always do math exactly.</button>
+            <button data-right>Check it first. It guessed the digits.</button>
+            <button data-why="It often gets small sums right, because it has seen many of them. It just can't be sure.">No. LLMs never get math right.</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </div>
+      <p class="hook">What your LLM still can't do.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="part" data-title="Words aren't actions">
+      <h2>Words aren't actions</h2>
+      <p class="say">Your LLM writes very well. But writing “I'll remind you” doesn't set a reminder.</p>
+      <p class="agent-say">I can write anything… but I can't <b>do</b> anything. Yet.</p>
+      <div class="open-question">
+        <div>This leaves a question</div>
+        <div class="big">An LLM can only write text. How can writing text make something happen?</div>
+        <div><a href="lesson1.html">Lesson 1 answers it.</a></div>
+      </div>
+      <p><button class="done-toggle" data-done="1">Mark lesson as done</button></p>
+    </section>
+  </main>
+</div>
+
+<nav class="pagebar" aria-label="Move between parts">
+  <div class="inner">
+    <button data-page-back>← Previous</button>
+    <span data-page-label></span>
+    <button class="primary" data-page-next>Next →</button>
+  </div>
+</nav>
+
+<script src="../assets/course.js"></script>
+<script src="../assets/practice.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/common.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/pen.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/guide.js"></script>
+<script>
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// ---------- Part 1: guess first, then see the LLM's chances ----------
+(function guess() {
+  const CHANCES = [["mat", 52], ["floor", 21], ["sofa", 15], ["bed", 9], ["other", 3]];
+  const chips = document.getElementById("g1Chips"), after = document.getElementById("g1After");
+  const blank = document.getElementById("g1Blank"), rule = document.getElementById("g1Rule");
+  function pick(word) {
+    chips.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.textContent === word));
+    blank.textContent = word;
+    drawBars(document.getElementById("g1Bars"), CHANCES, word);
+    const pct = CHANCES.find(r => r[0] === word)[1];
+    document.getElementById("g1Say").innerHTML = word === "mat"
+      ? `You picked “mat”. The LLM agrees: its biggest chance, ${pct}%.`
+      : `You picked “${word}”. The LLM gives it ${pct}%. Its favourite is “mat”, 52%.`;
+    after.hidden = false; rule.hidden = false;
+  }
+  CHANCES.slice(0, 4).forEach(([w]) => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.type = "button"; b.textContent = w;
+    b.onclick = () => pick(w);
+    chips.appendChild(b);
+  });
+  addReset(chips, () => {
+    chips.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
+    blank.textContent = ""; after.hidden = true; rule.hidden = true;
+  });
+})();
+
+// ---------- Part 2: write an answer one guess at a time ----------
+(function writeOne() {
+  const PROMPT = "You: What do cats love?";
+  const STEPS = [   // each guess: the chances, biggest first (the LLM picks the first)
+    [["Cats", 58], ["They", 22], ["Most", 12], ["other", 8]],
+    [["love", 55], ["like", 28], ["enjoy", 11], ["other", 6]],
+    [["to", 68], ["fish", 17], ["naps", 9], ["other", 6]],
+    [["sleep", 47], ["play", 30], ["eat", 15], ["other", 8]],
+    [["in", 56], ["all", 25], ["a", 12], ["other", 7]],
+    [["the", 79], ["warm", 11], ["a", 6], ["other", 4]],
+    [["sun.", 61], ["box.", 20], ["dark.", 12], ["other", 7]],
+  ];
+  const box = document.getElementById("w2"), count = document.getElementById("w2Count"), bars = document.getElementById("w2Bars");
+  const next = document.getElementById("w2Next"), play = document.getElementById("w2Play");
+  const back = document.getElementById("w2Back"), again = document.getElementById("w2Again");
+  let done = 0, timer = null;
+
+  function draw() {
+    const words = STEPS.slice(0, done).map(s => s[0][0]);
+    box.innerHTML = `<span class="prompt">${PROMPT}</span>\nLLM: ` +
+      words.map((w, i) => i === done - 1 ? `<span class="new">${w}</span>` : w).join(" ");
+    const end = done === STEPS.length;
+    if (done === 0) {
+      count.textContent = "Press ▶ Next word to make the first guess.";
+      drawBars(bars, STEPS[0].map(([w]) => [w, 0]), null);
+      bars.style.visibility = "hidden";
+    } else {
+      const [w, p] = STEPS[done - 1][0];
+      count.textContent = `Guess ${done} of ${STEPS.length}: it picks “${w}” (${p}%, the biggest chance).` + (end ? ` ${STEPS.length} words, ${STEPS.length} guesses.` : "");
+      drawBars(bars, STEPS[done - 1], w);
+      bars.style.visibility = "";
+    }
+    next.hidden = end; play.hidden = end; back.hidden = done === 0 || end; again.hidden = !end;
+    play.textContent = timer ? "⏸ Pause" : "▶ Play";
+  }
+  function stop() { clearInterval(timer); timer = null; }
+  next.onclick = () => { stop(); done = Math.min(STEPS.length, done + 1); draw(); };
+  back.onclick = () => { stop(); done = Math.max(0, done - 1); draw(); };
+  play.onclick = () => {
+    if (timer) { stop(); draw(); return; }
+    timer = setInterval(() => { done++; if (done >= STEPS.length) stop(); draw(); }, reduceMotion ? 400 : 1100);
+    done++; if (done >= STEPS.length) stop(); draw();
+  };
+  const restart = () => { stop(); done = 0; draw(); };
+  again.onclick = restart;
+  addReset(next, restart);
+  addTour(next, [
+    { at: box, say: "This is the text so far: your question, then the LLM's answer as it grows." },
+    { at: bars, run: () => { stop(); done = 1; draw(); }, say: "Before each word, the LLM gives every word a chance. It picks the biggest: “Cats”, 58%." },
+    { at: next, run: restart, click: next, say: "Your turn ↑ Press ▶ Next word to make a guess." },
+  ], { id: "write-one" });
+  draw();
+})();
+
+// ---------- Part 3: ask the LLM, then check its answer ----------
+(function onlyWords() {
+  const ASKS = [
+    { label: "4,817 × 263 = ?", q: "What is 4,817 × 263?",
+      a: "4,817 × 263 is 1,264,871.",
+      check: "✗ Wrong. The real answer is 1,266,871. It wrote digits that <b>look</b> right." },
+    { label: "Weather now?", q: "What's the weather in Kochi right now?",
+      a: "It's warm and sunny in Kochi today, around 31°C.",
+      check: "✗ Just a guess. It can't see today's weather. It only knows text it read before." },
+    { label: "Remind me at 6", q: "Remind me to call Mom at 6 pm.",
+      a: "Sure! I'll remind you to call Mom at 6 pm.",
+      check: "✗ Nothing happened. It wrote “I'll remind you”, but it can't set reminders." },
+  ];
+  const chips = document.getElementById("a3Chips"), reply = document.getElementById("a3Reply");
+  const check = document.getElementById("a3Check"), ask = document.getElementById("a3Ask"), verify = document.getElementById("a3Verify");
+  let cur = 0, timer = null;
+  function show() {
+    clearTimeout(timer);
+    chips.querySelectorAll(".chip").forEach((c, i) => c.classList.toggle("on", i === cur));
+    reply.innerHTML = `<span class="prompt">You: ${ASKS[cur].q}</span>`;
+    check.hidden = true; verify.hidden = true; ask.hidden = false;
+  }
+  ask.onclick = () => {
+    const a = ASKS[cur], words = a.a.split(" ");
+    ask.hidden = true;
+    let i = 0;
+    const tick = () => {
+      i++;
+      reply.innerHTML = `<span class="prompt">You: ${a.q}</span>\nLLM: ` + words.slice(0, i).join(" ");
+      if (i < words.length) timer = setTimeout(tick, reduceMotion ? 0 : 140);
+      else verify.hidden = false;
+    };
+    tick();
+  };
+  verify.onclick = () => { check.innerHTML = ASKS[cur].check; check.hidden = false; verify.hidden = true; };
+  ASKS.forEach((a, i) => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.type = "button"; b.textContent = a.label;
+    b.onclick = () => { cur = i; show(); };
+    chips.appendChild(b);
+  });
+  addReset(ask, () => { cur = 0; show(); });
+  show();
+})();
+</script>
+</body>
+</html>

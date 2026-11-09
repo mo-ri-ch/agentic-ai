@@ -1,0 +1,44 @@
+/* course.css — small styles used only by this course (the notebook look comes from study-notebook-design). */
+
+/* Your agent */
+.agent-face .agent-bulb { fill: var(--hl-orange); }
+.agent-face .agent-tool { stroke: var(--pen); }
+
+/* Chance bars */
+.bars { display: grid; gap: 6px; margin: 10px 0 12px; }
+.bar { display: grid; grid-template-columns: 5.2em 1fr 3em; align-items: center; gap: 10px; font-family: var(--mono); font-size: 0.92rem; }
+.bar .track { height: 20px; background: var(--paper); border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+.bar .fill { display: block; height: 100%; background: var(--hl-yellow); border-right: 2px solid var(--ink); transition: width .35s ease; }
+.bar .pct { text-align: right; color: var(--pencil); }
+.bar.picked .fill { background: var(--hl-green); }
+.bar.picked span:first-child { font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .bar .fill { transition: none; } }
+
+/* Word choices */
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 12px; }
+.chip { font-family: var(--mono); font-weight: 600; padding: 4px 12px; border-radius: 20px; border-width: 1.5px; }
+.chip.on { background: var(--hl-yellow); color: var(--on-hl); }
+
+/* The text being written */
+.written {
+  font-family: var(--mono); font-size: 1.02rem; line-height: 1.5; min-height: 3.2em;
+  white-space: pre-wrap; word-break: break-word;
+  padding: 8px 12px; background: var(--paper); border: 2px solid var(--ink); border-radius: 8px;
+}
+.written .prompt { color: var(--pencil); }
+.written .new { background: var(--hl-yellow); color: var(--on-hl); border-radius: 3px; }
+.written .blank { display: inline-block; min-width: 3.5em; border-bottom: 2px dashed var(--ink); }
+.btnrow { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+.count { font-family: var(--hand); color: var(--pencil); font-size: 1.05rem; }
+
+/* Red-pen check under an answer */
+.redcheck { font-family: var(--hand); color: var(--redpen); font-size: 1.12rem; line-height: 1.4; margin: 10px 0 0; }
+.redcheck b { color: var(--redpen); }
+
+/* Agent steps: think, act, look, answer */
+.steps { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 6px; }
+.steps li { display: grid; grid-template-columns: 5.6em 1fr; gap: 8px; align-items: baseline; font-size: 0.95rem; }
+.steps .k { font-family: var(--head); font-size: 1.05rem; }
+.steps .v { font-family: var(--mono); font-size: 0.88rem; word-break: break-word; }
+.steps li.new .v { background: var(--hl-yellow); color: var(--on-hl); border-radius: 3px; padding: 0 4px; }
+.redcheck.good, .redcheck.good b { color: var(--good); }
