@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From chatbot to agent</title>
+<meta name="description" content="Lesson 1 of Build an AI Agent: from chatbot to agent. The LLM writes what it wants done, a program does it, and the loop repeats: think, act, look.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Kalam:wght@400&family=Patrick+Hand&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem("notebook-theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
+<link rel="stylesheet" href="https://mo-ri-ch.github.io/study-notebook-design/v1/style.css">
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body data-pen="blue">
+<div class="wrap">
+  <header class="topbar">
+    <a class="home" href="../">← Build an AI Agent</a>
+    <span class="where">Lesson 1 of 8</span>
+  </header>
+
+  <main data-paged>
+    <div class="paged-head">
+      <h1>From chatbot to agent</h1>
+      <div class="progress" aria-label="Lesson parts"></div>
+    </div>
+
+    <!-- 1 -->
+    <section class="part" data-title="Words that do things">
+      <h2>Words that do things</h2>
+      <p class="agent-say">I can only write text. So what if I write down what I want done… and someone else does it?</p>
+      <p class="say">That someone is a small <mark>program</mark>. It reads everything the LLM writes.</p>
+
+      <div class="activity">
+        <div class="do">You are the program. Click the line you must act on.</div>
+        <div class="tx" id="p1Tx"></div>
+        <p class="count" id="p1Say" style="margin:10px 0 0">Two lines are just words. One asks for something to be done.</p>
+        <div class="tool-run" id="p1Run" hidden></div>
+      </div>
+      <p class="say" id="p1Rule" hidden style="position:relative">A line starting with <code data-peek="Real agents use the same idea in a stricter format, often JSON. The pattern of thinking, acting and looking was made popular by a 2022 paper called ReAct (Reason + Act).">ACT:</code> asks for something to be done. The program does it, here with a calculator. Anything the program can do when asked is a <mark>tool</mark>.<br><b class="eqbox">the LLM writes → the program does</b><button class="doubt" type="button" data-peek-from="actPeek" aria-label="How does the LLM know to write ACT:?">🤔</button></p>
+      <div hidden id="actPeek"><b>🤔 How does the LLM know to write ACT:?</b>
+        <div style="margin-top:6px">Someone tells it, in text placed before your question: “To use the calculator, write ACT: calculator(…)”. The LLM guesses words that fit, and today's LLMs are also trained to follow such instructions. Coming in Lesson 2.</div>
+      </div>
+      <p class="hook">The program has the answer. But the LLM hasn't seen it yet.</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="part" data-title="Give back the result">
+      <h2>Give back the result</h2>
+      <p class="say">The program writes the result into the text, on a <code>LOOK:</code> line. Then the LLM carries on guessing words, and now the answer is right there to read.</p>
+
+      <div class="activity">
+        <div class="do"><span data-peek="The LLM's lines here are written out for you, so you can step through them. In Lesson 3, a real LLM writes them.">Step through it.</span> Watch who writes each line.</div>
+        <div class="tx" id="p2Tx"></div>
+        <div class="count" id="p2Say" style="margin-top:8px"></div>
+        <div class="btnrow">
+          <button class="primary" id="p2Next">Next step →</button>
+          <button id="p2Back" hidden>← Back</button>
+          <button id="p2Again" hidden>↺ Start again</button>
+        </div>
+      </div>
+      <p class="say">The LLM wrote once before the tool and once after. Each extra tool adds <span data-peek="In our agent the LLM asks for one tool at a time. Real LLMs can also ask for several tools in one write, so they need fewer writes.">one more write</span>:<br><b class="eqbox">LLM writes = tools used + 1</b><br>1 tool used → 1 + 1 = 2 writes.</p>
+      <p class="hook">Try it on new numbers.</p>
+    </section>
+
+    <section class="part" data-nonum data-title="✏️ Practice 1.1">
+      <h2>✏️ Practice 1.1</h2>
+      <p class="say">Remember:<br>Every <code>ACT:</code> line gets one <code>LOOK:</code> line back from the program.<br><b class="eqbox">LLM writes = tools used + 1</b></p>
+      <div class="activity">
+        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
+        <div class="pq" data-ans="3" data-tol="0.1" data-hint="The program writes one LOOK line for every ACT line." data-work="3 ACT lines → 3 LOOK lines.">
+          <div class="pq-q">The LLM writes <b>3</b> <code>ACT:</code> lines in one task. How many <code>LOOK:</code> lines does the program add?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="3" data-tol="0.1" data-hint="Use the box: LLM writes = tools used + 1." data-work="2 tools used → 2 + 1 = 3 writes.">
+          <div class="pq-q">An agent uses <b>2 tools</b>, then answers. How many times does the LLM write?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="5" data-tol="0.01" data-hint="First count the LLM's writes for 1 tool. Then add the time for the tool itself." data-work="1 tool → 1 + 1 = 2 writes.<br>2 writes × 2 s = 4 s.<br>4 s + 1 s for the tool = 5 seconds.">
+          <div class="pq-q">Each LLM write takes <b>2 seconds</b>. The calculator takes <b>1 second</b>. The agent uses the calculator once. How many seconds in total?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="hook">One tool was enough here. What if a task needs more?</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="part" data-title="The loop">
+      <h2>The loop</h2>
+      <p class="say">Some tasks need several steps. So the program keeps going round: the LLM <b>thinks</b>, asks to <b>act</b>, the program writes what to <b>look</b> at. One trip round the loop is one <mark>round</mark>, and uses one tool.</p>
+
+      <div class="activity">
+        <div class="do">Step through. Watch the loop go round twice.</div>
+        <div class="loopwrap">
+          <div class="loop" aria-hidden="true">
+            <svg viewBox="0 0 210 210">
+              <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--pencil)"/></marker></defs>
+              <path class="arr" d="M142,28 Q172,36 172,90" marker-end="url(#ah)"/>
+              <path class="arr" d="M135,122 Q105,142 79,122" marker-end="url(#ah)"/>
+              <path class="arr" d="M38,94 Q36,38 66,28" marker-end="url(#ah)"/>
+              <g class="node" id="nThink"><rect x="70" y="10" width="70" height="34" rx="8"/><text x="105" y="27">💭 Think</text></g>
+              <g class="node" id="nAct"><rect x="135" y="96" width="70" height="34" rx="8"/><text x="170" y="113">🔧 Act</text></g>
+              <g class="node" id="nLook"><rect x="5" y="96" width="70" height="34" rx="8"/><text x="40" y="113">👀 Look</text></g>
+              <text class="round" id="nRound" x="105" y="76"></text>
+              <g class="node" id="nAnswer"><rect x="60" y="168" width="90" height="34" rx="8"/><text x="105" y="185">💬 Answer</text></g>
+              <path class="arr out" d="M105,90 L105,164" marker-end="url(#ah)"/>
+            </svg>
+          </div>
+          <div>
+            <div class="tx" id="p3Tx"></div>
+            <div class="count" id="p3Say" style="margin-top:8px"></div>
+          </div>
+        </div>
+        <div class="btnrow">
+          <button class="primary" id="p3Next">Next step →</button>
+          <button id="p3Play">▶ Play</button>
+          <button id="p3Back" hidden>← Back</button>
+          <button id="p3Again" hidden>↺ Start again</button>
+        </div>
+      </div>
+      <p class="say">The loop stops when the LLM writes <code>ANSWER:</code>. Here: 2 rounds, so 2 tools, so the LLM wrote 2 + 1 = 3 times.<br><b class="eqbox">LLM writes = rounds + 1</b></p>
+      <p class="say">In case it never answers, the program also stops after a set number of rounds, called the <mark>step limit</mark>.</p>
+      <p class="hook">Lots of lines now. Who wrote which?</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="part" data-title="Who wrote what?">
+      <h2>Who wrote what?</h2>
+      <div class="activity">
+        <div class="do">Tap every line the <b>program</b> wrote. Then press Check.</div>
+        <div class="tx" id="p4Tx"></div>
+        <p class="redcheck" id="p4Say" hidden></p>
+        <div class="btnrow">
+          <button class="primary" id="p4Check" hidden>✓ Check</button>
+        </div>
+      </div>
+      <p class="say">The program only writes <code>LOOK:</code> lines. Everything else, the thinking and the asking, comes from the LLM. Together, they're an <mark>agent</mark>:<br><b class="eqbox">agent = LLM + a program running the loop</b></p>
+      <p class="hook">Try it on new numbers.</p>
+    </section>
+
+    <section class="part" data-nonum data-title="✏️ Practice 1.2">
+      <h2>✏️ Practice 1.2</h2>
+      <p class="say">Remember:<br>One round = think, act, look. One tool used per round.<br><b class="eqbox">LLM writes = rounds + 1</b><br>The program stops at the <b>step limit</b>, even if the task isn't done.</p>
+      <div class="activity">
+        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
+        <div class="pq" data-ans="3" data-tol="0.1" data-hint="Each thing to look up or work out is one tool use, so one round." data-work="Weather in Delhi: 1 round.<br>Weather in Kochi: 1 round.<br>The difference, on the calculator: 1 round.<br>3 rounds.">
+          <div class="pq-q">“How much warmer is Kochi than Delhi?” The agent checks the weather in <b>both</b> cities, then uses the calculator. How many rounds?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="4" data-tol="0.1" data-hint="Use the box: LLM writes = rounds + 1." data-work="3 rounds → 3 + 1 = 4 writes. The last one is the ANSWER.">
+          <div class="pq-q">Same task. How many times does the LLM write?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="4" data-tol="0.1" data-hint="The program stops at the step limit, even if the task needs more rounds." data-work="The task needs 6 rounds, but the limit is 4. The program stops after 4 tool uses, before an answer.">
+          <div class="pq-q">The step limit is <b>4</b> rounds. A task needs <b>6</b> tool uses. How many tools does the agent get to use?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="hook">Quick check: did it all make sense?</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="part" data-title="Lesson test">
+      <h2>Lesson 1 test</h2>
+      <p class="say">5 questions, one for each idea in this lesson. Answer them all right to pass. A wrong answer tells you why, and which page to look at again.</p>
+      <div class="test" data-test="2">
+        <div class="quiz" data-page="lesson1.html#1" data-topic="Words that do things" data-right="Right. The program sees the ACT: line and runs the weather tool.">
+          <div class="q"><small>1. Predict</small>The LLM writes <code>ACT: weather("Delhi")</code>. What happens next?</div>
+          <div class="options">
+            <button data-why="The LLM can't check anything. It only writes text. Someone else has to act.">The LLM checks the weather itself</button>
+            <button data-right>The program runs the weather tool</button>
+            <button data-why="Without a program it would be just words. But an agent has a program that reads every ACT: line.">Nothing. It's only text.</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson1.html#2" data-topic="Give back the result" data-right="Right. The LLM guesses words from the text it can see. The result has to be in that text.">
+          <div class="q"><small>2. Why</small>Why does the program write the result into the text, on a <code>LOOK:</code> line?</div>
+          <div class="options">
+            <button data-right>So the LLM can read it when it writes its next words</button>
+            <button data-why="The person may see it too, but that's not the reason. The LLM only knows what's in the text.">Only so the person can see it</button>
+            <button data-why="It isn't decoration: without it, the LLM would have to guess the result again.">To make the text look neat</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson1.html#2" data-topic="Give back the result" data-right="Right. 4 tools + 1 = 5 writes.">
+          <div class="q"><small>3. Count</small>An agent uses <b>4 tools</b>, then answers. How many times does the LLM write?</div>
+          <div class="options">
+            <button data-why="It writes once before each tool, and once more after the last one, for the answer.">4</button>
+            <button data-right>5</button>
+            <button data-why="The LOOK lines come from the program, not the LLM. Count only the LLM's writes: tools + 1.">8</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson1.html#4" data-topic="The loop" data-right="Right. ANSWER: ends it, or the step limit if the LLM never gets there.">
+          <div class="q"><small>4. Loop</small>When does the loop stop?</div>
+          <div class="options">
+            <button data-why="Some tasks take 1 round, some take 5. It isn't a fixed number.">Always after 3 rounds</button>
+            <button data-right>When the LLM writes ANSWER:, or at the step limit</button>
+            <button data-why="The program doesn't judge the answer. It stops when it sees ANSWER: or hits the step limit.">When the program thinks the answer is good</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson1.html#5" data-topic="Who wrote what?" data-right="Right. The LLM only wrote “ACT: calculator(…)”. The program ran it.">
+          <div class="q"><small>5. Spot the mistake</small>A friend says: “The LLM ran the calculator.” What's wrong?</div>
+          <div class="options">
+            <button data-right>The program ran it. The LLM only wrote the ACT: line.</button>
+            <button data-why="An agent does use tools: through its program. The LLM asks, the program does.">Agents can't use calculators</button>
+            <button data-why="The LLM wrote the ACT: line, but writing isn't running. The program did that.">Nothing. The LLM did run it.</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </div>
+      <p class="hook">What your agent still doesn't know.</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="part" data-title="What can it do?">
+      <h2>What can it do?</h2>
+      <p class="say">Your agent can ask for things now. But how does the LLM know there's a calculator, or what to write to use it?</p>
+      <p class="agent-say">I can ask for anything… but what can I actually <b>do</b>?</p>
+      <div class="open-question">
+        <div>This leaves a question</div>
+        <div class="big">The agent wants to act. But what can it actually do?</div>
+        <div><a href="lesson2.html">Lesson 2 answers it.</a></div>
+      </div>
+      <p><button class="done-toggle" data-done="2">Mark lesson as done</button></p>
+    </section>
+  </main>
+</div>
+
+<nav class="pagebar" aria-label="Move between parts">
+  <div class="inner">
+    <button data-page-back>← Previous</button>
+    <span data-page-label></span>
+    <button class="primary" data-page-next>Next →</button>
+  </div>
+</nav>
+
+<script src="../assets/course.js"></script>
+<script src="../assets/practice.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/common.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/pen.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/guide.js"></script>
+<script>
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const WHO = { you: "you", llm: "LLM", prog: "program" };
+// One transcript line: [who, text]
+const line = ([who, text], opts = {}) =>
+  `<div class="ln${opts.isNew ? " new" : ""}"><span class="who ${opts.hideWho ? "hide" : who}">${opts.hideWho ? "?" : WHO[who]}</span><span class="txt">${text}</span></div>`;
+
+// ---------- Part 1: be the program ----------
+(function beTheProgram() {
+  const LINES = [["you", "What is 4,817 × 263?"], ["llm", "THINK: Exact math. I'll use the calculator."], ["llm", "ACT: calculator(4817 * 263)"]];
+  const tx = document.getElementById("p1Tx"), say = document.getElementById("p1Say");
+  const run = document.getElementById("p1Run"), rule = document.getElementById("p1Rule");
+  const WRONG = ["That's the person's question. It doesn't ask the program to do anything.", "That's the LLM thinking out loud. Just words: the program skips it."];
+  function draw() {
+    tx.innerHTML = LINES.map(([who, t], i) => `<button type="button" class="ln" data-i="${i}"><span class="who ${who}">${WHO[who]}</span><span class="txt">${t}</span></button>`).join("");
+    tx.querySelectorAll("button.ln").forEach(b => b.onclick = () => {
+      const i = +b.dataset.i;
+      tx.querySelectorAll("button.ln").forEach(x => x.classList.remove("right", "wrong"));
+      if (i === 2) {
+        b.classList.add("right");
+        say.textContent = "Yes! It starts with ACT:, so you run it.";
+        run.innerHTML = "🔧 The program runs calculator(4817 * 263) → <b>1266871</b>";
+        run.hidden = false; rule.hidden = false;
+      } else {
+        b.classList.add("wrong");
+        say.textContent = WRONG[i];
+        run.hidden = true;
+      }
+    });
+  }
+  addReset(tx, () => { draw(); say.textContent = "Two lines are just words. One asks for something to be done."; run.hidden = true; rule.hidden = true; });
+  draw();
+})();
+
+// ---------- Part 2: the result goes back into the text ----------
+(function giveBack() {
+  const STEPS = [
+    { add: [["you", "What is 4,817 × 263?"]], say: "Your question. Press Next step." },
+    { add: [["llm", "THINK: Exact math. I'll use the calculator."], ["llm", "ACT: calculator(4817 * 263)"]], say: "The LLM writes (1st time). It stops at the ACT: line." },
+    { add: [["prog", "LOOK: 1266871"]], say: "The program runs the calculator and writes the result on a LOOK: line." },
+    { add: [["llm", "ANSWER: 4,817 × 263 = 1,266,871."]], say: "The LLM writes again (2nd time). The result is in the text, so it copies it. Right this time!" },
+  ];
+  const tx = document.getElementById("p2Tx"), say = document.getElementById("p2Say");
+  const next = document.getElementById("p2Next"), back = document.getElementById("p2Back"), again = document.getElementById("p2Again");
+  let at = 0;
+  function draw() {
+    let html = "";
+    STEPS.slice(0, at + 1).forEach((s, i) => s.add.forEach(l => html += line(l, { isNew: i === at && at > 0 })));
+    tx.innerHTML = html;
+    const writes = Math.min(at, 1) + (at >= 3 ? 1 : 0), tools = at >= 2 ? 1 : 0;
+    say.innerHTML = STEPS[at].say + `<br>LLM writes: <b>${writes}</b> · tools used: <b>${tools}</b>`;
+    const end = at === STEPS.length - 1;
+    next.hidden = end; back.hidden = at === 0 || end; again.hidden = !end;
+  }
+  next.onclick = () => { at = Math.min(STEPS.length - 1, at + 1); draw(); };
+  back.onclick = () => { at = Math.max(0, at - 1); draw(); };
+  const restart = () => { at = 0; draw(); };
+  again.onclick = restart;
+  addReset(next, restart);
+  draw();
+})();
+
+// ---------- Part 3: the loop, round and round until ANSWER ----------
+(function theLoop() {
+  const STEPS = [
+    { node: null, round: 0, add: ["you", "How much do 3 coffees at Blue Cup cost?"], say: "A task with two steps. Press Next step." },
+    { node: "nThink", round: 1, add: ["llm", "THINK: I need the price first."], say: "Round 1 · Think: the LLM decides what it needs." },
+    { node: "nAct", round: 1, add: ["llm", "ACT: search(\"Blue Cup coffee price\")"], say: "Round 1 · Act: it asks for a search." },
+    { node: "nLook", round: 1, add: ["prog", "LOOK: ₹120 a cup"], say: "Round 1 · Look: the program writes what the search found." },
+    { node: "nThink", round: 2, add: ["llm", "THINK: Now 3 × 120."], say: "Round 2 · Think: with the price in the text, it plans the next step." },
+    { node: "nAct", round: 2, add: ["llm", "ACT: calculator(3 * 120)"], say: "Round 2 · Act: it asks for the calculator." },
+    { node: "nLook", round: 2, add: ["prog", "LOOK: 360"], say: "Round 2 · Look: the program writes the result." },
+    { node: "nAnswer", round: 2, add: ["llm", "ANSWER: 3 coffees at Blue Cup cost ₹360."], say: "The LLM has all it needs, so it writes ANSWER:. The loop stops. 2 rounds, 3 LLM writes." },
+  ];
+  const tx = document.getElementById("p3Tx"), say = document.getElementById("p3Say"), roundLabel = document.getElementById("nRound");
+  const next = document.getElementById("p3Next"), play = document.getElementById("p3Play");
+  const back = document.getElementById("p3Back"), again = document.getElementById("p3Again");
+  let at = 0, timer = null;
+  function draw() {
+    tx.innerHTML = STEPS.slice(0, at + 1).map((s, i) => line(s.add, { isNew: i === at && at > 0 })).join("");
+    ["nThink", "nAct", "nLook", "nAnswer"].forEach(id => document.getElementById(id).classList.toggle("on", STEPS[at].node === id));
+    roundLabel.textContent = STEPS[at].round && STEPS[at].node !== "nAnswer" ? `round ${STEPS[at].round}` : "";
+    say.textContent = STEPS[at].say;
+    const end = at === STEPS.length - 1;
+    next.hidden = end; play.hidden = end; back.hidden = at === 0 || end; again.hidden = !end;
+    play.textContent = timer ? "⏸ Pause" : "▶ Play";
+  }
+  function stop() { clearInterval(timer); timer = null; }
+  function step() { at = Math.min(STEPS.length - 1, at + 1); if (at === STEPS.length - 1) stop(); draw(); }
+  next.onclick = () => { stop(); step(); };
+  back.onclick = () => { stop(); at = Math.max(0, at - 1); draw(); };
+  play.onclick = () => {
+    if (timer) { stop(); draw(); return; }
+    timer = setInterval(step, reduceMotion ? 500 : 1400);
+    step();
+  };
+  const restart = () => { stop(); at = 0; draw(); };
+  again.onclick = restart;
+  addReset(next, restart);
+  addTour(next, [
+    { at: tx, say: "The text grows here, line by line. The coloured tag says who wrote each line." },
+    { at: () => document.querySelector(".loop"), run: () => { stop(); at = 1; draw(); }, say: "The loop picture shows where we are. Now: 💭 Think, in round 1." },
+    { at: next, run: restart, click: next, say: "Your turn ↑ Press Next step and follow the loop round." },
+  ], { id: "loop" });
+  draw();
+})();
+
+// ---------- Part 4: who wrote what? ----------
+(function whoWrote() {
+  const LINES = [
+    ["you", "Is it warm enough to swim in Kochi?"],
+    ["llm", "THINK: I need today's weather."],
+    ["llm", "ACT: weather(\"Kochi\")"],
+    ["prog", "LOOK: 29°C, sunny"],
+    ["llm", "THINK: Warm. Is the sea calm?"],
+    ["llm", "ACT: search(\"Kochi sea today\")"],
+    ["prog", "LOOK: Calm sea, low waves"],
+    ["llm", "ANSWER: Yes! 29°C, sunny, and a calm sea."],
+  ];
+  const tx = document.getElementById("p4Tx"), say = document.getElementById("p4Say"), check = document.getElementById("p4Check");
+  let picked = new Set(), checked = false;
+  function draw() {
+    tx.innerHTML = LINES.map(([who, t], i) => {
+      const show = checked;
+      let cls = picked.has(i) ? " picked" : "";
+      if (checked) cls = who === "prog" ? (picked.has(i) ? " right" : " wrong") : (picked.has(i) ? " wrong" : "");
+      return `<button type="button" class="ln${cls}" data-i="${i}" aria-pressed="${picked.has(i)}"><span class="who ${show ? who : "hide"}">${show ? WHO[who] : (picked.has(i) ? "program" : "?")}</span><span class="txt">${t}</span></button>`;
+    }).join("");
+    tx.querySelectorAll("button.ln").forEach(b => b.onclick = () => {
+      if (checked) return;
+      const i = +b.dataset.i;
+      picked.has(i) ? picked.delete(i) : picked.add(i);
+      draw();
+    });
+    check.hidden = checked || picked.size === 0;
+  }
+  check.onclick = () => {
+    checked = true;
+    const right = LINES.every(([who], i) => (who === "prog") === picked.has(i));
+    say.classList.toggle("good", right);
+    say.innerHTML = right ? "✓ Right. Only the two LOOK: lines came from the program." : "✗ Not quite. The program wrote only the two LOOK: lines. The tags now show who wrote each line.";
+    say.hidden = false;
+    draw();
+  };
+  addReset(tx, () => { picked = new Set(); checked = false; say.hidden = true; draw(); });
+  draw();
+})();
+</script>
+</body>
+</html>

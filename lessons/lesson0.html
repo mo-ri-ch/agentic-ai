@@ -29,14 +29,14 @@
     <section class="part" data-title="Guess the next word">
       <h2>Guess the next word</h2>
       <p class="agent-say">Hi, I'm your agent. Well, I will be! Right now I'm just an LLM. Let's see what that means.</p>
-      <p class="say">An <mark><span data-peek="Large Language Model. “Large” because it learned from a huge amount of text: books, websites, code.">LLM</span></mark> is a program that has read a huge amount of text. It does one thing: <b>guess the next word.</b></p>
+      <p class="say">An <mark><span data-peek="Large Language Model. “Large” because it learned from a huge amount of text: books, websites, code.">LLM</span></mark> is an AI that has read a huge amount of text. It does one thing: <b>guess the next word.</b></p>
 
       <div class="activity">
         <div class="do">Which word comes next? Guess first.</div>
         <div class="written"><span class="prompt">The cat sat on the</span> <span class="blank" id="g1Blank"></span></div>
         <div class="chips" id="g1Chips" role="group" aria-label="Pick the next word" style="margin-top:12px"></div>
         <div id="g1After" hidden>
-          <div class="count">The LLM's chances for the next word:</div>
+          <div class="count"><span data-peek="Made-up numbers, to show the idea. A real LLM gives its own numbers, and gives every word it knows a chance.">The LLM's chances</span> for the next word:</div>
           <div class="bars" id="g1Bars"></div>
           <div class="count" id="g1Say"></div>
         </div>
@@ -48,13 +48,13 @@
     <!-- 2 -->
     <section class="part" data-title="One word at a time">
       <h2>One word at a time</h2>
-      <p class="say" style="position:relative">The LLM guesses a <span data-peek="Real LLMs guess pieces of words, called tokens: “sleeping” might be “sleep” + “ing”. We say “words” to keep it simple.">word</span>, adds it to the text, then guesses again. Here it picks the word with the <b>biggest chance</b>.<button class="doubt" type="button" data-peek-from="pickPeek" aria-label="Does it always pick the biggest chance?">🤔</button></p>
+      <p class="say" style="position:relative">The LLM guesses a <span data-peek="Real LLMs guess pieces of words, called tokens: a long word like “unbelievable” might be “un” + “believ” + “able”. We say “words” to keep it simple.">word</span>, adds it to the text, then guesses again. Here it picks the word with the <b>biggest chance</b>.<button class="doubt" type="button" data-peek-from="pickPeek" aria-label="Does it always pick the biggest chance?">🤔</button></p>
       <div hidden id="pickPeek"><b>🤔 Does it always pick the biggest chance?</b>
         <div style="margin-top:6px">Ours does, to keep things simple. Real chatbots sometimes pick a less likely word on purpose. That's why the same question can get different answers.</div>
       </div>
 
       <div class="activity">
-        <div class="do">Watch it write its answer, one guess at a time.</div>
+        <div class="do">Watch it write its answer, <span data-peek="The chances here are made up, to show the idea. A real LLM works the same way, with its own numbers.">one guess at a time.</span></div>
         <div class="written" id="w2"></div>
         <div class="count" id="w2Count" style="margin-top:8px"></div>
         <div class="bars" id="w2Bars"></div>
@@ -103,7 +103,7 @@
       <h2>Only words</h2>
       <p class="say">An LLM reads text and writes text. Nothing else.</p>
       <div class="activity">
-        <div class="do">Ask the LLM. Then check its answer.</div>
+        <div class="do"><span data-peek="These answers are written out for you, but they're typical of an LLM working alone, with no tools.">Ask the LLM.</span> Then check its answer.</div>
         <div class="chips" id="a3Chips" role="group" aria-label="Pick a question"></div>
         <div class="written" id="a3Reply" aria-live="polite"></div>
         <p class="redcheck" id="a3Check" hidden></p>
@@ -112,7 +112,7 @@
           <button id="a3Verify" hidden>✓ Check the answer</button>
         </div>
       </div>
-      <p class="say near" id="a3Say" style="position:relative">It writes words that <b>sound</b> right. But on its own it can't calculate exactly, can't look up anything new, and can't <b>do</b> anything.<button class="doubt" type="button" data-peek-from="chatgptPeek" aria-label="But ChatGPT can search the web!">🤔</button></p>
+      <p class="say near" id="a3Say" style="position:relative">It writes words that <b>sound</b> right. But on its own it can't be sure its math is right, can't look up anything new, and can't <b>do</b> anything.<button class="doubt" type="button" data-peek-from="chatgptPeek" aria-label="But ChatGPT can search the web!">🤔</button></p>
       <div hidden id="chatgptPeek"><b>🤔 But ChatGPT can search the web!</b>
         <div style="margin-top:6px">Yes, because it isn't just an LLM. It's an LLM <b>plus tools</b>, like a search. That's an agent, and it's what you'll build in this course.</div>
       </div>
@@ -154,7 +154,7 @@
         <div class="quiz" data-page="lesson0.html#4" data-topic="Only words" data-right="Right. An LLM alone only writes text from what it read before. It can't look anything up.">
           <div class="q"><small>4. Spot the mistake</small>A friend says: “The LLM read today's news to answer me.” What's wrong?</div>
           <div class="options">
-            <button data-why="An LLM doesn't read anything while it answers. It only guesses words from what it read before.">Nothing. LLMs read the internet as they answer.</button>
+            <button data-why="An LLM doesn't read the internet while it answers. It reads only your text, and guesses words from what it learned before.">Nothing. LLMs read the internet as they answer.</button>
             <button data-right>An LLM alone can't look anything up. It only writes text.</button>
             <button data-why="It can write about news: words that sound right. It just can't check today's news.">LLMs can't write about news at all.</button>
           </div>

@@ -42,3 +42,31 @@
 .steps .v { font-family: var(--mono); font-size: 0.88rem; word-break: break-word; }
 .steps li.new .v { background: var(--hl-yellow); color: var(--on-hl); border-radius: 3px; padding: 0 4px; }
 .redcheck.good, .redcheck.good b { color: var(--good); }
+
+/* A transcript: what the LLM, the program and you wrote, one line each */
+.tx { font-family: var(--mono); font-size: 0.9rem; line-height: 1.45; padding: 8px 10px; background: var(--paper); border: 2px solid var(--ink); border-radius: 8px; display: grid; gap: 4px; }
+.tx .ln { display: grid; grid-template-columns: 4.6em 1fr; gap: 8px; align-items: baseline; padding: 2px 4px; border-radius: 4px; word-break: break-word; }
+.tx .ln.new .txt { background: var(--hl-yellow); color: var(--on-hl); border-radius: 3px; padding: 0 3px; }
+.tx button.ln { font: inherit; text-align: left; background: none; border: 1.5px dashed transparent; color: var(--ink); cursor: pointer; }
+.tx button.ln:hover { border-color: var(--pencil); background: none; }
+.tx button.ln.picked { border-color: var(--ink); border-style: solid; }
+.tx button.ln.right { border-color: var(--good); border-style: solid; }
+.tx button.ln.wrong { border-color: var(--redpen); border-style: solid; }
+.who { font-family: var(--hand); font-size: 0.85rem; text-align: center; border-radius: 10px; padding: 0 4px; color: var(--ink); }
+.who.you { background: var(--note-yellow); }
+.who.llm { background: var(--note-blue); }
+.who.prog { background: var(--note-green); }
+.who.hide { background: none; border: 1px dashed var(--rule); color: var(--pencil); }
+.tool-run { font-family: var(--mono); font-size: 0.9rem; margin: 10px 0 0; padding: 6px 10px; border-left: 4px solid var(--good); background: var(--card); }
+
+/* The loop picture: Think → Act → Look, and the way out to Answer */
+.loopwrap { display: grid; grid-template-columns: 210px 1fr; gap: 16px; align-items: start; }
+@media (max-width: 640px) { .loopwrap { grid-template-columns: 1fr; } .loopwrap svg { max-width: 170px; margin: 0 auto; display: block; } }
+.loop svg { width: 100%; height: auto; overflow: visible; }
+.loop .node rect { fill: var(--card); stroke: var(--ink); stroke-width: 2; }
+.loop .node text { font-family: var(--head); font-size: 15px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+.loop .node.on rect { fill: var(--hl-yellow); }
+.loop .node.on text { fill: var(--on-hl); }
+.loop .arr { fill: none; stroke: var(--pencil); stroke-width: 2; }
+.loop .arr.out { stroke-dasharray: 5 4; }
+.loop .round { font-family: var(--hand); font-size: 14px; fill: var(--redpen); text-anchor: middle; }
