@@ -13,7 +13,7 @@ const COURSE_LESSONS = [
   { n: 3, label: "2", step: "tools", title: "Tools", file: "lesson2.html", ready: true, test: 8,
     summary: "Give the agent a calculator, a search and more, and let it choose when to use them.",
     leaves: "You've watched an agent work. Can you build one yourself?" },
-  { n: 4, label: "3", step: "build it", title: "Build the loop", file: "lesson3.html", ready: false,
+  { n: 4, label: "3", step: "build it", title: "Build the loop", file: "lesson3.html", ready: true, test: 9,
     summary: "Write your own agent in about 50 lines of Python. No framework.",
     leaves: "Your agent forgets everything when the task ends. How can it remember?" },
   { n: 5, label: "4", step: "memory", title: "Memory", file: "lesson4.html", ready: false,

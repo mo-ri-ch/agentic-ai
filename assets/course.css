@@ -103,3 +103,13 @@
 @media (max-width: 520px) { .sortrow { grid-template-columns: 8.2em 1fr; gap: 6px; padding: 4px 0; } .sortrow code { font-size: 0.78rem; } .sortrow .seg { flex-wrap: nowrap; } .sortrow .seg button { padding: 3px 8px; font-size: 0.78rem; } }
 .tx .ln.block .t-head, .tx .ln.block .t, .tx .ln.block .t-how { display: block; }
 .tx .ln.block .t-head { font-family: var(--hand); }
+
+/* Code with lines that light up (e.g. which lines are Think / Act / Look) */
+pre.mapcode code .cl { display: block; border-radius: 3px; padding: 0 4px; margin: 0 -4px; transition: background .2s; }
+pre.mapcode code .cl.on { background: color-mix(in srgb, var(--hl-yellow) 45%, transparent); }
+pre.mapcode code .cl.dim { opacity: 0.45; }
+@media (prefers-reduced-motion: reduce) { pre.mapcode code .cl { transition: none; } }
+.tryrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-family: var(--mono); font-size: 0.92rem; margin: 6px 0; }
+.tryrow input { font: inherit; width: 11em; padding: 4px 8px; border: 2px solid var(--ink); border-radius: var(--radius, 8px); background: var(--paper); color: var(--ink); }
+.tryrow input.wide { width: min(100%, 24em); }
+.tx .ln.cut .txt { text-decoration: line-through; opacity: 0.5; }

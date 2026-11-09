@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build the loop</title>
+<meta name="description" content="Lesson 3 of Build an AI Agent: build the loop. Write a real agent in Python: tools as functions, finding the ACT: line, the loop, a fake LLM, then a real one.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Kalam:wght@400&family=Patrick+Hand&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem("notebook-theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
+<link rel="stylesheet" href="https://mo-ri-ch.github.io/study-notebook-design/v1/style.css">
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body data-pen="blue">
+<div class="wrap">
+  <header class="topbar">
+    <a class="home" href="../">← Build an AI Agent</a>
+    <span class="where">Lesson 3 of 8</span>
+  </header>
+
+  <main data-paged>
+    <div class="paged-head">
+      <h1>Build the loop</h1>
+      <div class="progress" aria-label="Lesson parts"></div>
+    </div>
+
+    <!-- 1 -->
+    <section class="part" data-title="Tools are functions">
+      <h2>Tools are functions</h2>
+      <p class="agent-say">Time to build me for real, in Python. First, my tools.</p>
+      <p class="say">In code, a tool is a Python <mark>function</mark>: text goes in, text comes out.</p>
+      <div class="activity">
+        <div class="do">Call each tool. Try a city that isn't there, too.</div>
+<pre><code>def weather(city):
+    today = {"kochi": "29°C, sunny", "delhi": "18°C, foggy", "pune": "24°C, light rain"}
+    return today.get(city.lower(), f"Error: no city called {city}")</code></pre>
+        <p class="count" style="margin:0 0 6px"><code>today.get(city, …)</code> looks the city up. If it isn't there, you get the error instead. The calculator's code is in the full code at the end.</p>
+        <div class="tryrow">weather(" <input id="p1City" value="Kochi" aria-label="City" spellcheck="false"> ") <button id="p1RunW">▶ Run</button></div>
+        <div class="tryrow">calculator(" <input id="p1Math" value="12 * 7" aria-label="Math" spellcheck="false"> ") <button id="p1RunC">▶ Run</button></div>
+        <div class="out" id="p1Out"><span class="c"># press ▶ Run</span></div>
+      </div>
+      <p class="say">The program keeps every tool in a <span data-peek="A Python dictionary stores pairs: a key and its value. Here the key is the tool's name, and the value is the function.">dictionary</span>, name → function, so it can find a tool by the name in the <code>ACT:</code> line:<br><b class="eqbox">TOOLS["weather"]("Kochi") → "29°C, sunny"</b></p>
+      <p class="hook">The program needs that name. How does it get it out of the LLM's reply?</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="part" data-title="Find the ACT: line">
+      <h2>Find the ACT: line</h2>
+      <div class="activity">
+        <div class="do">Edit the reply, or pick one. See what the program finds.</div>
+        <div class="chips" id="p2Chips"></div>
+        <div class="tryrow"><input class="wide" id="p2In" aria-label="The LLM's reply" spellcheck="false"></div>
+        <div class="out" id="p2Out"></div>
+      </div>
+      <p class="say near" style="position:relative">One line of Python finds it. It looks for the pattern <code>ACT: name(input)</code>:<br><b class="eqbox">act = re.search(r"ACT: (\w+)\((.*)\)", reply)</b><br>For <code>ACT: weather("Kochi")</code>, <code>act.group(1)</code> is <code>weather</code> and <code>act.group(2)</code> is <code>"Kochi"</code>. No match? Then <code>act</code> is <code>None</code>.<button class="doubt" type="button" data-peek-from="rePeek" aria-label="What do the symbols in the pattern mean?">🤔</button></p>
+      <div hidden id="rePeek"><b>🤔 What do the symbols in the pattern mean?</b>
+        <ul style="margin:6px 0 0">
+          <li><code>(\w+)</code>: one or more letters, digits or _ : the tool's name.</li>
+          <li><code>\(</code> and <code>\)</code>: real brackets.</li>
+          <li><code>(.*)</code>: anything in between: the input.</li>
+        </ul>
+      </div>
+      <p class="hook">Try it on new examples.</p>
+    </section>
+
+    <section class="part" data-nonum data-title="✏️ Practice 3.1">
+      <h2>✏️ Practice 3.1</h2>
+      <p class="say">Remember:<br>A tool is a function: text in, text out.<br><b class="eqbox">TOOLS[name](input)</b> calls the tool with that name.<br><code>act.group(1)</code> is the name, <code>act.group(2)</code> the input.</p>
+      <div class="activity">
+        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
+        <div class="pq" data-ans="84" data-tol="0.01" data-hint="The calculator works out the math and hands back the answer." data-work="12 × 7 = 84. It comes back as the text &quot;84&quot;.">
+          <div class="pq-q">What does <code>calculator("12 * 7")</code> give back?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="25" data-tol="0.01" data-hint="The program finds calculator and 100 / 4, then calls calculator(&quot;100 / 4&quot;)." data-work="act.group(1) = calculator, act.group(2) = 100 / 4.<br>100 / 4 = 25. (Python writes it as 25.0: / always gives a decimal.)">
+          <div class="pq-q">The reply is <code>ACT: calculator(100 / 4)</code>. What number ends up on the <code>LOOK:</code> line?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="3" data-tol="0.1" data-hint="Each tool is one pair in the dictionary: name → function." data-work="calculator, weather and search: 3 pairs.">
+          <div class="pq-q"><code>TOOLS</code> holds <code>calculator</code> and <code>weather</code>. You add a <code>search</code> tool. How many pairs are in <code>TOOLS</code> now?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="hook">Tools, and a way to find them. Now the loop.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="part" data-title="The loop in code">
+      <h2>The loop in code</h2>
+      <div class="activity">
+        <div class="do">Press a part of the loop. See which lines do it.</div>
+        <div class="chips" id="p3Parts"></div>
+<pre class="mapcode"><code id="p3Code"></code></pre>
+        <div class="count" id="p3Say"></div>
+      </div>
+      <p class="say">Each pass through the <code>for</code> loop is one round. <code>range(step_limit)</code> is the step limit: at most 5 rounds. <code>return</code> ends it early, as soon as there's an <code>ANSWER:</code>: an answer in round 2 means only 2 rounds run.</p>
+      <p class="hook">The loop needs an LLM to call. Which one?</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="part" data-title="A fake LLM first">
+      <h2>A fake LLM first</h2>
+      <div class="activity">
+        <div class="do">Pick a test. Run the loop with a fake LLM.</div>
+        <div class="chips" id="p4Chips"></div>
+        <div class="tx" id="p4Replies"></div>
+        <div class="btnrow"><button class="primary" id="p4Run">▶ Run the loop</button></div>
+        <div class="out" id="p4Out" hidden></div>
+      </div>
+      <p class="say">The <mark>fake LLM</mark> hands back the next reply from a list, written by hand. No model needed, so you can test every part of the loop first: tools, errors, the step limit.<br><b class="eqbox">test the loop with a fake LLM first</b></p>
+      <p class="hook">Try it on new numbers.</p>
+    </section>
+
+    <section class="part" data-nonum data-title="✏️ Practice 3.2">
+      <h2>✏️ Practice 3.2</h2>
+      <p class="say">Remember:<br>Each call to the LLM uses one reply. A reply with <code>ACT:</code> gets one <code>LOOK:</code> line.<br>The loop ends at <code>ANSWER:</code>, or after <code>step_limit</code> rounds.</p>
+      <div class="activity">
+        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
+        <div class="pq" data-ans="2" data-tol="0.1" data-hint="Only replies with ACT: get a LOOK: line. The ANSWER: reply ends the loop." data-work="Reply 1: ACT → LOOK.<br>Reply 2: ACT → LOOK.<br>Reply 3: ANSWER → the loop ends.<br>2 LOOK: lines.">
+          <div class="pq-q"><code>fake_replies</code> has <b>3</b> replies: two with <code>ACT:</code>, then one with <code>ANSWER:</code>. How many <code>LOOK:</code> lines get printed?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="3" data-tol="0.1" data-hint="With no ANSWER:, the loop runs until the step limit." data-work="No ANSWER:, so all 3 rounds run.<br>1 call per round: 3 calls.">
+          <div class="pq-q"><code>step_limit=3</code>. The fake LLM never writes <code>ANSWER:</code>. How many times is the LLM called?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="2" data-tol="0.1" data-hint="The step limit stops the loop, even if a reply with ANSWER: is still waiting in the list." data-work="Round 1: reply 1 (ACT). Round 2: reply 2 (ACT).<br>step_limit=2 reached: the loop stops.<br>2 replies used. The ANSWER: is never read.">
+          <div class="pq-q">Replies: <code>ACT</code>, <code>ACT</code>, <code>ANSWER</code>. <code>step_limit=2</code>. How many replies get used?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="hook">The loop works. Time for a real LLM.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="part" data-title="A real LLM">
+      <h2>A real LLM</h2>
+      <div class="activity">
+        <div class="do">A real reply. Something's wrong with it. Cut it.</div>
+        <div class="tx" id="p5Tx"></div>
+        <p class="redcheck" id="p5Say">The LLM kept writing after its ACT: line, and made up a LOOK: line itself.</p>
+        <div class="btnrow"><button class="primary" id="p5Cut">✂️ Cut at the ACT: line</button></div>
+      </div>
+      <p class="say near" style="position:relative">Swap <code>fake_llm</code> for <code>real_llm</code> (it's in the Colab notebook). The loop stays the same. But a real LLM sometimes keeps going and makes up its own result. So the program keeps its reply only up to the first <code>ACT:</code> or <code>ANSWER:</code> line, and writes the real <code>LOOK:</code> itself.<button class="doubt" type="button" data-peek-from="smallPeek" aria-label="Which real LLM do we use?">🤔</button></p>
+      <div hidden id="smallPeek"><b>🤔 Which real LLM do we use?</b>
+        <div style="margin-top:6px">A small, free model, Qwen2.5 1.5B, that runs inside Colab. No account or key needed. Small models make more mistakes than big ones, so expect the odd error. Errors go back on <code>LOOK:</code> lines, so it can often fix them.</div>
+      </div>
+      <p class="hook">Here's all of it in Python.</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="part" data-title="The code">
+      <h2>The code</h2>
+      <p class="say">Guess what each <code>print</code> shows. Then press <b>▶ Run</b>.</p>
+<pre><code>import re
+
+<span class="c"># Tools: plain Python functions. Text in, text out.</span>
+def calculator(math):
+    if not re.fullmatch(r"[0-9+\-*/(). ]+", math) or "**" in math:
+        return "Error: the calculator only takes numbers and + - * / ( )"
+    try:
+        return str(eval(math))
+    except Exception:
+        return "Error: that math doesn't work out"
+
+def weather(city):
+    today = {"kochi": "29°C, sunny", "delhi": "18°C, foggy", "pune": "24°C, light rain"}
+    return today.get(city.lower(), f"Error: no city called {city}")
+
+TOOLS = {"calculator": calculator, "weather": weather}
+print(TOOLS["weather"]("Kochi"))
+
+<span class="c"># The tool list, at the top of the text, every time</span>
+INSTRUCTIONS = """You are an agent. TOOLS you can use:
+calculator(math) - works out math exactly. Give it the math, like 12 * 7.
+weather(city) - the weather right now in a city. Give it the city name.
+To use a tool, write one line: ACT: tool(input)
+Then stop. The result will come back on a LOOK: line.
+When you know the answer, write: ANSWER: your answer"""
+
+<span class="c"># A fake LLM: it just hands back the next reply from a list</span>
+fake_replies = [
+    "THINK: Exact math. I'll use the calculator.\nACT: calculator(4817 * 263)",
+    "ANSWER: 4,817 × 263 = 1,266,871.",
+]
+def fake_llm(text):
+    return fake_replies.pop(0)
+
+<span class="c"># The loop: think, act, look, until ANSWER: or the step limit</span>
+def run_agent(question, llm, step_limit=5):
+    text = INSTRUCTIONS + "\n\nQuestion: " + question + "\n"
+    for step in range(step_limit):
+        reply = llm(text)
+        print(reply)
+        text += reply + "\n"
+        if "ANSWER:" in reply:
+            return reply.split("ANSWER:")[1].strip()
+        act = re.search(r"ACT: (\w+)\((.*)\)", reply)
+        if act is None:
+            look = "Error: write ACT: tool(input) or ANSWER: your answer"
+        elif act.group(1) not in TOOLS:
+            look = f"Error: no tool called {act.group(1)}"
+        else:
+            look = TOOLS[act.group(1)](act.group(2).strip('"'))
+        print("LOOK:", look)
+        text += "LOOK: " + look + "\n"
+    return "Stopped: the step limit was reached."
+
+print(run_agent("What is 4,817 × 263?", fake_llm))</code></pre>
+      <div class="run-area">
+        <button class="run-code" type="button" aria-expanded="false">▶ Run</button>
+        <div class="terminal" hidden><div class="term-bar">Terminal</div><pre class="term-out"><span class="prompt">$ python lesson3.py</span>
+29°C, sunny
+THINK: Exact math. I'll use the calculator.
+ACT: calculator(4817 * 263)
+LOOK: 1266871
+ANSWER: 4,817 × 263 = 1,266,871.
+4,817 × 263 = 1,266,871.</pre></div>
+      </div>
+      <p class="run-links">
+        <a class="btn primary" href="https://colab.research.google.com/github/mo-ri-ch/agentic-ai/blob/main/notebooks/lesson3.ipynb" target="_blank" rel="noopener">▶ Run it in Google Colab</a>
+      </p>
+      <p class="muted-note">The notebook has all of this, then the real LLM. Its first run downloads the model (about 3 GB), so it takes a few minutes. You just need a Google account.</p>
+      <p class="hook">Quick check: did it all make sense?</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="part" data-title="Lesson test">
+      <h2>Lesson 3 test</h2>
+      <p class="say">5 questions, one for each idea in this lesson. Answer them all right to pass. A wrong answer tells you why, and which page to look at again.</p>
+      <div class="test" data-test="4">
+        <div class="quiz" data-page="lesson3.html#1" data-topic="Tools are functions" data-right="Right. A tool is a Python function: text in, text out.">
+          <div class="q"><small>1. Idea</small>In the code, what is a tool?</div>
+          <div class="options">
+            <button data-right>A Python function: text in, text out</button>
+            <button data-why="The LLM only writes the ACT: line. The tool is code the program runs.">A line the LLM writes</button>
+            <button data-why="A tool can be anything a function can do, not only finding things on the web.">Always a web search</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson3.html#2" data-topic="Find the ACT: line" data-right="Right. act.group(1) is “wether”, which isn't in TOOLS.">
+          <div class="q"><small>2. Predict</small>The reply is <code>ACT: wether("Kochi")</code>. What's on the <code>LOOK:</code> line?</div>
+          <div class="options">
+            <button data-why="The program doesn't fix spelling. It looks up the exact name in TOOLS.">29°C, sunny</button>
+            <button data-right>Error: no tool called wether</button>
+            <button data-why="The pattern does match: a name, then brackets. It's the name that's wrong.">Error: write ACT: tool(input) or ANSWER: your answer</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson3.html#4" data-topic="The loop in code" data-right="Right. Round 1 asks for a tool, round 2 answers, and return ends the loop.">
+          <div class="q"><small>3. Count</small><code>step_limit=5</code>. The LLM answers in round 2. How many times is the LLM called?</div>
+          <div class="options">
+            <button data-right>2</button>
+            <button data-why="The step limit is the most rounds, not how many always run. return ends the loop at ANSWER:.">5</button>
+            <button data-why="Round 1 asked for a tool; it takes another call to read the result and answer.">1</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson3.html#5" data-topic="A fake LLM first" data-right="Right. With replies written by hand, you know what should happen, so any mistake is in the loop.">
+          <div class="q"><small>4. Why</small>Why test with a fake LLM before a real one?</div>
+          <div class="options">
+            <button data-why="It can't answer anything new: it only hands back replies written by hand.">It's smarter than a real LLM</button>
+            <button data-right>You can test the loop with replies you chose</button>
+            <button data-why="Students never see it. It's for the person building the agent.">Users like it better</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson3.html#7" data-topic="A real LLM" data-right="Right. The program keeps the reply up to the ACT: line, runs the real tool, and writes the real LOOK:.">
+          <div class="q"><small>5. Predict</small>A real LLM writes <code>ACT: weather("Kochi")</code>, then <code>LOOK: 31°C</code>. What does the program do?</div>
+          <div class="options">
+            <button data-why="That LOOK: was made up by the LLM. The program never trusts it.">Uses 31°C as the result</button>
+            <button data-why="Nothing is wrong with the ACT: line. Only what comes after it is cut.">Stops with an error</button>
+            <button data-right>Cuts the reply after ACT:, then runs the real tool</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </div>
+      <p class="hook">What your agent still can't do.</p>
+    </section>
+
+    <!-- 8 -->
+    <section class="part" data-title="Gone when it's done">
+      <h2>Gone when it's done</h2>
+      <p class="say">Every call to <code>run_agent</code> starts a new <code>text</code>. When it returns, that text is gone, with everything the agent found.</p>
+      <p class="agent-say">I'm real now! But ask me again tomorrow, and I won't remember a thing.</p>
+      <div class="open-question">
+        <div>This leaves a question</div>
+        <div class="big">Your agent forgets everything when the task ends. How can it remember?</div>
+        <div><a href="lesson4.html">Lesson 4 answers it.</a></div>
+      </div>
+      <p><button class="done-toggle" data-done="4">Mark lesson as done</button></p>
+    </section>
+  </main>
+</div>
+
+<nav class="pagebar" aria-label="Move between parts">
+  <div class="inner">
+    <button data-page-back>← Previous</button>
+    <span data-page-label></span>
+    <button class="primary" data-page-next>Next →</button>
+  </div>
+</nav>
+
+<script src="../assets/course.js"></script>
+<script src="../assets/practice.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/common.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/pen.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/guide.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/codewalk.js"></script>
+<script>
+const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const WHO = { you: "you", llm: "LLM", prog: "program" };
+const line = ([who, text], cls = "") => `<div class="ln ${cls}"><span class="who ${who}">${WHO[who]}</span><span class="txt">${esc(text)}</span></div>`;
+// The same tools as the Python code, so the page gives the same answers
+const TODAY = { kochi: "29°C, sunny", delhi: "18°C, foggy", pune: "24°C, light rain" };
+const pyWeather = city => TODAY[city.toLowerCase()] || `Error: no city called ${city}`;
+function pyCalculator(math) {
+  if (!/^[0-9+\-*/(). ]+$/.test(math) || math.includes("**")) return "Error: the calculator only takes numbers and + - * / ( )";
+  try {
+    const v = Function(`"use strict"; return (${math});`)();
+    if (!isFinite(v)) return "Error: that math doesn't work out";
+    // Python: / or a decimal point gives a decimal (25.0, 126.0); whole numbers with + - * stay whole
+    return /[/.]/.test(math) && Number.isInteger(v) ? v.toFixed(1) : String(v);
+  } catch (e) { return "Error: that math doesn't work out"; }
+}
+const TOOLS = { calculator: pyCalculator, weather: pyWeather };
+
+// ---------- Part 1: call the tools ----------
+(function callTools() {
+  const out = document.getElementById("p1Out"), city = document.getElementById("p1City"), math = document.getElementById("p1Math");
+  const run = (name, input) => { out.innerHTML = `print(TOOLS["${name}"]("${esc(input)}"))\n<span class="c"># ${esc(TOOLS[name](input))}</span>`; };
+  document.getElementById("p1RunW").onclick = () => run("weather", city.value);
+  document.getElementById("p1RunC").onclick = () => run("calculator", math.value);
+  city.onkeydown = e => { if (e.key === "Enter") run("weather", city.value); };
+  math.onkeydown = e => { if (e.key === "Enter") run("calculator", math.value); };
+  addReset(out, () => { city.value = "Kochi"; math.value = "12 * 7"; out.innerHTML = '<span class="c"># press ▶ Run</span>'; });
+})();
+
+// ---------- Part 2: find the ACT: line, like re.search ----------
+(function findAct() {
+  const EXAMPLES = [
+    ["A good one", 'ACT: weather("Kochi")'],
+    ["Wrong name", 'ACT: wether("Kochi")'],
+    ["No ACT:", "I'll use the calculator now."],
+    ["Math", "ACT: calculator(4817 * 263)"],
+  ];
+  const chips = document.getElementById("p2Chips"), input = document.getElementById("p2In"), out = document.getElementById("p2Out");
+  function show() {
+    const reply = input.value, m = reply.match(/ACT: (\w+)\((.*)\)/);
+    let html = "";
+    if (!m) {
+      html = `act = None\n<span class="c"># no ACT: name(input) found</span>\nLOOK: Error: write ACT: tool(input) or ANSWER: your answer`;
+    } else {
+      const name = m[1], arg = m[2].replace(/^"+|"+$/g, "");
+      html = `act.group(1) = "${esc(name)}"\nact.group(2) = "${esc(m[2])}"\n`;
+      html += name in TOOLS ? `LOOK: ${esc(TOOLS[name](arg))}` : `<span class="c"># "${esc(name)}" isn't in TOOLS</span>\nLOOK: Error: no tool called ${esc(name)}`;
+    }
+    out.innerHTML = html;
+    chips.querySelectorAll(".chip").forEach((c, i) => c.classList.toggle("on", EXAMPLES[i][1] === reply));
+  }
+  EXAMPLES.forEach(([label, text]) => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.type = "button"; b.textContent = label;
+    b.onclick = () => { input.value = text; show(); };
+    chips.appendChild(b);
+  });
+  input.oninput = show;
+  addReset(out, () => { input.value = EXAMPLES[0][1]; show(); });
+  input.value = EXAMPLES[0][1]; show();
+})();
+
+// ---------- Part 3: which lines are Think, Act, Look? ----------
+(function mapLoop() {
+  const CODE = [
+    ["def run_agent(question, llm, step_limit=5):", ""],
+    ['    text = INSTRUCTIONS + "\\n\\nQuestion: " + question + "\\n"', "start"],
+    ["    for step in range(step_limit):", "stop"],
+    ["        reply = llm(text)", "think"],
+    ["        print(reply)", "think"],
+    ['        text += reply + "\\n"', "think"],
+    ['        if "ANSWER:" in reply:', "stop"],
+    ['            return reply.split("ANSWER:")[1].strip()', "stop"],
+    ['        act = re.search(r"ACT: (\\w+)\\((.*)\\)", reply)', "act"],
+    ["        if act is None:", "act"],
+    ['            look = "Error: write ACT: tool(input) or ANSWER: your answer"', "act"],
+    ["        elif act.group(1) not in TOOLS:", "act"],
+    ['            look = f"Error: no tool called {act.group(1)}"', "act"],
+    ["        else:", "act"],
+    ["            look = TOOLS[act.group(1)](act.group(2).strip('\"'))", "act"],
+    ['        print("LOOK:", look)', "look"],
+    ['        text += "LOOK: " + look + "\\n"', "look"],
+    ['    return "Stopped: the step limit was reached."', "stop"],
+  ];
+  const PARTS = [
+    ["start", "📄 Start", "The text starts with INSTRUCTIONS (the tool list and the rules), then the question."],
+    ["think", "💭 Think", "Call the LLM with all the text so far. Its reply joins the text."],
+    ["act", "🔧 Act", "Find the ACT: line, check the tool exists, and run it. Any problem becomes an error message."],
+    ["look", "👀 Look", "The result joins the text on a LOOK: line, for the LLM to read next round."],
+    ["stop", "🛑 Stop", "Two ways out: ANSWER: ends it with return, or the for loop runs out of rounds: the step limit."],
+  ];
+  const code = document.getElementById("p3Code"), chips = document.getElementById("p3Parts"), say = document.getElementById("p3Say");
+  code.innerHTML = CODE.map(([t, p]) => `<span class="cl" data-p="${p}">${esc(t)}</span>`).join("");
+  function pick(p) {
+    code.querySelectorAll(".cl").forEach(l => { l.classList.toggle("on", p && l.dataset.p === p); l.classList.toggle("dim", !!p && l.dataset.p !== p); });
+    chips.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.p === p));
+    say.textContent = p ? PARTS.find(x => x[0] === p)[2] : "Press a part above.";
+  }
+  PARTS.forEach(([p, label]) => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.type = "button"; b.textContent = label; b.dataset.p = p;
+    b.onclick = () => pick(p);
+    chips.appendChild(b);
+  });
+  addReset(code, () => pick(null));
+  pick(null);
+})();
+
+// ---------- Part 4: run the loop with a fake LLM (outputs from the real Python run) ----------
+(function fakeTests() {
+  const TESTS = {"normal": {"replies": ["THINK: Exact math. I'll use the calculator.\nACT: calculator(4817 * 263)", "ANSWER: 4,817 × 263 = 1,266,871."], "q": "What is 4,817 × 263?", "limit": 5, "out": "THINK: Exact math. I'll use the calculator.\nACT: calculator(4817 * 263)\nLOOK: 1266871\nANSWER: 4,817 × 263 = 1,266,871.\n4,817 × 263 = 1,266,871.\n"}, "typo": {"replies": ["THINK: I'll check the weather.\nACT: weather(\"Kochii\")", "THINK: I spelled it wrong.\nACT: weather(\"Kochi\")", "ANSWER: It's 29°C and sunny in Kochi."], "q": "Is it warm in Kochi?", "limit": 5, "out": "THINK: I'll check the weather.\nACT: weather(\"Kochii\")\nLOOK: Error: no city called Kochii\nTHINK: I spelled it wrong.\nACT: weather(\"Kochi\")\nLOOK: 29°C, sunny\nANSWER: It's 29°C and sunny in Kochi.\nIt's 29°C and sunny in Kochi.\n"}, "never": {"replies": ["ACT: weather(\"Pune\")", "ACT: weather(\"Pune\")", "ACT: weather(\"Pune\")", "ACT: weather(\"Pune\")", "ACT: weather(\"Pune\")"], "q": "Is it raining in Pune?", "limit": 3, "out": "ACT: weather(\"Pune\")\nLOOK: 24°C, light rain\nACT: weather(\"Pune\")\nLOOK: 24°C, light rain\nACT: weather(\"Pune\")\nLOOK: 24°C, light rain\nStopped: the step limit was reached.\n"}};
+  const LABELS = { normal: "Normal", typo: "A typo", never: "Never answers" };
+  const chips = document.getElementById("p4Chips"), replies = document.getElementById("p4Replies");
+  const run = document.getElementById("p4Run"), out = document.getElementById("p4Out");
+  let cur = "normal";
+  function show() {
+    const t = TESTS[cur];
+    chips.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.k === cur));
+    replies.innerHTML = `<div class="count">fake_replies = (${t.replies.length} replies) · step_limit=${t.limit}</div>` +
+      t.replies.map((r, i) => line(["llm", `${i + 1}. ${r.replace(/\n/g, "  ⏎  ")}`])).join("");
+    out.hidden = true; run.hidden = false;
+  }
+  Object.keys(LABELS).forEach(k => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.type = "button"; b.textContent = LABELS[k]; b.dataset.k = k;
+    b.onclick = () => { cur = k; show(); };
+    chips.appendChild(b);
+  });
+  run.onclick = () => {
+    const t = TESTS[cur];
+    out.innerHTML = `<span class="c">$ run_agent("${esc(t.q)}", fake_llm, step_limit=${t.limit})</span>\n` + esc(t.out.trimEnd());
+    out.hidden = false; run.hidden = true;
+  };
+  addReset(run, () => { cur = "normal"; show(); });
+  show();
+})();
+
+// ---------- Part 5: cut a real reply at its ACT: line ----------
+(function cutReply() {
+  const RAW = [
+    "THINK: I need today's weather in Kochi.",
+    'ACT: weather("Kochi")',
+    "LOOK: 31°C, cloudy",
+    "ANSWER: It's 31°C and cloudy in Kochi.",
+  ];
+  const tx = document.getElementById("p5Tx"), say = document.getElementById("p5Say"), cut = document.getElementById("p5Cut");
+  function draw(isCut) {
+    const end = RAW.findIndex(l => l.startsWith("ACT:") || l.startsWith("ANSWER:"));
+    tx.innerHTML = RAW.map((l, i) => line(["llm", l], isCut && i > end ? "cut" : (i > end ? "new" : ""))).join("");
+    say.classList.toggle("good", isCut);
+    say.textContent = isCut
+      ? "✓ Kept up to the ACT: line. The program runs the real weather tool and writes the real LOOK: 29°C, sunny."
+      : "The LLM kept writing after its ACT: line, and made up a LOOK: line itself. Its weather is wrong.";
+    cut.hidden = isCut;
+  }
+  cut.onclick = () => draw(true);
+  addReset(tx, () => draw(false));
+  draw(false);
+})();
+</script>
+</body>
+</html>

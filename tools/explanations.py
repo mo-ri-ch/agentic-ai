@@ -1,0 +1,43 @@
+"""One plain sentence for each line of the lesson code, shown by "Step through".
+The key is the line's code (without its comment).
+"""
+
+EXPLAIN = {
+    # ---------- Lesson 3 ----------
+    "import re": "Load re, Python's tool for finding patterns in text. We'll use it to find ACT: lines.",
+    "def calculator(math):": "Define the calculator tool. Nothing runs yet; it only runs when the agent asks for it.",
+    'if not re.fullmatch(r"[0-9+\\-*/(). ]+", math) or "**" in math:': "Check the math holds only numbers and + - * / ( ), so nothing else can sneak in.",
+    'return "Error: the calculator only takes numbers and + - * / ( )"': "Not plain math: send back an error, as text.",
+    "try:": "Try the next line. If it goes wrong (like dividing by 0), jump to except instead of crashing.",
+    "return str(eval(math))": "Work out the math, and turn the answer into text.",
+    "except Exception:": "Something went wrong while working it out.",
+    "return \"Error: that math doesn't work out\"": "Send back an error, as text, so the LLM can try again.",
+    "def weather(city):": "Define the weather tool. Here it uses made-up weather, so it works without the internet.",
+    'today = {"kochi": "29°C, sunny", "delhi": "18°C, foggy", "pune": "24°C, light rain"}': "A dictionary of made-up weather: city → weather.",
+    'return today.get(city.lower(), f"Error: no city called {city}")': "Look up the city (in small letters). If it isn't there, send back an error.",
+    'TOOLS = {"calculator": calculator, "weather": weather}': "A dictionary of tools: name → function. The program finds a tool by its name.",
+    'print(TOOLS["weather"]("Kochi"))': "Find the weather tool by its name, and call it with \"Kochi\".",
+    'INSTRUCTIONS = """You are an agent. TOOLS you can use:': "The tool list and the rules, as one piece of text. It goes at the top, every time.",
+    "fake_replies = [": "The fake LLM's replies, written out by hand, in order.",
+    "def fake_llm(text):": "Define the fake LLM. Like a real one, it takes the text and gives back a reply.",
+    "return fake_replies.pop(0)": "Take the first reply off the list and hand it back. It ignores the text.",
+    "def run_agent(question, llm, step_limit=5):": "Define the loop. It takes a question, an LLM to use, and a step limit (5 unless we say otherwise).",
+    'text = INSTRUCTIONS + "\\n\\nQuestion: " + question + "\\n"': "Start the text: the tool list at the top, then the question.",
+    "for step in range(step_limit):": "One round each time. range(step_limit) stops after 5 rounds: that's the step limit.",
+    "reply = llm(text)": "The LLM reads all the text so far and writes its reply.",
+    "print(reply)": "Show the reply.",
+    'text += reply + "\\n"': "Add the reply to the text, so the LLM sees it next time.",
+    'if "ANSWER:" in reply:': "Did the LLM write ANSWER:?",
+    'return reply.split("ANSWER:")[1].strip()': "Yes: hand back what comes after ANSWER:. return ends the loop.",
+    'act = re.search(r"ACT: (\\w+)\\((.*)\\)", reply)': "Look for an ACT: line: a tool name, then the input in brackets.",
+    "if act is None:": "No ACT: line found?",
+    'look = "Error: write ACT: tool(input) or ANSWER: your answer"': "Then the LOOK: line says how to write it.",
+    "elif act.group(1) not in TOOLS:": "Found one, but is the tool name in our dictionary?",
+    'look = f"Error: no tool called {act.group(1)}"': "No such tool: the LOOK: line says so.",
+    "else:": "Otherwise the ACT: line is fine.",
+    "look = TOOLS[act.group(1)](act.group(2).strip('\"'))": "Find the tool by its name, call it with the input (without quotes), and keep the result.",
+    'print("LOOK:", look)': "Show the LOOK: line.",
+    'text += "LOOK: " + look + "\\n"': "Add the LOOK: line to the text, so the LLM can read the result.",
+    'return "Stopped: the step limit was reached."': "All rounds used and no ANSWER:. Stop anyway.",
+    'print(run_agent("What is 4,817 × 263?", fake_llm))': "Run the agent with the fake LLM, and show its answer.",
+}

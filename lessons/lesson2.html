@@ -50,7 +50,6 @@
     <!-- 2 -->
     <section class="part" data-title="Which tool?">
       <h2>Which tool?</h2>
-      <p class="say">The LLM reads each tool's description, then writes the <code>ACT:</code> line that fits the question.</p>
       <div class="activity">
         <div class="do">You are the LLM. Pick the tool for each question.</div>
         <div class="tools" id="p2Tools"></div>
@@ -63,6 +62,7 @@
           <button id="p2Again" hidden>↺ Start again</button>
         </div>
       </div>
+      <p class="say">That's what the LLM does too: it matches the question to each tool's description, then writes the <code>ACT:</code> line.<br>“What's 9 × 6?” → calculator “works out math exactly” → <code>ACT: calculator(9 * 6)</code></p>
       <p class="hook">Try it on new numbers.</p>
     </section>
 
