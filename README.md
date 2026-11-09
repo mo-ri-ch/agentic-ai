@@ -3,7 +3,7 @@
 Build an AI agent from scratch, one question at a time. Interactive notebook-style lessons for
 beginners and teachers. Standalone: no other course needed.
 
-**Website:** https://gradlabs.in/learn/agents/ (coming soon)
+**Website:** https://gradlabs.in/learn/agents/
 
 ## The path
 
