@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tools</title>
+<meta name="description" content="Lesson 2 of Build an AI Agent: tools. Tell the LLM which tools it has, describe them well, handle errors, and take care with tools that change things.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Kalam:wght@400&family=Patrick+Hand&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem("notebook-theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
+<link rel="stylesheet" href="https://mo-ri-ch.github.io/study-notebook-design/v1/style.css">
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body data-pen="blue">
+<div class="wrap">
+  <header class="topbar">
+    <a class="home" href="../">← Build an AI Agent</a>
+    <span class="where">Lesson 2 of 8</span>
+  </header>
+
+  <main data-paged>
+    <div class="paged-head">
+      <h1>Tools</h1>
+      <div class="progress" aria-label="Lesson parts"></div>
+    </div>
+
+    <!-- 1 -->
+    <section class="part" data-title="Tell it what it can use">
+      <h2>Tell it what it can use</h2>
+      <p class="agent-say">I'd love to use a calculator. But how would I know there is one?</p>
+
+      <div class="activity">
+        <div class="do">Turn the tool list off and on. Then let the LLM write.</div>
+        <div class="modes" role="tablist" aria-label="Tool list">
+          <button class="mode on" data-list="off" role="tab" aria-selected="true">No tool list</button>
+          <button class="mode" data-list="on" role="tab" aria-selected="false">With a tool list</button>
+        </div>
+        <div class="tx" id="p1Tx"></div>
+        <p class="redcheck" id="p1Check" hidden></p>
+        <div class="btnrow"><button class="primary" id="p1Go">▶ Let the LLM write</button></div>
+      </div>
+      <p class="say" id="p1Say" style="position:relative">The program puts a <mark>tool list</mark> at the top of the text, every time, before your question. The LLM reads it like everything else, so it knows which tools exist and how to ask for them.<button class="doubt" type="button" data-peek-from="listPeek" aria-label="Who writes the tool list?">🤔</button></p>
+      <div hidden id="listPeek"><b>🤔 Who writes the tool list?</b>
+        <div style="margin-top:6px">The person who builds the agent. It goes in the <b>instructions</b>: text the LLM sees before every question, often called the system prompt. Real tool lists are often written in JSON, a stricter format, but they say the same things.</div>
+      </div>
+      <p class="hook">The list has several tools. How does the LLM pick one?</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="part" data-title="Which tool?">
+      <h2>Which tool?</h2>
+      <p class="say">The LLM reads each tool's description, then writes the <code>ACT:</code> line that fits the question.</p>
+      <div class="activity">
+        <div class="do">You are the LLM. Pick the tool for each question.</div>
+        <div class="tools" id="p2Tools"></div>
+        <p class="count" id="p2Num"></p>
+        <p class="qbig" id="p2Q"></p>
+        <div class="picks" id="p2Picks"></div>
+        <div class="tool-run" id="p2Act" hidden></div>
+        <div class="btnrow">
+          <button class="primary" id="p2Next" hidden>Next question →</button>
+          <button id="p2Again" hidden>↺ Start again</button>
+        </div>
+      </div>
+      <p class="hook">Try it on new numbers.</p>
+    </section>
+
+    <section class="part" data-nonum data-title="✏️ Practice 2.1">
+      <h2>✏️ Practice 2.1</h2>
+      <p class="say">Remember:<br>The tool list goes at the top of the text, <b>every time</b>.<br>One round = one <code>ACT:</code> line = one tool used.</p>
+      <div class="activity">
+        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
+        <div class="pq" data-ans="80" data-tol="0.1" data-hint="Every tool's description is in the list. Add them all up." data-work="4 tools × 20 words = 80 words.">
+          <div class="pq-q">A tool list has <b>4 tools</b>, each described in <b>20 words</b>. How many words does the program add before every question?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="800" data-tol="0.1" data-hint="The list goes at the top every time, so the LLM reads it once per question." data-work="80 words × 10 questions = 800 words.">
+          <div class="pq-q">Same list. The agent gets <b>10 questions</b>. How many words of tool list does the LLM read in total?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="3" data-tol="0.1" data-hint="Each ACT: line asks for one tool, about one city." data-work="Pune, Goa and Delhi: 1 ACT: line each.<br>3 ACT: lines.">
+          <div class="pq-q">“Is it raining in Pune, Goa or Delhi?” The agent has a <code>weather</code> tool. How many <code>ACT:</code> lines does it write?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="hook">Those descriptions were clear. What if they aren't?</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="part" data-title="Good descriptions">
+      <h2>Good descriptions</h2>
+      <div class="activity">
+        <div class="do">Same question, two tool lists. Switch between them.</div>
+        <div class="modes" role="tablist" aria-label="Which tool list">
+          <button class="mode on" data-desc="vague" role="tab" aria-selected="true">Vague list</button>
+          <button class="mode" data-desc="clear" role="tab" aria-selected="false">Clear list</button>
+        </div>
+        <div class="tools" id="p3Tools"></div>
+        <div class="tx" id="p3Tx"></div>
+        <p class="redcheck" id="p3Check" hidden></p>
+        <div class="btnrow"><button class="primary" id="p3Go">▶ Let the LLM write</button></div>
+      </div>
+      <p class="say">The LLM can only go by the words in the list. A good description says three things:<br><b class="eqbox">name + what it does + what to give it</b><br><code>weather</code> + “the weather right now in a city” + “the city name”.</p>
+      <p class="hook">Even a good tool can fail. Then what?</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="part" data-title="When a tool fails">
+      <h2>When a tool fails</h2>
+      <div class="activity">
+        <div class="do">Step through. Something goes wrong in round 1.</div>
+        <div class="tx" id="p4Tx"></div>
+        <div class="count" id="p4Say" style="margin-top:8px"></div>
+        <div class="btnrow">
+          <button class="primary" id="p4Next">Next step →</button>
+          <button id="p4Back" hidden>← Back</button>
+          <button id="p4Again" hidden>↺ Start again</button>
+        </div>
+      </div>
+      <p class="say">The program doesn't stop when a tool fails. It writes the error on the <code>LOOK:</code> line, like any result. The LLM reads it, fixes its mistake and tries again.<br><b class="eqbox">errors go back on a LOOK: line too</b><br>The retry costs a round: 2 rounds here, so 2 + 1 = 3 LLM writes.</p>
+      <p class="hook">Try it on new numbers.</p>
+    </section>
+
+    <section class="part" data-nonum data-title="✏️ Practice 2.2">
+      <h2>✏️ Practice 2.2</h2>
+      <p class="say">Remember:<br>A failed tool use still takes a round. The error comes back on a <code>LOOK:</code> line.<br><b class="eqbox">LLM writes = rounds + 1</b><br>The program stops at the <b>step limit</b>, even if the task isn't done.</p>
+      <div class="activity">
+        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
+        <div class="pq" data-ans="3" data-tol="0.1" data-hint="Count every tool use, including the one that failed." data-work="Search: 1 round (fails).<br>Search again: 1 round.<br>Calculator: 1 round.<br>3 rounds.">
+          <div class="pq-q">A task needs a <b>search</b>, then the <b>calculator</b>. The first search fails, the second works. How many rounds?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="4" data-tol="0.1" data-hint="Use the box: LLM writes = rounds + 1." data-work="3 rounds → 3 + 1 = 4 writes.">
+          <div class="pq-q">Same task. How many times does the LLM write?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="4" data-tol="0.1" data-hint="Each of the 2 tools takes one failed round and one that works." data-work="Tool 1: 1 failed + 1 working = 2 rounds.<br>Tool 2: 1 failed + 1 working = 2 rounds.<br>4 rounds. With a step limit of 3, the program stops it before it can answer.">
+          <div class="pq-q">A task needs <b>2 tools</b>. Each fails <b>once</b>, then works. How many rounds does it need? (The step limit is 3: think about whether it finishes.)</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="hook">So far the tools only looked things up. Some do more.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="part" data-title="Tools that change things">
+      <h2>Tools that change things</h2>
+      <div class="activity">
+        <div class="do">Sort each tool. Then press Check.</div>
+        <div id="p5Rows"></div>
+        <p class="redcheck" id="p5Say" hidden></p>
+        <div class="btnrow"><button class="primary" id="p5Check" hidden>✓ Check</button></div>
+      </div>
+      <p class="say">A tool that <b>only looks</b> changes nothing, so trying again is safe. A tool that <b>changes something</b>, like sending an email, can't always be undone. An agent needs more care with those: coming in Lesson 7.</p>
+      <p class="hook">Quick check: did it all make sense?</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="part" data-title="Lesson test">
+      <h2>Lesson 2 test</h2>
+      <p class="say">5 questions, one for each idea in this lesson. Answer them all right to pass. A wrong answer tells you why, and which page to look at again.</p>
+      <div class="test" data-test="3">
+        <div class="quiz" data-page="lesson2.html#1" data-topic="Tell it what it can use" data-right="Right. With no tool list, the LLM doesn't know a weather tool exists, so it can only guess.">
+          <div class="q"><small>1. Predict</small>An agent has a weather tool, but it's <b>missing from the tool list</b>. You ask: “Is it raining in Goa?” What happens?</div>
+          <div class="options">
+            <button data-why="The LLM only knows what's in the text. If the tool isn't in the list, it doesn't know it exists.">It uses the weather tool anyway</button>
+            <button data-right>It guesses an answer, with no tool</button>
+            <button data-why="The program isn't the one deciding. It only acts on ACT: lines the LLM writes.">The program checks the weather by itself</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson2.html#2" data-topic="Which tool?" data-right="Right. 12% of 3,500 is math that must be exact: calculator(3500 * 0.12) gives 420.">
+          <div class="q"><small>2. Apply</small>Tools: <code>calculator</code>, <code>search</code>, <code>weather</code>, <code>add_reminder</code>. Which one for “What's 12% of 3,500?”</div>
+          <div class="options">
+            <button data-right>calculator</button>
+            <button data-why="A search could find a page about percentages, but the calculator works it out exactly.">search</button>
+            <button data-why="Nothing here needs saving for later. It's math.">add_reminder</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson2.html#4" data-topic="Good descriptions" data-right="Right. It has a name, but it doesn't say what it does or what to give it.">
+          <div class="q"><small>3. Spot the mistake</small>A tool list says: <code>tool_x: helps</code>. What's wrong with it?</div>
+          <div class="options">
+            <button data-why="Short names are fine. The problem is the description.">The name is too short</button>
+            <button data-right>It doesn't say what it does or what to give it</button>
+            <button data-why="Nothing is wrong with having one tool. But the LLM can't tell what this one is for.">An agent needs at least two tools</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson2.html#5" data-topic="When a tool fails" data-right="Right. The error goes back on a LOOK: line, so the LLM can read it and try again.">
+          <div class="q"><small>4. Predict</small>The weather tool answers “Error: no city called Kochii”. What does the program do?</div>
+          <div class="options">
+            <button data-why="The program doesn't stop on an error. Only ANSWER: or the step limit stop the loop.">It stops the agent</button>
+            <button data-why="Hiding it would leave the LLM waiting for a result it never sees.">It hides the error and waits</button>
+            <button data-right>It writes the error on a LOOK: line</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson2.html#7" data-topic="Tools that change things" data-right="Right. Once an email is sent, it can't be unsent. The others only look.">
+          <div class="q"><small>5. Think</small>Which tool needs the most care?</div>
+          <div class="options">
+            <button data-why="A search only looks. Doing it twice changes nothing.">search</button>
+            <button data-right>send_email</button>
+            <button data-why="The calculator only works something out. Nothing in the world changes.">calculator</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </div>
+      <p class="hook">You've seen every piece now.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="part" data-title="Your turn to build">
+      <h2>Your turn to build</h2>
+      <p class="say">An LLM, a tool list, a program running the loop. You've watched an agent work, step by step.</p>
+      <p class="agent-say">I know what I can do now. Will you build me for real?</p>
+      <div class="open-question">
+        <div>This leaves a question</div>
+        <div class="big">You've watched an agent work. Can you build one yourself?</div>
+        <div><a href="lesson3.html">Lesson 3 answers it.</a></div>
+      </div>
+      <p><button class="done-toggle" data-done="3">Mark lesson as done</button></p>
+    </section>
+  </main>
+</div>
+
+<nav class="pagebar" aria-label="Move between parts">
+  <div class="inner">
+    <button data-page-back>← Previous</button>
+    <span data-page-label></span>
+    <button class="primary" data-page-next>Next →</button>
+  </div>
+</nav>
+
+<script src="../assets/course.js"></script>
+<script src="../assets/practice.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/common.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/pen.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/guide.js"></script>
+<script>
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const WHO = { you: "you", llm: "LLM", prog: "program" };
+const line = ([who, text], opts = {}) =>
+  `<div class="ln${opts.isNew ? " new" : ""}${opts.block ? " block" : ""}"><span class="who ${who}">${WHO[who]}</span><span class="txt">${text}</span></div>`;
+const toolList = (tools, head = "TOOLS you can use:") =>
+  `<span class="t-head">${head}</span>` + tools.map(([n, d]) => `<span class="t"><b>${n}</b> — ${d}</span>`).join("") +
+  `<span class="t-how">To use one, write: ACT: tool(input)</span>`;
+// Type lines one word at a time into a transcript, then call done()
+function typeLines(el, before, lines, done) {
+  const words = lines.map(([, t]) => t.split(" "));
+  let li = 0, wi = 0, timer = null;
+  const tick = () => {
+    wi++;
+    if (wi > words[li].length) { li++; wi = 1; }
+    if (li >= lines.length) { done(); return; }
+    let html = before;
+    lines.slice(0, li).forEach(l => html += line(l));
+    html += line([lines[li][0], words[li].slice(0, wi).join(" ")], { isNew: true });
+    el.innerHTML = html;
+    timer = setTimeout(tick, reduceMotion ? 0 : 110);
+  };
+  tick();
+  return () => clearTimeout(timer);
+}
+function setupModes(container, attr, onChange) {
+  const btns = container.querySelectorAll(`.mode[data-${attr}]`);
+  btns.forEach(b => b.onclick = () => {
+    btns.forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-selected", x === b); });
+    onChange(b.dataset[attr]);
+  });
+  return value => btns.forEach(x => { const on = x.dataset[attr] === value; x.classList.toggle("on", on); x.setAttribute("aria-selected", on); });
+}
+
+// ---------- Part 1: with and without a tool list ----------
+(function toolListDemo() {
+  const LIST = [["calculator(math)", "works out math exactly"]];
+  const Q = ["you", "What is 4,817 × 263?"];
+  const REPLY = {
+    off: [["llm", "ANSWER: 4,817 × 263 is 1,264,871."]],
+    on: [["llm", "THINK: Exact math, and I have a calculator."], ["llm", "ACT: calculator(4817 * 263)"]],
+  };
+  const CHECK = {
+    off: ["✗ Wrong, and it never asked for the calculator. It didn't know there was one.", false],
+    on: ["✓ It read the tool list, so it asked for the calculator, the way the list says.", true],
+  };
+  const box = document.querySelector("#p1Tx").closest(".activity");
+  const tx = document.getElementById("p1Tx"), check = document.getElementById("p1Check"), go = document.getElementById("p1Go");
+  let mode = "off", cancel = null;
+  const before = () => (mode === "on" ? line(["prog", toolList(LIST)], { block: true }) : "") + line(Q);
+  function draw() {
+    if (cancel) cancel();
+    tx.innerHTML = before(); check.hidden = true; go.hidden = false;
+  }
+  const setMode = setupModes(box, "list", m => { mode = m; draw(); });
+  go.onclick = () => {
+    go.hidden = true;
+    cancel = typeLines(tx, before(), REPLY[mode], () => {
+      tx.innerHTML = before() + REPLY[mode].map(l => line(l)).join("");
+      check.innerHTML = CHECK[mode][0]; check.classList.toggle("good", CHECK[mode][1]); check.hidden = false;
+    });
+  };
+  addReset(tx, () => { mode = "off"; setMode("off"); draw(); });
+  draw();
+})();
+
+// ---------- Part 2: pick the right tool ----------
+(function whichTool() {
+  const TOOLS = [
+    ["calculator(math)", "works out math exactly"],
+    ["search(words)", "finds facts on the web"],
+    ["weather(city)", "the weather right now in a city"],
+    ["add_reminder(what, when)", "saves a reminder for later"],
+  ];
+  const QS = [
+    { q: "Is it raining in Pune right now?", tool: 2, act: 'weather("Pune")' },
+    { q: "What's 15% of 840?", tool: 0, act: "calculator(840 * 0.15)" },
+    { q: "Remind me to pay rent on the 1st.", tool: 3, act: 'add_reminder("Pay rent", "the 1st")' },
+    { q: "When does Blue Cup café open?", tool: 1, act: 'search("Blue Cup café opening hours")' },
+  ];
+  const WHY = {
+    0: "The calculator only works out math. Is there math here?",
+    1: "A search finds facts on the web. Is there a tool made for this exact job?",
+    2: "The weather tool only gives the weather in a city.",
+    3: "add_reminder saves something for later. Does this question ask for that?",
+  };
+  document.getElementById("p2Tools").innerHTML = toolList(TOOLS);
+  const num = document.getElementById("p2Num"), qEl = document.getElementById("p2Q"), picks = document.getElementById("p2Picks");
+  const act = document.getElementById("p2Act"), next = document.getElementById("p2Next"), again = document.getElementById("p2Again");
+  let at = 0, right = 0, tries = 0;
+  function show() {
+    const Q = QS[at];
+    num.textContent = `Question ${at + 1} of ${QS.length}`;
+    qEl.textContent = `“${Q.q}”`;
+    act.hidden = true; next.hidden = true; again.hidden = true; tries = 0;
+    picks.innerHTML = TOOLS.map(([n], i) => `<button type="button" data-i="${i}">${n.split("(")[0]}</button>`).join("");
+    picks.querySelectorAll("button").forEach(b => b.onclick = () => {
+      const i = +b.dataset.i;
+      if (!act.hidden && act.dataset.ok === "1") return;
+      tries++;
+      if (i === Q.tool) {
+        b.classList.add("right");
+        if (tries === 1) right++;
+        act.dataset.ok = "1";
+        act.innerHTML = `✓ The LLM writes: <b>ACT: ${Q.act}</b>`;
+        act.hidden = false;
+        if (at < QS.length - 1) next.hidden = false;
+        else { again.hidden = false; num.textContent = `Done: ${right} of ${QS.length} right first time.`; }
+      } else {
+        b.classList.add("wrong");
+        act.dataset.ok = "0";
+        act.innerHTML = `✗ ${WHY[i]}`;
+        act.hidden = false;
+      }
+    });
+  }
+  next.onclick = () => { at++; show(); };
+  const restart = () => { at = 0; right = 0; show(); };
+  again.onclick = restart;
+  addReset(picks, restart);
+  show();
+})();
+
+// ---------- Part 3: vague or clear descriptions ----------
+(function descriptions() {
+  const LISTS = {
+    vague: [["tool_a(x)", "gets data"], ["tool_b(x)", "a useful helper"], ["tool_c(x)", "info tool"]],
+    clear: [["calculator(math)", "works out math exactly"], ["dictionary(word)", "the meaning of a word"], ["weather(city)", "the weather right now in a city. Give it the city name."]],
+  };
+  const Q = ["you", "Is it warm in Kochi right now?"];
+  const REPLY = {
+    vague: [["llm", "THINK: Which one gives the weather? I can't tell. I'll try tool_c."], ["llm", "ACT: tool_c(\"Kochi\")"], ["prog", "LOOK: Error: tool_c gives word meanings. “Kochi” isn't a word it knows."]],
+    clear: [["llm", "THINK: weather gives the weather in a city."], ["llm", "ACT: weather(\"Kochi\")"], ["prog", "LOOK: 29°C, sunny"]],
+  };
+  const CHECK = {
+    vague: ["✗ A wasted round. The names and descriptions didn't say what each tool does.", false],
+    clear: ["✓ Right tool, first time. The description said what it does and what to give it.", true],
+  };
+  const box = document.querySelector("#p3Tx").closest(".activity");
+  const tools = document.getElementById("p3Tools"), tx = document.getElementById("p3Tx");
+  const check = document.getElementById("p3Check"), go = document.getElementById("p3Go");
+  let mode = "vague", cancel = null;
+  function draw() {
+    if (cancel) cancel();
+    tools.innerHTML = toolList(LISTS[mode]);
+    tx.innerHTML = line(Q); check.hidden = true; go.hidden = false;
+  }
+  const setMode = setupModes(box, "desc", m => { mode = m; draw(); });
+  go.onclick = () => {
+    go.hidden = true;
+    cancel = typeLines(tx, line(Q), REPLY[mode], () => {
+      tx.innerHTML = line(Q) + REPLY[mode].map(l => line(l)).join("");
+      check.innerHTML = CHECK[mode][0]; check.classList.toggle("good", CHECK[mode][1]); check.hidden = false;
+    });
+  };
+  addReset(tx, () => { mode = "vague"; setMode("vague"); draw(); });
+  draw();
+})();
+
+// ---------- Part 4: a tool fails, the LLM fixes it ----------
+(function whenItFails() {
+  const STEPS = [
+    { add: [["you", "What's the weather in Kochi?"]], say: "Press Next step." },
+    { add: [["llm", "THINK: I'll check the weather."], ["llm", "ACT: weather(\"Kochii\")"]], say: "Round 1: the LLM asks for the weather. It spelled Kochi wrong." },
+    { add: [["prog", "LOOK: Error: no city called “Kochii”"]], say: "Round 1: the tool fails. The program writes the error on the LOOK: line." },
+    { add: [["llm", "THINK: I spelled it wrong. Try “Kochi”."], ["llm", "ACT: weather(\"Kochi\")"]], say: "Round 2: the LLM reads the error and fixes its mistake." },
+    { add: [["prog", "LOOK: 29°C, sunny"]], say: "Round 2: this time it works." },
+    { add: [["llm", "ANSWER: It's 29°C and sunny in Kochi."]], say: "The answer. 2 rounds, 3 LLM writes." },
+  ];
+  const tx = document.getElementById("p4Tx"), say = document.getElementById("p4Say");
+  const next = document.getElementById("p4Next"), back = document.getElementById("p4Back"), again = document.getElementById("p4Again");
+  let at = 0;
+  function draw() {
+    let html = "";
+    STEPS.slice(0, at + 1).forEach((s, i) => s.add.forEach(l => html += line(l, { isNew: i === at && at > 0 })));
+    tx.innerHTML = html; say.textContent = STEPS[at].say;
+    const end = at === STEPS.length - 1;
+    next.hidden = end; back.hidden = at === 0 || end; again.hidden = !end;
+  }
+  next.onclick = () => { at = Math.min(STEPS.length - 1, at + 1); draw(); };
+  back.onclick = () => { at = Math.max(0, at - 1); draw(); };
+  const restart = () => { at = 0; draw(); };
+  again.onclick = restart;
+  addReset(next, restart);
+  draw();
+})();
+
+// ---------- Part 5: only looks, or changes something? ----------
+(function sortTools() {
+  const TOOLS = [
+    ["calculator", "look", "Works something out. Nothing changes."],
+    ["search", "look", "Reads the web. Nothing changes."],
+    ["send_email", "change", "Once sent, it can't be unsent."],
+    ["weather", "look", "Reads the weather. Nothing changes."],
+    ["add_reminder", "change", "Saves something new on your phone."],
+    ["delete_file", "change", "The file is gone."],
+  ];
+  const rows = document.getElementById("p5Rows"), say = document.getElementById("p5Say"), check = document.getElementById("p5Check");
+  let choice = {}, checked = false;
+  function draw() {
+    rows.innerHTML = TOOLS.map(([n, kind, why], i) => {
+      const cls = checked ? (choice[i] === kind ? " right" : " wrong") : "";
+      const b = (k, label) => `<button type="button" data-i="${i}" data-k="${k}" class="${choice[i] === k ? "on" : ""}" aria-pressed="${choice[i] === k}">${label}</button>`;
+      return `<div class="sortrow${cls}"><code>${n}</code><span class="seg">${b("look", "👀 looks")}${b("change", "✍️ changes")}</span>${checked ? `<span class="why">${choice[i] === kind ? "✓" : "✗"} ${why}</span>` : ""}</div>`;
+    }).join("");
+    rows.querySelectorAll("button").forEach(b => b.onclick = () => { if (checked) return; choice[b.dataset.i] = b.dataset.k; draw(); });
+    check.hidden = checked || Object.keys(choice).length < TOOLS.length;
+  }
+  check.onclick = () => {
+    checked = true;
+    const n = TOOLS.filter(([, kind], i) => choice[i] === kind).length;
+    say.classList.toggle("good", n === TOOLS.length);
+    say.textContent = n === TOOLS.length ? "✓ All 6 right." : `${n} of 6 right. Read the notes under each tool.`;
+    say.hidden = false; draw();
+  };
+  addReset(rows, () => { choice = {}; checked = false; say.hidden = true; draw(); });
+  draw();
+})();
+</script>
+</body>
+</html>

@@ -70,3 +70,36 @@
 .loop .arr { fill: none; stroke: var(--pencil); stroke-width: 2; }
 .loop .arr.out { stroke-dasharray: 5 4; }
 .loop .round { font-family: var(--hand); font-size: 14px; fill: var(--redpen); text-anchor: middle; }
+
+/* Two-way switch (e.g. tool list off / on) */
+.modes { display: flex; margin: 0 0 14px; border: 2px solid var(--ink); border-radius: 10px; overflow: hidden; width: fit-content; max-width: 100%; }
+.mode { border: 0; border-radius: 0; padding: 6px 14px; font-size: 0.85rem; background: var(--card); }
+.mode + .mode { border-left: 2px solid var(--ink); }
+.mode.on { background: var(--ink); color: var(--paper); }
+.mode:hover:not(.on) { background: var(--hl-yellow); }
+
+/* A tool list, as the LLM sees it */
+.tools { font-family: var(--mono); font-size: 0.86rem; line-height: 1.45; padding: 8px 12px; margin: 0 0 10px; background: var(--note-green); color: var(--ink); border-radius: 4px 4px 8px 4px; }
+.tools .t-head { font-family: var(--hand); font-size: 1rem; margin-bottom: 2px; }
+.tools .t { display: block; }
+.tools .t b { font-weight: 600; }
+.tools .t-how { display: block; margin-top: 4px; color: var(--ink); opacity: 0.8; }
+.tx .ln.block .txt { white-space: pre-line; }
+
+/* Pick or sort buttons */
+.picks { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 0; }
+.picks button { font-family: var(--mono); font-size: 0.88rem; }
+.picks button.right { border-color: var(--good); background: var(--note-green); color: var(--ink); }
+.picks button.wrong { border-color: var(--redpen); }
+.qbig { font-size: 1.1rem; margin: 4px 0 0; }
+.sortrow { display: grid; grid-template-columns: 9em 1fr; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--rule); }
+.sortrow code { font-size: 0.9rem; }
+.sortrow .seg { display: flex; gap: 6px; flex-wrap: wrap; }
+.sortrow .seg button { font-size: 0.82rem; padding: 4px 10px; }
+.sortrow .seg button.on { background: var(--hl-yellow); color: var(--on-hl); }
+.sortrow.right .seg button.on { background: var(--note-green); color: var(--ink); border-color: var(--good); }
+.sortrow.wrong .seg button.on { border-color: var(--redpen); }
+.sortrow .why { grid-column: 1 / -1; font-size: 0.85rem; color: var(--pencil); }
+@media (max-width: 520px) { .sortrow { grid-template-columns: 8.2em 1fr; gap: 6px; padding: 4px 0; } .sortrow code { font-size: 0.78rem; } .sortrow .seg { flex-wrap: nowrap; } .sortrow .seg button { padding: 3px 8px; font-size: 0.78rem; } }
+.tx .ln.block .t-head, .tx .ln.block .t, .tx .ln.block .t-how { display: block; }
+.tx .ln.block .t-head { font-family: var(--hand); }

@@ -10,7 +10,7 @@ const COURSE_LESSONS = [
   { n: 2, label: "1", step: "the loop", title: "From chatbot to agent", file: "lesson1.html", ready: true, test: 7,
     summary: "Put the LLM in a loop: think, act, look at what happened, repeat.",
     leaves: "The agent wants to act. But what can it actually do?" },
-  { n: 3, label: "2", step: "tools", title: "Tools", file: "lesson2.html", ready: false,
+  { n: 3, label: "2", step: "tools", title: "Tools", file: "lesson2.html", ready: true, test: 8,
     summary: "Give the agent a calculator, a search and more, and let it choose when to use them.",
     leaves: "You've watched an agent work. Can you build one yourself?" },
   { n: 4, label: "3", step: "build it", title: "Build the loop", file: "lesson3.html", ready: false,
