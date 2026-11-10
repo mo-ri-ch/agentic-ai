@@ -133,11 +133,13 @@
     <section class="part" data-title="Who wrote what?">
       <h2>Who wrote what?</h2>
       <div class="activity">
-        <div class="do">Tap every line the <b>program</b> wrote. Then press Check.</div>
+        <div class="do">Who wrote each line? Tap its tag to change it: LLM, program or you.</div>
         <div class="tx" id="p4Tx"></div>
+        <p class="count" id="p4Left" style="margin:8px 0 0"></p>
         <p class="redcheck" id="p4Say" hidden></p>
         <div class="btnrow">
           <button class="primary" id="p4Check" hidden>✓ Check</button>
+          <button id="p4Again" hidden>↺ Try again</button>
         </div>
       </div>
       <p class="say">The program only writes <code>LOOK:</code> lines. Everything else, the thinking and the asking, comes from the LLM. Together, they're an <mark>agent</mark>:<br><b class="eqbox">agent = LLM + a program running the loop</b></p>
@@ -335,42 +337,50 @@ const line = ([who, text], opts = {}) =>
 
 // ---------- Part 4: who wrote what? ----------
 (function whoWrote() {
-  const LINES = [
-    ["you", "Is it warm enough to swim in Kochi?"],
-    ["llm", "THINK: I need today's weather."],
-    ["llm", "ACT: weather(\"Kochi\")"],
-    ["prog", "LOOK: 29°C, sunny"],
-    ["llm", "THINK: Warm. Is the sea calm?"],
-    ["llm", "ACT: search(\"Kochi sea today\")"],
-    ["prog", "LOOK: Calm sea, low waves"],
-    ["llm", "ANSWER: Yes! 29°C, sunny, and a calm sea."],
+  const LINES = [   // [who wrote it, the line, why]
+    ["you", "Is it warm enough to swim in Kochi?", "you: you asked the question."],
+    ["llm", "THINK: I need today's weather.", "the LLM: it thinks out loud before it acts."],
+    ["llm", "ACT: weather(\"Kochi\")", "the LLM: it asks for the tool. The program only does it."],
+    ["prog", "LOOK: 29°C, sunny", "the program: it writes what the tool gave back."],
+    ["llm", "THINK: Warm. Is the sea calm?", "the LLM: thinking is always the LLM."],
+    ["llm", "ACT: search(\"Kochi sea today\")", "the LLM: asking for a tool is always the LLM."],
+    ["prog", "LOOK: Calm sea, low waves", "the program: a tool's result comes from the program."],
+    ["llm", "ANSWER: Yes! 29°C, sunny, and a calm sea.", "the LLM: it writes the answer, from what's in the text."],
   ];
-  const tx = document.getElementById("p4Tx"), say = document.getElementById("p4Say"), check = document.getElementById("p4Check");
-  let picked = new Set(), checked = false;
+  const ORDER = ["llm", "prog", "you"];   // each tap moves to the next tag
+  const tx = document.getElementById("p4Tx"), left = document.getElementById("p4Left"), say = document.getElementById("p4Say");
+  const check = document.getElementById("p4Check"), again = document.getElementById("p4Again");
+  let pick = {}, checked = false;
   function draw() {
-    tx.innerHTML = LINES.map(([who, t], i) => {
-      const show = checked;
-      let cls = picked.has(i) ? " picked" : "";
-      if (checked) cls = who === "prog" ? (picked.has(i) ? " right" : " wrong") : (picked.has(i) ? " wrong" : "");
-      return `<button type="button" class="ln${cls}" data-i="${i}" aria-pressed="${picked.has(i)}"><span class="who ${show ? who : "hide"}">${show ? WHO[who] : (picked.has(i) ? "program" : "?")}</span><span class="txt">${t}</span></button>`;
+    tx.innerHTML = LINES.map(([who, t, why], i) => {
+      const p = pick[i], ok = checked && p === who;
+      const cls = checked ? (ok ? " right" : " wrong") : "";
+      const tag = p ? `<span class="who ${p}">${WHO[p]}</span>` : `<span class="who hide">tap</span>`;
+      const note = checked && !ok ? `<span></span><span class="count" style="font-size:.9rem">✗ It's ${why}</span>` : "";
+      return `<button type="button" class="ln${cls}" data-i="${i}" aria-label="Line ${i + 1}: ${p ? "tagged " + WHO[p] : "not tagged yet"}. Tap to change.">${tag}<span class="txt">${t}</span>${note}</button>`;
     }).join("");
     tx.querySelectorAll("button.ln").forEach(b => b.onclick = () => {
       if (checked) return;
       const i = +b.dataset.i;
-      picked.has(i) ? picked.delete(i) : picked.add(i);
+      pick[i] = ORDER[(ORDER.indexOf(pick[i]) + 1) % ORDER.length];
       draw();
     });
-    check.hidden = checked || picked.size === 0;
+    const n = Object.keys(pick).length;
+    left.textContent = checked ? "" : (n < LINES.length ? `${LINES.length - n} lines left to tag.` : "All tagged. Press Check.");
+    check.hidden = checked || n < LINES.length;
+    again.hidden = !checked;
   }
   check.onclick = () => {
     checked = true;
-    const right = LINES.every(([who], i) => (who === "prog") === picked.has(i));
-    say.classList.toggle("good", right);
-    say.innerHTML = right ? "✓ Right. Only the two LOOK: lines came from the program." : "✗ Not quite. The program wrote only the two LOOK: lines. The tags now show who wrote each line.";
+    const wrong = LINES.filter(([who], i) => pick[i] !== who).length;
+    say.classList.toggle("good", wrong === 0);
+    say.textContent = wrong === 0 ? "✓ All 8 right. The program wrote only the two LOOK: lines." : `${LINES.length - wrong} of 8 right. Each ✗ says why.`;
     say.hidden = false;
     draw();
   };
-  addReset(tx, () => { picked = new Set(); checked = false; say.hidden = true; draw(); });
+  const restart = () => { pick = {}; checked = false; say.hidden = true; draw(); };
+  again.onclick = restart;
+  addReset(tx, restart);
   draw();
 })();
 </script>
