@@ -78,9 +78,9 @@
               <g class="node" id="nThink"><rect x="70" y="10" width="70" height="34" rx="8"/><text x="105" y="27">💭 Think</text></g>
               <g class="node" id="nAct"><rect x="135" y="96" width="70" height="34" rx="8"/><text x="170" y="113">🔧 Act</text></g>
               <g class="node" id="nLook"><rect x="5" y="96" width="70" height="34" rx="8"/><text x="40" y="113">👀 Look</text></g>
-              <text class="round" id="nRound" x="105" y="76"></text>
+              <text class="round" id="nRound" x="140" y="76"></text>
               <g class="node" id="nAnswer"><rect x="60" y="168" width="90" height="34" rx="8"/><text x="105" y="185">💬 Answer</text></g>
-              <path class="arr out" d="M105,90 L105,164" marker-end="url(#ah)"/>
+              <path class="arr out" d="M105,46 L105,164" marker-end="url(#ah)"/>
             </svg>
           </div>
           <div>
@@ -95,7 +95,7 @@
           <button id="p3Again" hidden>↺ Start again</button>
         </div>
       </div>
-      <p class="say">The loop stops when the LLM writes <code>ANSWER:</code>. The LLM writes once in each round, then once more for the answer. Here: 2 rounds, so the LLM wrote 2 + 1 = 3 times.<br><b class="eqbox">times the LLM writes = rounds + 1</b></p>
+      <p class="say">The loop stops when the LLM writes <code>ANSWER:</code>. The LLM writes once in each round (its <code>THINK:</code> and <code>ACT:</code> lines together), then once more for the answer. Here: 2 rounds, so the LLM wrote 2 + 1 = 3 times.<br><b class="eqbox">times the LLM writes = rounds + 1</b></p>
       <p class="say">In case it never answers, the program also stops after a set number of rounds, called the <mark>step limit</mark>.</p>
       <p class="hook">Try it on new numbers.</p>
     </section>
@@ -295,12 +295,12 @@ const line = ([who, text], opts = {}) =>
   const STEPS = [
     { node: null, round: 0, add: ["you", "How much do 3 coffees at Blue Cup cost?"], say: "A task with two steps. Press Next step." },
     { node: "nThink", round: 1, add: ["llm", "THINK: I need the price first."], say: "Round 1 · Think: the LLM decides what it needs." },
-    { node: "nAct", round: 1, add: ["llm", "ACT: search(\"Blue Cup coffee price\")"], say: "Round 1 · Act: it asks for a search." },
+    { node: "nAct", round: 1, add: ["llm", "ACT: search(\"Blue Cup coffee price\")"], say: "Round 1 · Act: in the same write, it asks for a search. Then it stops and waits." },
     { node: "nLook", round: 1, add: ["prog", "LOOK: ₹120 a cup"], say: "Round 1 · Look: the program writes what the search found." },
     { node: "nThink", round: 2, add: ["llm", "THINK: Now 3 × 120."], say: "Round 2 · Think: with the price in the text, it plans the next step." },
-    { node: "nAct", round: 2, add: ["llm", "ACT: calculator(3 * 120)"], say: "Round 2 · Act: it asks for the calculator." },
+    { node: "nAct", round: 2, add: ["llm", "ACT: calculator(3 * 120)"], say: "Round 2 · Act: in the same write, it asks for the calculator." },
     { node: "nLook", round: 2, add: ["prog", "LOOK: 360"], say: "Round 2 · Look: the program writes the result." },
-    { node: "nAnswer", round: 2, add: ["llm", "ANSWER: 3 coffees at Blue Cup cost ₹360."], say: "The LLM has all it needs, so it writes ANSWER:. The loop stops. 2 rounds, 3 LLM writes." },
+    { node: "nAnswer", round: 2, add: ["llm", "ANSWER: 3 coffees at Blue Cup cost ₹360."], say: "The LLM has all it needs, so this time it writes ANSWER: instead of ACT:. The loop stops. 2 rounds, 3 LLM writes." },
   ];
   const tx = document.getElementById("p3Tx"), say = document.getElementById("p3Say"), roundLabel = document.getElementById("nRound");
   const next = document.getElementById("p3Next"), play = document.getElementById("p3Play");
