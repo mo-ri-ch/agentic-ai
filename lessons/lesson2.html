@@ -68,21 +68,21 @@
 
     <section class="part" data-nonum data-title="✏️ Practice 2.1">
       <h2>✏️ Practice 2.1</h2>
-      <p class="say">New numbers, same ideas.<br>Remember: the tool list goes at the top of the text, <b>every time</b>.<br>One round = one <code>ACT:</code> line = one tool used.</p>
+      <p class="say">New numbers, same ideas.<br>Remember: the tool list goes at the top of the text, <b>every time</b>.<br>The LLM matches the question to each tool's description.<br>One <code>ACT:</code> line asks for one tool, once.</p>
       <div class="activity">
         <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
-        <div class="pq" data-ans="80" data-tol="0.1" data-hint="Every tool's description is in the list. Add them all up." data-work="4 tools × 20 words = 80 words.">
-          <div class="pq-q">A tool list has <b>4 tools</b>, each described in <b>20 words</b>. How many words does the program add before every question?</div>
+        <div class="pq" data-ans="800" data-tol="0.1" data-hint="First the words in the whole list. The list goes at the top every time, so then multiply by the questions." data-work="The list: 4 tools × 20 words = 80 words.<br>Every question: 80 × 10 = 800 words.">
+          <div class="pq-q">A tool list has <b>4</b> tools, each described in <b>20</b> words. The agent gets <b>10</b> questions. How many words of tool list does the LLM read in total?</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
-        <div class="pq" data-ans="800" data-tol="0.1" data-hint="The list goes at the top every time, so the LLM reads it once per question." data-work="80 words × 10 questions = 800 words.">
-          <div class="pq-q">Same list. The agent gets <b>10 questions</b>. How many words of tool list does the LLM read in total?</div>
+        <div class="pq" data-ans="2" data-tol="0.1" data-hint="Match each part of the question to a tool's description." data-work="“Will it rain in Goa tomorrow?” → weather.<br>“What's 15% of ₹600?” → calculator.<br>2 tools.">
+          <div class="pq-q">Tools: <code>calculator</code>, <code>search</code>, <code>weather</code>, <code>add_reminder</code>. “Will it rain in Goa tomorrow, and what's 15% of ₹600?” How many <b>different</b> tools does the LLM need?</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
         <div class="pq" data-ans="3" data-tol="0.1" data-hint="Each ACT: line asks for one tool, about one city." data-work="Pune, Goa and Delhi: 1 ACT: line each.<br>3 ACT: lines.">
-          <div class="pq-q">“Is it raining in Pune, Goa or Delhi?” The agent has a <code>weather</code> tool. How many <code>ACT:</code> lines does it write?</div>
+          <div class="pq-q">“Is it raining in Pune, Goa and Delhi?” The agent has a <code>weather</code> tool, one city at a time. How many <code>ACT:</code> lines does it write?</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
