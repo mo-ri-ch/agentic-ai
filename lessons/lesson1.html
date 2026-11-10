@@ -102,11 +102,11 @@
 
     <section class="part" data-nonum data-title="✏️ Practice 1.1">
       <h2>✏️ Practice 1.1</h2>
-      <p class="say">Remember:<br>One round = think, act, look: one tool, and one <code>LOOK:</code> line back.<br><b class="eqbox">times the LLM writes = rounds + 1</b><br>The program stops at the <b>step limit</b>, even if the task isn't done.</p>
+      <p class="say">New numbers, same ideas.<br>Remember: one round = think, act, look. Each round uses one tool.<br><b class="eqbox">times the LLM writes = rounds + 1</b><br>The <b>step limit</b> is the most rounds the program allows. It stops there, even without an answer.</p>
       <div class="activity">
         <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
-        <div class="pq" data-ans="3" data-tol="0.1" data-hint="Each thing to look up or work out is one tool use, so one round." data-work="Weather in Delhi: 1 round.<br>Weather in Kochi: 1 round.<br>The difference, on the calculator: 1 round.<br>3 rounds.">
-          <div class="pq-q">“How much warmer is Kochi than Delhi?” The agent checks the weather in <b>both</b> cities, then uses the calculator. How many rounds?</div>
+        <div class="pq" data-ans="3" data-tol="0.1" data-hint="What does it need to find out, and what does it need to work out? Each is one tool use, so one round." data-work="Weather in Delhi: 1 round.<br>Weather in Kochi: 1 round.<br>The difference, on the calculator: 1 round.<br>3 rounds.">
+          <div class="pq-q">“How much warmer is Kochi than Delhi?” The agent has a <code>weather</code> tool (one city at a time) and a <code>calculator</code>. How many rounds does it need?</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
@@ -115,13 +115,13 @@
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
-        <div class="pq" data-ans="7" data-tol="0.01" data-hint="Count the LLM's writes first (rounds + 1). Then add the time for the tools: one per round." data-work="3 rounds → 3 + 1 = 4 writes.<br>4 writes × 1 s = 4 s.<br>3 tools × 1 s = 3 s.<br>4 + 3 = 7 seconds.">
-          <div class="pq-q">Same task. Each LLM write takes <b>1 second</b>, and each tool takes <b>1 second</b>. How many seconds in total?</div>
+        <div class="pq" data-ans="11" data-tol="0.01" data-hint="Count the LLM's writes first (rounds + 1). Then the tools: one per round. Add both times." data-work="3 rounds → 3 + 1 = 4 writes.<br>4 writes × 2 s = 8 s.<br>3 tools × 1 s = 3 s.<br>8 + 3 = 11 seconds.">
+          <div class="pq-q">Same task. Each LLM write takes <b>2 seconds</b>, and each tool takes <b>1 second</b>. How many seconds in total?</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
         <div class="pq" data-ans="4" data-tol="0.1" data-hint="The program stops at the step limit, even if the task needs more rounds." data-work="The task needs 6 rounds, but the limit is 4. The program stops after 4 tool uses, before an answer.">
-          <div class="pq-q">The step limit is <b>4</b> rounds. A task needs <b>6</b> tool uses. How many tools does the agent get to use?</div>
+          <div class="pq-q">The step limit is <b>4</b> rounds. A task needs <b>6</b> tool uses. How many times does the agent use a tool before the program stops it?</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
