@@ -56,7 +56,12 @@
         </div>
         <div class="out" id="p1Out"><span class="c"># press ▶ Run</span></div>
       </div>
-      <p class="say">The program keeps every tool in a <span data-peek="A Python dictionary stores pairs: a key and its value. Here the key is the tool's name, and the value is the function.">dictionary</span>, name → function, so it can find a tool by the name in the <code>ACT:</code> line:<br><b class="eqbox">TOOLS["weather"]("Kochi") → "29°C, sunny"</b></p>
+      <p class="say">The <code>ACT:</code> line only gives the tool's name, as text. So the program keeps every tool in a <span data-peek="A Python dictionary stores pairs: a key and its value. Here the key is the tool's name, and the value is the function.">dictionary</span>, name → function, and finds the tool by its name:</p>
+<pre><code>TOOLS = {"calculator": calculator, "weather": weather}
+
+TOOLS["weather"]            <span class="c"># → the weather function</span>
+TOOLS["weather"]("Kochi")   <span class="c"># → same as weather("Kochi") → "29°C, sunny"</span></code></pre>
+      <p class="say"><b class="eqbox">TOOLS[name](input)</b> = find the tool, then run it.</p>
       <p class="hook">The program needs that name. How does it get it out of the LLM's reply?</p>
     </section>
 
