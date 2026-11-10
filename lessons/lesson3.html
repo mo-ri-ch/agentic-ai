@@ -118,7 +118,15 @@ TOOLS["weather"]("Kochi")   <span class="c"># → same as weather("Kochi") → "
 <pre class="mapcode"><code id="p3Code"></code></pre>
         <div class="count" id="p3Say"></div>
       </div>
-      <p class="say">Each pass through the <code>for</code> loop is one round. <code>range(step_limit)</code> is the step limit: at most 5 rounds. <code>return</code> ends it early, as soon as there's an <code>ANSWER:</code>: an answer in round 2 means only 2 rounds run.</p>
+      <p class="say near" style="position:relative">Each pass through the <code>for</code> loop is one round. <code>range(step_limit)</code> runs it at most <code>step_limit</code> times, 5 here. <code>return</code> ends it early: an answer in round 2 means only 2 rounds run.<br><b class="eqbox">The loop ends at ANSWER: (return), or after step_limit rounds.</b><button class="doubt" type="button" data-peek-from="instrPeek" aria-label="What's in INSTRUCTIONS?">🤔</button></p>
+      <div hidden id="instrPeek"><b>🤔 What's in INSTRUCTIONS?</b> The tool list and the rules, at the top of the text every round:
+<pre style="margin:6px 0 0;white-space:pre-wrap">You are an agent. TOOLS you can use:
+calculator(math) - works out math exactly. Give it the math, like 12 * 7.
+weather(city) - the weather right now in a city. Give it the city name.
+To use a tool, write one line: ACT: tool(input)
+Then stop. The result will come back on a LOOK: line.
+When you know the answer, write: ANSWER: your answer</pre>
+      </div>
       <p class="hook">The loop needs an LLM to call. Which one?</p>
     </section>
 
