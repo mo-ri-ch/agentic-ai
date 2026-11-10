@@ -142,7 +142,7 @@ When you know the answer, write: ANSWER: your answer</pre>
         <div class="btnrow"><button class="primary" id="p4Run">▶ Run the loop</button></div>
         <div class="out" id="p4Out" hidden></div>
       </div>
-      <p class="say">The <mark>fake LLM</mark> hands back the next reply from a list, written by hand. No model needed, so you can test every part of the loop first: tools, errors, the step limit.<br><b class="eqbox">test the loop with a fake LLM first</b></p>
+      <p class="say">The <mark>fake LLM</mark> hands back the next reply from a list, written by hand. No model needed, so you can test every part of the loop first: tools, errors, the step limit.<br><b class="eqbox">fake_llm(text) → the next reply in the list</b></p>
       <p class="hook">Try it on new numbers.</p>
     </section>
 
@@ -469,7 +469,7 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
     chips.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.k === cur));
     replies.innerHTML = `<div class="count">fake_replies = (${t.replies.length} replies) · step_limit=${t.limit}</div>` +
       t.replies.map((r, i) => line(["llm", `${i + 1}. ${r.replace(/\n/g, "  ⏎  ")}`])).join("");
-    out.hidden = true; run.hidden = false;
+    out.hidden = true; run.hidden = false; replies.hidden = false;
   }
   Object.keys(LABELS).forEach(k => {
     const b = document.createElement("button");
@@ -479,8 +479,10 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
   });
   run.onclick = () => {
     const t = TESTS[cur];
-    out.innerHTML = `<span class="c">$ run_agent("${esc(t.q)}", fake_llm, step_limit=${t.limit})</span>\n` + esc(t.out.trimEnd());
-    out.hidden = false; run.hidden = true;
+    const lines = t.out.trimEnd().split("\n"), last = lines.pop();
+    out.innerHTML = `<span class="c">$ run_agent("${esc(t.q)}", fake_llm, step_limit=${t.limit})</span>\n` + esc(lines.join("\n")) +
+      `\n<span class="c"># what run_agent gives back:</span>\n` + esc(last);
+    out.hidden = false; run.hidden = true; replies.hidden = true;
   };
   addReset(run, () => { cur = "normal"; show(); });
   show();
