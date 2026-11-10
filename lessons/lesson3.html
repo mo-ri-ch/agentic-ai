@@ -385,7 +385,8 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
       html = `act = None\n<span class="c"># no ACT: name(input) found</span>\nLOOK: Error: write ACT: tool(input) or ANSWER: your answer`;
     } else {
       const name = m[1], arg = m[2].replace(/^"+|"+$/g, "");
-      html = `act.group(1) = "${esc(name)}"\nact.group(2) = "${esc(m[2])}"\n`;
+      const quoted = arg !== m[2];
+      html = `act.group(1) → ${esc(name)}\nact.group(2) → ${esc(m[2])}\n${quoted ? '<span class="c"># the quotes come off before the tool runs</span>\n' : ""}`;
       html += name in TOOLS ? `LOOK: ${esc(TOOLS[name](arg))}` : `<span class="c"># "${esc(name)}" isn't in TOOLS</span>\nLOOK: Error: no tool called ${esc(name)}`;
     }
     out.innerHTML = html;
