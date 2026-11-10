@@ -85,8 +85,8 @@
       <p class="say">New examples, same ideas.<br>Remember: a tool is a function: text in, text out.<br><b class="eqbox">TOOLS[name](input)</b> calls the tool with that name.<br><code>act.group(1)</code> is the name, <code>act.group(2)</code> the input.</p>
       <div class="activity">
         <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
-        <div class="pq" data-ans="84" data-tol="0.01" data-hint="The calculator works out the math and hands back the answer." data-work="12 × 7 = 84. It comes back as the text &quot;84&quot;.">
-          <div class="pq-q">What does <code>calculator("12 * 7")</code> give back?</div>
+        <div class="pq" data-ans="60" data-tol="0.01" data-hint="The calculator works out the math and hands back the answer, as text." data-work="15 × 4 = 60. It comes back as the text &quot;60&quot;.">
+          <div class="pq-q">What does <code>calculator("15 * 4")</code> give back?</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
@@ -95,8 +95,8 @@
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
-        <div class="pq" data-ans="3" data-tol="0.1" data-hint="Each tool is one pair in the dictionary: name → function." data-work="calculator, weather and search: 3 pairs.">
-          <div class="pq-q"><code>TOOLS</code> holds <code>calculator</code> and <code>weather</code>. You add a <code>search</code> tool. How many pairs are in <code>TOOLS</code> now?</div>
+        <div class="pq" data-ans="18" data-tol="0.1" data-hint="Find the name and the input. Then look the city up in the weather tool's dictionary." data-work="act.group(1) = weather, act.group(2) = &quot;Delhi&quot;.<br>TOOLS[&quot;weather&quot;](&quot;Delhi&quot;) → &quot;18°C, foggy&quot;.<br>18°C.">
+          <div class="pq-q">The reply is <code>ACT: weather("Delhi")</code>. What temperature, in °C, ends up on the <code>LOOK:</code> line? (The weather tool's code is on the first page.)</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
@@ -122,6 +122,8 @@
       <h2>A fake LLM first</h2>
       <div class="activity">
         <div class="do">Pick a test. Run the loop with a fake LLM.</div>
+<pre><code>def fake_llm(text):
+    return fake_replies.pop(0)   # hand back the next reply, ignore the text</code></pre>
         <div class="chips" id="p4Chips"></div>
         <div class="tx" id="p4Replies"></div>
         <div class="btnrow"><button class="primary" id="p4Run">▶ Run the loop</button></div>
@@ -136,8 +138,8 @@
       <p class="say">New numbers, same ideas.<br>Remember: each call to the LLM uses one reply. A reply with <code>ACT:</code> gets one <code>LOOK:</code> line.<br>The loop ends at <code>ANSWER:</code>, or after <code>step_limit</code> rounds.</p>
       <div class="activity">
         <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
-        <div class="pq" data-ans="2" data-tol="0.1" data-hint="Only replies with ACT: get a LOOK: line. The ANSWER: reply ends the loop." data-work="Reply 1: ACT → LOOK.<br>Reply 2: ACT → LOOK.<br>Reply 3: ANSWER → the loop ends.<br>2 LOOK: lines.">
-          <div class="pq-q"><code>fake_replies</code> has <b>3</b> replies: two with <code>ACT:</code>, then one with <code>ANSWER:</code>. How many <code>LOOK:</code> lines get printed?</div>
+        <div class="pq" data-ans="4" data-tol="0.1" data-hint="The loop ends as soon as a reply has ANSWER:, even if the step limit is bigger." data-work="Calls 1, 2, 3: ACT → LOOK.<br>Call 4: ANSWER → return ends the loop.<br>4 calls. The other step_limit rounds never run.">
+          <div class="pq-q"><code>fake_replies</code> holds <code>ACT</code>, <code>ACT</code>, <code>ACT</code>, then <code>ANSWER</code>. <code>step_limit=5</code>. How many times is the LLM called?</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
@@ -147,7 +149,7 @@
           <div class="pq-fb" aria-live="polite"></div>
         </div>
         <div class="pq" data-ans="2" data-tol="0.1" data-hint="The step limit stops the loop, even if a reply with ANSWER: is still waiting in the list." data-work="Round 1: reply 1 (ACT). Round 2: reply 2 (ACT).<br>step_limit=2 reached: the loop stops.<br>2 replies used. The ANSWER: is never read.">
-          <div class="pq-q">Replies: <code>ACT</code>, <code>ACT</code>, <code>ANSWER</code>. <code>step_limit=2</code>. How many replies get used?</div>
+          <div class="pq-q"><code>fake_replies</code> holds <code>ACT</code>, <code>ACT</code>, then <code>ANSWER</code>. But <code>step_limit=2</code>. How many of the replies get used?</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
