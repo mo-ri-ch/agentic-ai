@@ -31,13 +31,29 @@
       <p class="agent-say">Time to build me for real, in Python. First, my tools.</p>
       <p class="say">In code, a tool is a Python <mark>function</mark>: text goes in, text comes out.</p>
       <div class="activity">
-        <div class="do">Call each tool. Try a city that isn't there, too.</div>
+        <div class="do">Pick a tool, then call it. Try something that doesn't work, too.</div>
+        <div class="modes" role="tablist" aria-label="Which tool">
+          <button class="mode on" data-tool="weather" role="tab" aria-selected="true">weather()</button>
+          <button class="mode" data-tool="calculator" role="tab" aria-selected="false">calculator()</button>
+        </div>
+        <div id="p1W">
 <pre><code>def weather(city):
     today = {"kochi": "29°C, sunny", "delhi": "18°C, foggy", "pune": "24°C, light rain"}
     return today.get(city.lower(), f"Error: no city called {city}")</code></pre>
-        <p class="count" style="margin:0 0 6px"><code>today.get(city, …)</code> looks the city up. If it isn't there, you get the error instead. The calculator's code is in the full code at the end.</p>
-        <div class="tryrow">weather(" <input id="p1City" value="Kochi" aria-label="City" spellcheck="false"> ") <button id="p1RunW">▶ Run</button></div>
-        <div class="tryrow">calculator(" <input id="p1Math" value="12 * 7" aria-label="Math" spellcheck="false"> ") <button id="p1RunC">▶ Run</button></div>
+          <p class="count" style="margin:0 0 6px"><code>today.get(city, …)</code> looks the city up. If it isn't there, you get the error instead.</p>
+          <div class="tryrow">weather(" <input id="p1City" value="Kochi" aria-label="City" spellcheck="false"> ") <button id="p1RunW">▶ Run</button></div>
+        </div>
+        <div id="p1C" hidden>
+<pre><code>def calculator(math):
+    if not re.fullmatch(r"[0-9+\-*/(). ]+", math) or "**" in math:
+        return "Error: the calculator only takes numbers and + - * / ( )"
+    try:
+        return str(eval(math))
+    except Exception:
+        return "Error: that math doesn't work out"</code></pre>
+          <p class="count" style="margin:0 0 6px">First it checks the input is only numbers and <code>+ - * / ( )</code>. <code>try</code> catches math that goes wrong, like dividing by 0, and sends back an error instead of crashing.</p>
+          <div class="tryrow">calculator(" <input id="p1Math" value="12 * 7" aria-label="Math" spellcheck="false"> ") <button id="p1RunC">▶ Run</button></div>
+        </div>
         <div class="out" id="p1Out"><span class="c"># press ▶ Run</span></div>
       </div>
       <p class="say">The program keeps every tool in a <span data-peek="A Python dictionary stores pairs: a key and its value. Here the key is the tool's name, and the value is the function.">dictionary</span>, name → function, so it can find a tool by the name in the <code>ACT:</code> line:<br><b class="eqbox">TOOLS["weather"]("Kochi") → "29°C, sunny"</b></p>
@@ -340,7 +356,10 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
   document.getElementById("p1RunC").onclick = () => run("calculator", math.value);
   city.onkeydown = e => { if (e.key === "Enter") run("weather", city.value); };
   math.onkeydown = e => { if (e.key === "Enter") run("calculator", math.value); };
-  addReset(out, () => { city.value = "Kochi"; math.value = "12 * 7"; out.innerHTML = '<span class="c"># press ▶ Run</span>'; });
+  const box = out.closest(".activity");
+  const show = t => { document.getElementById("p1W").hidden = t !== "weather"; document.getElementById("p1C").hidden = t !== "calculator"; out.innerHTML = '<span class="c"># press ▶ Run</span>'; };
+  const setTool = AG.modes(box, "tool", show);
+  addReset(out, () => { city.value = "Kochi"; math.value = "12 * 7"; setTool("weather"); show("weather"); });
 })();
 
 // ---------- Part 2: find the ACT: line, like re.search ----------
