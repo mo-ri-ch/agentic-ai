@@ -77,9 +77,10 @@ TOOLS["weather"]("Kochi")   <span class="c"># → same as weather("Kochi") → "
       <p class="say near" style="position:relative">One line of Python finds it. It looks for the pattern <code>ACT: name(input)</code>:<br><b class="eqbox">act = re.search(r"ACT: (\w+)\((.*)\)", reply)</b><br>For <code>ACT: weather("Kochi")</code>, <code>act.group(1)</code> is <code>weather</code> and <code>act.group(2)</code> is <code>"Kochi"</code>. No match? Then <code>act</code> is <code>None</code>.<button class="doubt" type="button" data-peek-from="rePeek" aria-label="What do the symbols in the pattern mean?">🤔</button></p>
       <div hidden id="rePeek"><b>🤔 What do the symbols in the pattern mean?</b>
         <ul style="margin:6px 0 0">
-          <li><code>(\w+)</code>: one or more letters, digits or _ : the tool's name.</li>
+          <li>Each pair of round brackets <code>( )</code> is a blank to fill in. <code>act.group(1)</code> gives blank ①, <code>act.group(2)</code> blank ②.</li>
+          <li><code>(\w+)</code>: blank ①, one or more letters, digits or _ : the tool's name.</li>
           <li><code>\(</code> and <code>\)</code>: real brackets.</li>
-          <li><code>(.*)</code>: anything in between: the input.</li>
+          <li><code>(.*)</code>: blank ②, anything in between: the input.</li>
         </ul>
       </div>
       <p class="hook">Try it on new examples.</p>
@@ -394,7 +395,12 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
     } else {
       const name = m[1], arg = m[2].replace(/^"+|"+$/g, "");
       const quoted = arg !== m[2];
-      html = `act.group(1) → ${esc(name)}\nact.group(2) → ${esc(m[2])}\n${quoted ? '<span class="c"># the quotes come off before the tool runs</span>\n' : ""}`;
+      const a = m.index + 5, b = a + name.length + 1, e = b + m[2].length;
+      html = `<span class="c"># the pattern's 2 blanks:</span>\n` +
+        `${esc(reply.slice(0, a))}<span class="g1">${esc(name)}</span><span class="gn">①</span>${esc(reply.slice(a + name.length, b))}<span class="g2">${esc(m[2])}</span><span class="gn">②</span>${esc(reply.slice(e))}\n` +
+        `act.group(1) → <span class="g1">${esc(name)}</span>  <span class="c gc"># the name</span>\n` +
+        `act.group(2) → <span class="g2">${esc(m[2])}</span>  <span class="c gc"># the input</span>\n` +
+        (quoted ? '<span class="c"># quotes come off before it runs</span>\n' : "");
       html += name in TOOLS ? `LOOK: ${esc(TOOLS[name](arg))}` : `<span class="c"># "${esc(name)}" isn't in TOOLS</span>\nLOOK: Error: no tool called ${esc(name)}`;
     }
     out.innerHTML = html;
