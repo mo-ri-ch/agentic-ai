@@ -10,7 +10,7 @@ import json
 import os
 import re
 
-TITLES = {3: "Build the loop"}
+TITLES = {3: "Build the loop", 4: "Memory", 5: "Planning", 6: "Teams of agents", 7: "Keeping agents safe", 8: "Your agent project"}
 
 
 def cells_from(code):
@@ -37,7 +37,7 @@ for path in sorted(glob.glob("code/lesson[0-9].py")):
     if os.path.exists(real):
         cells.append({"cell_type": "markdown", "metadata": {}, "source": [
             "## Now a real LLM\n", "\n",
-            "The same loop, with a small free model (Qwen2.5 1.5B) instead of the fake LLM.\n",
+            "The same code, with a small free model (Qwen2.5 1.5B) instead of the fake LLM.\n",
             "The first run downloads it (about 3 GB), so give it a few minutes.\n", "\n",
             "Small models make mistakes. Watch the `LOOK:` lines: errors go back to the LLM, so it can often fix them.",
         ]})

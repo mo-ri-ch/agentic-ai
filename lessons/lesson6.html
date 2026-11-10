@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teams of agents</title>
+<meta name="description" content="Lesson 6 of Build an AI Agent: teams of agents. Each agent has one job; a manager hands out work; a checker catches mistakes; and teams cost more.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Kalam:wght@400&family=Patrick+Hand&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem("notebook-theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
+<link rel="stylesheet" href="https://mo-ri-ch.github.io/study-notebook-design/v1/style.css">
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body data-pen="blue">
+<div class="wrap">
+  <header class="topbar">
+    <a class="home" href="../">← Build an AI Agent</a>
+    <span class="where">Lesson 6 of 8</span>
+  </header>
+
+  <main data-paged>
+    <div class="paged-head">
+      <h1>Teams of agents</h1>
+      <div class="progress" aria-label="Lesson parts"></div>
+    </div>
+
+    <!-- 1 -->
+    <section class="part" data-title="One job each">
+      <h2>One job each</h2>
+      <p class="agent-say">What if I had helpers, each good at one thing?</p>
+      <div class="activity">
+        <div class="do">Meet the team. Then give each job to the right agent.</div>
+        <div class="tools" style="margin-bottom:12px">
+          <span class="t"><b>researcher</b> — finds facts. Tool: search(words)</span>
+          <span class="t"><b>writer</b> — writes short, friendly text. No tools.</span>
+          <span class="t"><b>checker</b> — compares a draft with the facts. No tools.</span>
+        </div>
+        <div id="t1Rows"></div>
+        <p class="redcheck" id="t1Say" hidden></p>
+        <div class="btnrow"><button class="primary" id="t1Check" hidden>✓ Check</button><button id="t1Again" hidden>↺ Try again</button></div>
+      </div>
+      <p class="say">Each agent gets its own instructions and its own tools. Its job is small and clear, and its text stays short.<br><b class="eqbox">an agent's job = its instructions + its tools</b><br>The researcher has search, so finding facts is its job.</p>
+      <p class="hook">Three agents. Who tells them what to do?</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="part" data-title="A manager hands out work">
+      <h2>A manager hands out work</h2>
+      <div class="activity">
+        <div class="do"><span data-peek="The lines come from a real run of this lesson's Python code, with fake LLMs.">Step through.</span> Watch the manager ask for help.</div>
+        <div class="tx" id="t2Tx"></div>
+        <div class="count" id="t2Say" style="margin-top:8px"></div>
+        <div class="btnrow">
+          <button class="primary" id="t2Next">Next step →</button>
+          <button id="t2Back" hidden>← Back</button>
+          <button id="t2Again" hidden>↺ Start again</button>
+        </div>
+      </div>
+      <p class="say near" style="position:relative">To the manager, the other agents are just tools. <code>ACT: ask_writer(…)</code> runs the writer's whole loop, and its answer comes back on a <code>LOOK:</code> line.<br><b class="eqbox">to the manager, an agent is a tool</b><button class="doubt" type="button" data-peek-from="owPeek" aria-label="Do real systems work like this?">🤔</button></p>
+      <div hidden id="owPeek"><b>🤔 Do real systems work like this?</b>
+        <div style="margin-top:6px">Yes. It's often called the orchestrator-worker pattern: a lead agent splits the job and hands parts to helper agents. Anthropic's Claude Research works this way, with helpers searching side by side.</div>
+      </div>
+      <p class="hook">Try it on new numbers.</p>
+    </section>
+
+    <section class="part" data-nonum data-title="✏️ Practice 6.1">
+      <h2>✏️ Practice 6.1</h2>
+      <p class="say">New numbers, same ideas.<br>Remember: every agent runs its own loop: <b class="eqbox">times an agent writes = rounds + 1</b><br>The manager uses one round each time it asks a worker.</p>
+      <div class="activity">
+        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
+        <div class="pq" data-ans="4" data-tol="0.1" data-hint="Each ask is one round for the manager. Then one more write for its answer." data-work="3 asks = 3 rounds.<br>3 + 1 = 4 writes.">
+          <div class="pq-q">The manager asks <b>3</b> workers, once each, then answers. How many times does the <b>manager</b> write?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="6" data-tol="0.1" data-hint="One worker: 1 round + 1 = 2 writes. Then all three." data-work="Each worker: 1 + 1 = 2 writes.<br>3 workers × 2 = 6 writes.">
+          <div class="pq-q">Each worker uses <b>1</b> tool, then answers. How many writes do the <b>3 workers</b> make together?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="10" data-tol="0.1" data-hint="Add the manager's writes and the workers' writes." data-work="Manager: 4. Workers: 6.<br>4 + 6 = 10 writes.">
+          <div class="pq-q">Same job. How many LLM writes does the whole team make?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="hook">The writer's draft said 40 km. The facts say 25. Who notices?</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="part" data-title="A checker catches mistakes">
+      <h2>A checker catches mistakes</h2>
+      <div class="activity">
+        <div class="do">Step through. The draft has a mistake.</div>
+        <div class="tx" id="t4Tx"></div>
+        <div class="count" id="t4Say" style="margin-top:8px"></div>
+        <div class="btnrow">
+          <button class="primary" id="t4Next">Next step →</button>
+          <button id="t4Back" hidden>← Back</button>
+          <button id="t4Again" hidden>↺ Start again</button>
+        </div>
+      </div>
+      <p class="say">The writer slipped: 40 km, not 25. The checker's only job is to compare the draft with the facts, so it catches the slip. The manager sends the fix back to the writer, then checks again.<br><b class="eqbox">write → check → fix, until OK</b></p>
+      <p class="hook">Better work. But what does a team cost?</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="part" data-title="More agents, more cost">
+      <h2>More agents, more cost</h2>
+      <div class="activity">
+        <div class="do">Same job, one agent or a team. Compare. (Each write takes about 2 s.)</div>
+        <div class="modes" role="tablist" aria-label="Who does the job">
+          <button class="mode on" data-who="one" role="tab" aria-selected="true">One agent</button>
+          <button class="mode" data-who="team" role="tab" aria-selected="false">The team</button>
+        </div>
+        <div class="meter"><span>LLM writes</span><span class="track"><span class="fill" id="t5W"></span></span><span class="v" id="t5Wv"></span></div>
+        <div class="meter"><span>Time</span><span class="track"><span class="fill" id="t5T"></span></span><span class="v" id="t5Tv"></span></div>
+        <div class="tx" id="t5Tx" style="margin-top:10px"></div>
+        <p class="redcheck" id="t5Say"></p>
+      </div>
+      <p class="say near" style="position:relative">The team's answer was checked, but it took 12 writes instead of 2. More writes take more time and money. Start with one agent, and add a team only when the job needs it.<br><b class="eqbox">a team: better on big jobs, but costs more</b><button class="doubt" type="button" data-peek-from="costPeek" aria-label="How much more do real teams cost?">🤔</button></p>
+      <div hidden id="costPeek"><b>🤔 How much more do real teams cost?</b>
+        <div style="margin-top:6px">Anthropic found its agents use about 4 times the tokens of a chat, and its multi-agent research system about 15 times. Worth it for big research jobs, not for small questions.</div>
+      </div>
+      <p class="hook">Try it on new numbers.</p>
+    </section>
+
+    <section class="part" data-nonum data-title="✏️ Practice 6.2">
+      <h2>✏️ Practice 6.2</h2>
+      <p class="say">New numbers, same ideas.<br>Remember: <b class="eqbox">write → check → fix, until OK</b><br>Every fix is one more ask to the writer. Cost and time grow with every LLM write.</p>
+      <div class="activity">
+        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
+        <div class="pq" data-ans="3" data-tol="0.1" data-hint="The first draft, plus one ask for each FIX." data-work="First draft: 1.<br>FIX, FIX: 2 more.<br>1 + 2 = 3 asks.">
+          <div class="pq-q">The checker says <b>FIX</b> twice, then <b>OK</b>. How many times is the writer asked?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="6" data-tol="0.1" data-hint="Divide the team's writes by one agent's writes." data-work="12 ÷ 2 = 6 times as many.">
+          <div class="pq-q">One agent makes <b>2</b> LLM writes. The team makes <b>12</b>. How many times as many writes is that?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="3" data-tol="0.01" data-hint="Every write costs the same. Multiply." data-work="12 × ₹0.25 = ₹3.">
+          <div class="pq-q">Each LLM write costs <b>₹0.25</b>. What does the team's <b>12</b>-write job cost, in ₹?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="hook">Here's the team in Python.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="part" data-title="The code">
+      <h2>The code</h2>
+      <p class="say"><code>make_agent</code> builds an agent from its instructions and tools. The manager's tools are the other agents. Guess what each <code>print</code> shows. Then press <b>▶ Run</b>.</p>
+<pre><code>import re
+
+<span class="c"># The loop from Lesson 3, but each agent brings its own instructions and tools</span>
+def run_agent(instructions, question, tools, llm, step_limit=6):
+    text = instructions + "\n\nQuestion: " + question + "\n"
+    for step in range(step_limit):
+        reply = llm(text)
+        text += reply + "\n"
+        if "ANSWER:" in reply:
+            return reply.split("ANSWER:")[1].strip()
+        act = re.search(r"ACT: (\w+)\((.*)\)", reply)
+        if act is None or act.group(1) not in tools:
+            look = "Error: write ACT: tool(input) with a tool you have"
+        else:
+            look = tools[act.group(1)](act.group(2))
+        text += "LOOK: " + look + "\n"
+    return "Stopped: the step limit was reached."
+
+<span class="c"># Make an agent: a name, its instructions, its tools, and its (fake) LLM's replies</span>
+def make_agent(name, instructions, tools, replies):
+    def agent(task):
+        print(f"  {name} gets: {task}")
+        answer = run_agent(instructions, task, tools, lambda text: replies.pop(0))
+        print(f"  {name} answers: {answer}")
+        return answer
+    return agent
+
+def search(words):
+    return "Cherai Beach: calm water, 25 km from Kochi. Fort Kochi Beach: rocky."
+
+researcher = make_agent("researcher", "You find facts. Tool: search(words).", {"search": search}, [
+    "ACT: search(beaches near Kochi)",
+    "ANSWER: Cherai Beach is best: calm water, 25 km from Kochi.",
+])
+writer = make_agent("writer", "You write short, friendly text. No tools.", {}, [
+    "ANSWER: Cherai Beach is the best beach near Kochi: calm, and only 40 km away.",
+    "ANSWER: Cherai Beach is the best beach near Kochi: calm, and only 25 km away.",
+])
+checker = make_agent("checker", "You check a draft against the facts. Answer OK, or FIX: and what's wrong.", {}, [
+    "ANSWER: FIX: the facts say 25 km, not 40 km.",
+    "ANSWER: OK",
+])
+
+<span class="c"># The manager: its tools are the other agents</span>
+manager_replies = [
+    "ACT: ask_researcher(Find the best beach near Kochi)",
+    "ACT: ask_writer(Write one sentence: Cherai Beach, calm water, 25 km from Kochi)",
+    "ACT: ask_checker(Facts: 25 km from Kochi. Draft: calm, and only 40 km away.)",
+    "ACT: ask_writer(Fix it: the beach is 25 km away, not 40 km)",
+    "ACT: ask_checker(Facts: 25 km from Kochi. Draft: calm, and only 25 km away.)",
+    "ANSWER: Cherai Beach is the best beach near Kochi: calm, and only 25 km away.",
+]
+manager = make_agent("manager", "You lead a team. Tools: ask_researcher, ask_writer, ask_checker.",
+                     {"ask_researcher": researcher, "ask_writer": writer, "ask_checker": checker},
+                     manager_replies)
+
+print(manager("Write one sentence about the best beach near Kochi."))</code></pre>
+      <div class="run-area">
+        <button class="run-code" type="button" aria-expanded="false">▶ Run</button>
+        <div class="terminal" hidden><div class="term-bar">Terminal</div><pre class="term-out"><span class="prompt">$ python lesson6.py</span>
+  manager gets: Write one sentence about the best beach near Kochi.
+  researcher gets: Find the best beach near Kochi
+  researcher answers: Cherai Beach is best: calm water, 25 km from Kochi.
+  writer gets: Write one sentence: Cherai Beach, calm water, 25 km from Kochi
+  writer answers: Cherai Beach is the best beach near Kochi: calm, and only 40 km away.
+  checker gets: Facts: 25 km from Kochi. Draft: calm, and only 40 km away.
+  checker answers: FIX: the facts say 25 km, not 40 km.
+  writer gets: Fix it: the beach is 25 km away, not 40 km
+  writer answers: Cherai Beach is the best beach near Kochi: calm, and only 25 km away.
+  checker gets: Facts: 25 km from Kochi. Draft: calm, and only 25 km away.
+  checker answers: OK
+  manager answers: Cherai Beach is the best beach near Kochi: calm, and only 25 km away.
+Cherai Beach is the best beach near Kochi: calm, and only 25 km away.</pre></div>
+      </div>
+      <p class="run-links">
+        <a class="btn primary" href="https://colab.research.google.com/github/mo-ri-ch/agentic-ai/blob/main/notebooks/lesson6.ipynb" target="_blank" rel="noopener">▶ Run it in Google Colab</a>
+      </p>
+      <p class="muted-note">The notebook has all of this, then the same team with the real LLM from Lesson 3 playing every agent. Its first run downloads the model (about 3 GB).</p>
+      <p class="hook">Quick check: did it all make sense?</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="part" data-title="Lesson test">
+      <h2>Lesson 6 test</h2>
+      <p class="say">5 questions, one for each idea in this lesson. Answer them all right to pass. A wrong answer tells you why, and which page to look at again.</p>
+      <div class="test" data-test="7">
+        <div class="quiz" data-page="lesson6.html#1" data-topic="One job each" data-right="Right. Finding facts needs search, and only the researcher has it.">
+          <div class="q"><small>1. Apply</small>Which agent should find today's train times?</div>
+          <div class="options">
+            <button data-right>researcher</button>
+            <button data-why="The writer has no tools. It can't look anything up.">writer</button>
+            <button data-why="The checker compares a draft with facts. It doesn't find them.">checker</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson6.html#2" data-topic="A manager hands out work" data-right="Right. Calling it runs the writer's whole loop; its answer comes back on a LOOK: line.">
+          <div class="q"><small>2. Idea</small>To the manager, what is <code>ask_writer</code>?</div>
+          <div class="options">
+            <button data-why="The manager can't write the draft itself through it. It hands the job over.">A note to itself</button>
+            <button data-right>A tool that runs the whole writer agent</button>
+            <button data-why="It isn't a person. It's another agent, run by the program.">A message to a person</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson6.html#4" data-topic="A checker catches mistakes" data-right="Right. Its only job is comparing, so it catches what the writer missed.">
+          <div class="q"><small>3. Why</small>Why use a separate checker instead of trusting the writer?</div>
+          <div class="options">
+            <button data-why="It has no tools at all. It only compares.">It has better tools</button>
+            <button data-right>Its only job is to compare the draft with the facts</button>
+            <button data-why="Checking adds writes, so it costs more, not less.">It makes the job cheaper</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson6.html#5" data-topic="More agents, more cost" data-right="Right. Teams cost more, so use them when the job is big enough.">
+          <div class="q"><small>4. Think</small>“What's 2 + 2?” Should a team of 4 agents answer it?</div>
+          <div class="options">
+            <button data-why="More agents isn't always better: every agent adds LLM writes, time and money.">Yes: more agents, better answers</button>
+            <button data-right>No: one agent is enough for a small job</button>
+            <button data-why="A team can answer it. It just costs far more than it's worth.">No: teams can't do math</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson6.html#7" data-topic="The code" data-right="Right. Its tools dictionary holds researcher, writer and checker.">
+          <div class="q"><small>5. Code</small>In the code, what are the manager's tools?</div>
+          <div class="options">
+            <button data-why="Search belongs to the researcher. The manager has the agents.">search</button>
+            <button data-right>The other three agents</button>
+            <button data-why="The manager does have tools: the three agents in its dictionary.">It has none</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </div>
+      <p class="hook">What could still go wrong.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="part" data-title="On its own">
+      <h2>On its own</h2>
+      <p class="say">Your agents plan, act and check each other, mostly on their own. Some tools send emails or delete files.</p>
+      <p class="agent-say">I can do so much now. But who makes sure I don't do something I shouldn't?</p>
+      <div class="open-question">
+        <div>This leaves a question</div>
+        <div class="big">Agents now act on their own. How do we keep them safe?</div>
+        <div><a href="lesson7.html">Lesson 7 answers it.</a></div>
+      </div>
+      <p><button class="done-toggle" data-done="7">Mark lesson as done</button></p>
+    </section>
+  </main>
+</div>
+
+<nav class="pagebar" aria-label="Move between parts">
+  <div class="inner">
+    <button data-page-back>← Previous</button>
+    <span data-page-label></span>
+    <button class="primary" data-page-next>Next →</button>
+  </div>
+</nav>
+
+<script src="../assets/course.js"></script>
+<script src="../assets/practice.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/common.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/pen.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/guide.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/codewalk.js"></script>
+<script>
+const { esc, line } = AG;
+const JOB = ["you", "Write one sentence about the best beach near Kochi."];
+const DRAFT1 = "Cherai Beach is the best beach near Kochi: calm, and only 40 km away.";
+const DRAFT2 = "Cherai Beach is the best beach near Kochi: calm, and only 25 km away.";
+
+// ---------- Part 1: give each job to the right agent ----------
+(function whoDoesIt() {
+  const JOBS = [
+    ["Look up when the museum opens", "researcher", "Looking things up needs search: the researcher."],
+    ["Turn these notes into a friendly email", "writer", "Writing text is the writer's job."],
+    ["Does this draft match the facts?", "checker", "Comparing a draft with the facts: the checker."],
+    ["Find today's bus fares", "researcher", "Finding facts needs search: the researcher."],
+  ];
+  const AGENTS = ["researcher", "writer", "checker"];
+  const rows = document.getElementById("t1Rows"), say = document.getElementById("t1Say");
+  const check = document.getElementById("t1Check"), again = document.getElementById("t1Again");
+  let choice = {}, checked = false;
+  function draw() {
+    rows.innerHTML = JOBS.map(([t, who, why], i) => {
+      const cls = checked ? (choice[i] === who ? " right" : " wrong") : "";
+      const btns = AGENTS.map(a => `<button type="button" data-i="${i}" data-k="${a}" class="${choice[i] === a ? "on" : ""}" aria-pressed="${choice[i] === a}">${a}</button>`).join("");
+      return `<div class="sortrow two${cls}"><span>${esc(t)}</span><span class="seg">${btns}</span>${checked ? `<span class="why">${choice[i] === who ? "✓" : "✗"} ${why}</span>` : ""}</div>`;
+    }).join("");
+    rows.querySelectorAll("button").forEach(b => b.onclick = () => { if (checked) return; choice[b.dataset.i] = b.dataset.k; draw(); });
+    check.hidden = checked || Object.keys(choice).length < JOBS.length;
+    again.hidden = !checked;
+  }
+  check.onclick = () => {
+    checked = true;
+    const n = JOBS.filter(([, who], i) => choice[i] === who).length;
+    say.classList.toggle("good", n === JOBS.length);
+    say.textContent = n === JOBS.length ? "✓ All 4 right." : `${n} of 4 right. Read the note under each job.`;
+    say.hidden = false; draw();
+  };
+  const restart = () => { choice = {}; checked = false; say.hidden = true; draw(); };
+  again.onclick = restart;
+  addReset(rows, restart);
+  draw();
+})();
+
+// ---------- Part 2: the manager asks the researcher and the writer (from the real run) ----------
+AG.stepper({
+  tx: document.getElementById("t2Tx"), say: document.getElementById("t2Say"),
+  next: document.getElementById("t2Next"), back: document.getElementById("t2Back"), again: document.getElementById("t2Again"),
+  steps: [
+    { add: [JOB], say: "The manager gets the job. Press Next step." },
+    { add: [["manager", "ACT: ask_researcher(Find the best beach near Kochi)"]], say: "Round 1: the manager asks the researcher, like any tool." },
+    { add: [["researcher", "ACT: search(beaches near Kochi) … ANSWER: Cherai Beach is best: calm water, 25 km from Kochi."]], say: "The researcher runs its own loop: a search, then its answer." },
+    { add: [["prog", "LOOK: Cherai Beach is best: calm water, 25 km from Kochi."]], say: "The researcher's answer comes back to the manager on a LOOK: line." },
+    { add: [["manager", "ACT: ask_writer(Write one sentence: Cherai Beach, calm water, 25 km from Kochi)"]], say: "Round 2: the manager asks the writer." },
+    { add: [["writer", "ANSWER: " + DRAFT1]], say: "The writer runs its own loop: no tools, it just writes." },
+    { add: [["prog", "LOOK: " + DRAFT1]], say: "The draft comes back to the manager. Look closely at it…" },
+  ],
+});
+
+// ---------- Part 3: check, fix, check again (from the real run; each worker's answer also goes back on a LOOK: line) ----------
+AG.stepper({
+  tx: document.getElementById("t4Tx"), say: document.getElementById("t4Say"),
+  next: document.getElementById("t4Next"), back: document.getElementById("t4Back"), again: document.getElementById("t4Again"),
+  steps: [
+    { add: [["writer", "ANSWER: …calm, and only 40 km away."]], say: "The writer's draft. Each worker's answer goes back to the manager on a LOOK: line, as before." },
+    { add: [["manager", "ACT: ask_checker(Facts: 25 km from Kochi. Draft: …only 40 km away.)"]], say: "Round 3: the manager asks the checker." },
+    { add: [["checker", "ANSWER: FIX: the facts say 25 km, not 40 km."]], say: "The checker catches the slip." },
+    { add: [["manager", "ACT: ask_writer(Fix it: the beach is 25 km away, not 40 km)"], ["writer", "ANSWER: …calm, and only 25 km away."]], say: "Round 4: the writer fixes it." },
+    { add: [["manager", "ACT: ask_checker(Facts: 25 km from Kochi. Draft: …only 25 km away.)"], ["checker", "ANSWER: OK"]], say: "Round 5: checked again. OK." },
+    { add: [["manager", "ANSWER: " + DRAFT2]], say: "The manager answers. 5 rounds: 6 writes for the manager, 6 for the workers, 12 in all." },
+  ],
+});
+
+// ---------- Part 4: one agent or a team ----------
+(function cost() {
+  const D = {
+    one: { w: 2, lines: [JOB, ["llm", "ACT: search(beaches near Kochi)"], ["prog", "LOOK: Cherai Beach: calm water, 25 km from Kochi. Fort Kochi Beach: rocky."], ["llm", "ANSWER: " + DRAFT2]],
+           say: ["Fast and cheap. But nobody checked it: if it had slipped, the mistake would go out.", false] },
+    team: { w: 12, lines: [JOB, ["manager", "asks the researcher, the writer, the checker, the writer again, the checker again"], ["manager", "ANSWER: " + DRAFT2]],
+            say: ["Checked, and a slip was caught. But 6 times the writes, and 6 times the time.", true] },
+  };
+  const box = document.querySelector("#t5Tx").closest(".activity");
+  const tx = document.getElementById("t5Tx"), say = document.getElementById("t5Say");
+  function draw(k) {
+    const d = D[k];
+    document.getElementById("t5W").style.width = (d.w / 12 * 100) + "%"; document.getElementById("t5Wv").textContent = `${d.w}`;
+    document.getElementById("t5T").style.width = (d.w / 12 * 100) + "%"; document.getElementById("t5Tv").textContent = `${d.w * 2} s`;
+    tx.innerHTML = d.lines.map(l => line(l)).join("");
+    say.textContent = (d.say[1] ? "✓ " : "⚠ ") + d.say[0]; say.classList.toggle("good", d.say[1]);
+  }
+  const set = AG.modes(box, "who", draw);
+  addReset(tx, () => { set("one"); draw("one"); });
+  draw("one");
+})();
+</script>
+</body>
+</html>

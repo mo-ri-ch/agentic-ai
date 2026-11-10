@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Memory</title>
+<meta name="description" content="Lesson 4 of Build an AI Agent: memory. The text is the agent's memory during a task; it has a limit; summaries save space; notes carry memory to the next task.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Kalam:wght@400&family=Patrick+Hand&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem("notebook-theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
+<link rel="stylesheet" href="https://mo-ri-ch.github.io/study-notebook-design/v1/style.css">
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body data-pen="blue">
+<div class="wrap">
+  <header class="topbar">
+    <a class="home" href="../">← Build an AI Agent</a>
+    <span class="where">Lesson 4 of 8</span>
+  </header>
+
+  <main data-paged>
+    <div class="paged-head">
+      <h1>Memory</h1>
+      <div class="progress" aria-label="Lesson parts"></div>
+    </div>
+
+    <!-- 1 -->
+    <section class="part" data-title="The text is its memory">
+      <h2>The text is its memory</h2>
+      <p class="agent-say">How do I remember what I found two rounds ago? Let's see.</p>
+      <div class="activity">
+        <div class="do">Tap a line to hide it from the LLM. See what it writes next.</div>
+        <div class="tx" id="m1Tx"></div>
+        <div class="tool-run" id="m1Next"></div>
+        <p class="count" id="m1Why" style="margin:6px 0 0"></p>
+      </div>
+      <p class="say">The LLM keeps nothing in its head between writes. Each time, it reads the text from the top. What's in the text is all it knows.<br><b class="eqbox">memory during a task = the text</b><br>Hide the <code>LOOK:</code> line, and it asks for the weather again.</p>
+      <p class="hook">The text grows every round. Can it grow forever?</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="part" data-title="The text has a limit">
+      <h2>The text has a limit</h2>
+      <div class="activity">
+        <div class="do">Add rounds. Then switch how the program makes room.</div>
+        <div class="modes" role="tablist" aria-label="How to make room">
+          <button class="mode on" data-cut="front" role="tab" aria-selected="true">Cut from the front</button>
+          <button class="mode" data-cut="keep" role="tab" aria-selected="false">Keep the start</button>
+        </div>
+        <div class="tryrow">Rounds: <input type="range" id="m2Rounds" min="1" max="7" value="3" aria-label="Rounds so far" style="width:12em"> <b id="m2N">3</b></div>
+        <div class="meter"><span>Words</span><span class="track"><span class="fill" id="m2Fill"></span></span><span class="v" id="m2V"></span></div>
+        <div class="tx" id="m2Tx"></div>
+        <p class="redcheck" id="m2Say"></p>
+      </div>
+      <p class="say near" style="position:relative">An LLM can only read so much text at once: its <mark>context window</mark>. Here it's 300 words. 60 (tool list) + 10 (question) + 4 rounds × 50 = 270 fits. A 5th round makes 320: something must go. Keep the start, and drop the oldest rounds.<button class="doubt" type="button" data-peek-from="ctxPeek" aria-label="How big are real context windows?">🤔</button></p>
+      <div hidden id="ctxPeek"><b>🤔 How big are real context windows?</b>
+        <div style="margin-top:6px">They're counted in tokens (pieces of words), not words. The small model in our Colab notebooks reads up to 32,768 tokens. Big models read hundreds of thousands. Long tasks can still fill them.</div>
+      </div>
+      <p class="hook">Try it on new numbers.</p>
+    </section>
+
+    <section class="part" data-nonum data-title="✏️ Practice 4.1">
+      <h2>✏️ Practice 4.1</h2>
+      <p class="say">New numbers, same ideas.<br>Remember: <b class="eqbox">text = start + rounds × words per round</b><br>The start is the tool list and the question. The text must fit in the <b>context window</b>.</p>
+      <div class="activity">
+        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
+        <div class="pq" data-ans="240" data-tol="0.1" data-hint="Start = tool list + question. Then add 3 rounds." data-work="Start: 100 + 20 = 120.<br>3 rounds × 40 = 120.<br>120 + 120 = 240 words.">
+          <div class="pq-q">Tool list: <b>100</b> words. Question: <b>20</b>. Each round: <b>40</b>. How many words is the text after <b>3</b> rounds?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="7" data-tol="0.1" data-hint="Take the start away from the window. How many 40-word rounds fit in what's left?" data-work="Room for rounds: 400 − 120 = 280.<br>280 ÷ 40 = 7 rounds.">
+          <div class="pq-q">Same agent. The context window is <b>400</b> words. How many rounds fit?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="3" data-tol="0.1" data-hint="The program keeps the start and the newest rounds that fit." data-work="Room for rounds: 250 − 70 = 180.<br>180 ÷ 60 = 3 rounds.">
+          <div class="pq-q">Window: <b>250</b> words. Start: <b>70</b>. Each round: <b>60</b>. The program keeps the start. How many rounds can it keep?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="hook">Dropping old rounds loses what they found. Is there a better way?</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="part" data-title="Summaries save space">
+      <h2>Summaries save space</h2>
+      <div class="activity">
+        <div class="do">Three rounds of shopping prices. Squeeze them into one line.</div>
+        <div class="meter"><span>Words</span><span class="track"><span class="fill" id="m4Fill"></span></span><span class="v" id="m4V"></span></div>
+        <div class="tx" id="m4Tx"></div>
+        <div class="tool-run" id="m4Next"></div>
+        <div class="btnrow"><button class="primary" id="m4Go">📝 Summarize rounds 1–3</button></div>
+      </div>
+      <p class="say">A <mark>summary</mark> keeps the facts and drops the rest. The program asks the LLM to write it, one extra write, then swaps it in for the old rounds. The LLM's next step is the same, with far fewer words.<br><b class="eqbox">summary = the facts, in fewer words</b></p>
+      <p class="hook">That's memory during one task. What about the next task?</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="part" data-title="Notes for next time">
+      <h2>Notes for next time</h2>
+      <div class="activity">
+        <div class="do">Yesterday the agent saved a note. Today's task starts a new text. Switch the notes off and on.</div>
+        <div class="tool-run" style="margin:0 0 10px">Yesterday: “I'm vegetarian. Please remember that.” → <b>ACT: save_note(The person is vegetarian.)</b></div>
+        <div class="modes" role="tablist" aria-label="Notes">
+          <button class="mode on" data-notes="off" role="tab" aria-selected="true">No notes</button>
+          <button class="mode" data-notes="on" role="tab" aria-selected="false">Notes at the top</button>
+        </div>
+        <div class="tx" id="m5Tx"></div>
+        <p class="redcheck" id="m5Say"></p>
+      </div>
+      <p class="say near" style="position:relative">A new task starts a new text, so the old one is gone. <mark>Notes</mark> are saved outside the text, in a list. The program puts them at the top of every new text.<br><b class="eqbox">notes = memory between tasks</b><br>The note “The person is vegetarian.” → paneer tikka, not butter chicken.<button class="doubt" type="button" data-peek-from="ragPeek" aria-label="What if there are hundreds of notes?">🤔</button></p>
+      <div hidden id="ragPeek"><b>🤔 What if there are hundreds of notes?</b>
+        <div style="margin-top:6px">They won't all fit in the context window. So the program searches the notes and puts in only the ones that match the question. This is often called retrieval, or RAG.</div>
+      </div>
+      <p class="hook">Try it on new numbers.</p>
+    </section>
+
+    <section class="part" data-nonum data-title="✏️ Practice 4.2">
+      <h2>✏️ Practice 4.2</h2>
+      <p class="say">New numbers, same ideas.<br>Remember: notes go at the top of <b>every</b> new text.<br><b class="eqbox">summary = the facts, in fewer words</b><br>Words saved = the old rounds' words − the summary's words.</p>
+      <div class="activity">
+        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
+        <div class="pq" data-ans="60" data-tol="0.1" data-hint="Every note goes at the top of the text." data-work="5 notes × 12 words = 60 words.">
+          <div class="pq-q">The agent has <b>5</b> notes of <b>12</b> words each. How many words do they add to every new task?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="10" data-tol="0.1" data-hint="How many 12-word notes fit in 120 words?" data-work="120 ÷ 12 = 10 notes.">
+          <div class="pq-q">The program keeps <b>120</b> words of room for notes. Each note is <b>12</b> words. How many notes fit?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="130" data-tol="0.1" data-hint="Words saved = the old rounds' words − the summary's words." data-work="Old rounds: 3 × 50 = 150 words.<br>150 − 20 = 130 words saved.">
+          <div class="pq-q"><b>3</b> rounds of <b>50</b> words each become a <b>20</b>-word summary. How many words are saved?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="hook">Here's notes memory in Python.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="part" data-title="The code">
+      <h2>The code</h2>
+      <p class="say">The notes list lives outside <code>run_agent</code>, so it survives between tasks. Guess what each <code>print</code> shows. Then press <b>▶ Run</b>.</p>
+<pre><code>import re
+
+<span class="c"># Long-term memory: notes kept outside the text, in a list</span>
+notes = []
+
+def save_note(note):
+    notes.append(note)
+    return "Saved."
+
+TOOLS = {"save_note": save_note}
+
+<span class="c"># The instructions now end with every note saved so far</span>
+def instructions():
+    rules = """You are an agent. TOOLS you can use:
+save_note(note) - remember something for next time. Give it the note.
+To use a tool, write one line: ACT: tool(input)
+When you know the answer, write: ANSWER: your answer
+NOTES from earlier tasks:"""
+    return rules + "\n" + "\n".join("- " + note for note in notes)
+
+<span class="c"># A fake LLM that reads the text, so you can see the notes matter</span>
+def fake_llm(text):
+    if "Question: I'm vegetarian" in text:
+        if "LOOK:" not in text:
+            return "THINK: That's worth remembering.\nACT: save_note(The person is vegetarian.)"
+        return "ANSWER: Got it. I'll remember that."
+    if "- The person is vegetarian." in text:
+        return "ANSWER: How about paneer tikka? It's vegetarian, like you."
+    return "ANSWER: How about butter chicken?"
+
+<span class="c"># The same loop as Lesson 3. It also shows how long the text has grown.</span>
+def run_agent(question, llm, step_limit=5):
+    text = instructions() + "\n\nQuestion: " + question + "\n"
+    for step in range(step_limit):
+        reply = llm(text)
+        print(reply)
+        text += reply + "\n"
+        print("(the text is now", len(text.split()), "words)")
+        if "ANSWER:" in reply:
+            return reply.split("ANSWER:")[1].strip()
+        act = re.search(r"ACT: (\w+)\((.*)\)", reply)
+        if act is None:
+            look = "Error: write ACT: tool(input) or ANSWER: your answer"
+        elif act.group(1) not in TOOLS:
+            look = f"Error: no tool called {act.group(1)}"
+        else:
+            look = TOOLS[act.group(1)](act.group(2).strip('"'))
+        print("LOOK:", look)
+        text += "LOOK: " + look + "\n"
+    return "Stopped: the step limit was reached."
+
+<span class="c"># Task 1, before any notes</span>
+print(run_agent("Suggest a dinner for me.", fake_llm))
+<span class="c"># Task 2: tell it something worth remembering</span>
+print(run_agent("I'm vegetarian. Please remember that.", fake_llm))
+print(notes)
+<span class="c"># Task 3: a brand new text, but the note is at the top</span>
+print(run_agent("Suggest a dinner for me.", fake_llm))</code></pre>
+      <div class="run-area">
+        <button class="run-code" type="button" aria-expanded="false">▶ Run</button>
+        <div class="terminal" hidden><div class="term-bar">Terminal</div><pre class="term-out"><span class="prompt">$ python lesson4.py</span>
+ANSWER: How about butter chicken?
+(the text is now 52 words)
+How about butter chicken?
+THINK: That's worth remembering.
+ACT: save_note(The person is vegetarian.)
+(the text is now 56 words)
+LOOK: Saved.
+ANSWER: Got it. I'll remember that.
+(the text is now 64 words)
+Got it. I'll remember that.
+['The person is vegetarian.']
+ANSWER: How about paneer tikka? It's vegetarian, like you.
+(the text is now 61 words)
+How about paneer tikka? It's vegetarian, like you.</pre></div>
+      </div>
+      <p class="run-links">
+        <a class="btn primary" href="https://colab.research.google.com/github/mo-ri-ch/agentic-ai/blob/main/notebooks/lesson4.ipynb" target="_blank" rel="noopener">▶ Run it in Google Colab</a>
+      </p>
+      <p class="muted-note">The notebook has all of this, then the same with the real LLM from Lesson 3. Its first run downloads the model (about 3 GB).</p>
+      <p class="hook">Quick check: did it all make sense?</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="part" data-title="Lesson test">
+      <h2>Lesson 4 test</h2>
+      <p class="say">5 questions, one for each idea in this lesson. Answer them all right to pass. A wrong answer tells you why, and which page to look at again.</p>
+      <div class="test" data-test="5">
+        <div class="quiz" data-page="lesson4.html#1" data-topic="The text is its memory" data-right="Right. It can't see the result anymore, so it asks for it again.">
+          <div class="q"><small>1. Predict</small>The program forgets to add the <code>LOOK: 29°C, sunny</code> line. What does the LLM write next?</div>
+          <div class="options">
+            <button data-why="It can only answer from what's in the text. The result isn't there.">ANSWER: 29°C and sunny</button>
+            <button data-right>ACT: weather("Kochi"), again</button>
+            <button data-why="Nothing stops it. It just doesn't know it already asked.">Nothing: the agent stops</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson4.html#2" data-topic="The text has a limit" data-right="Right. Cutting from the front throws away the tool list and the question first.">
+          <div class="q"><small>2. Spot the mistake</small>To fit the context window, a program cuts the <b>oldest</b> words, from the very top. What goes wrong?</div>
+          <div class="options">
+            <button data-right>It loses the tool list and the question first</button>
+            <button data-why="The newest rounds are at the bottom. Those are the last to go.">It loses the newest rounds</button>
+            <button data-why="Cutting does make it fit. The problem is what gets cut.">The text still won't fit</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson4.html#4" data-topic="Summaries save space" data-right="Right. The facts stay; the extra words go.">
+          <div class="q"><small>3. Why</small>Why swap old rounds for a summary instead of just dropping them?</div>
+          <div class="options">
+            <button data-why="A summary is shorter, not longer. That's the point.">It makes the text longer</button>
+            <button data-right>It keeps the facts in fewer words</button>
+            <button data-why="Writing the summary costs one extra LLM write.">It costs nothing</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson4.html#5" data-topic="Notes for next time" data-right="Right. Notes are kept outside, then put at the top of each new text.">
+          <div class="q"><small>4. Idea</small>How does an agent remember something from yesterday's task?</div>
+          <div class="options">
+            <button data-why="Yesterday's text is gone when its task ends.">It reads yesterday's text</button>
+            <button data-why="An LLM doesn't change from one task to the next. It only reads text.">The LLM learns it for good</button>
+            <button data-right>A saved note goes at the top of the new text</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson4.html#7" data-topic="The code" data-right="Right. instructions() builds the start of every text, with all the notes.">
+          <div class="q"><small>5. Code</small>In the code, what puts the notes into a new task's text?</div>
+          <div class="options">
+            <button data-right><code>instructions()</code></button>
+            <button data-why="save_note only adds a note to the list. It doesn't build the text.">save_note</button>
+            <button data-why="fake_llm only reads the text. It doesn't write the notes into it.">fake_llm</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </div>
+      <p class="hook">What your agent still can't do.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="part" data-title="Too big for one go">
+      <h2>Too big for one go</h2>
+      <p class="say">Your agent remembers now. But give it a big goal, like planning a party, and it can wander off or forget a part.</p>
+      <p class="agent-say">Party for ten, under ₹5,000? Where do I even start?</p>
+      <div class="open-question">
+        <div>This leaves a question</div>
+        <div class="big">Big goals need many steps. How does an agent plan them?</div>
+        <div><a href="lesson5.html">Lesson 5 answers it.</a></div>
+      </div>
+      <p><button class="done-toggle" data-done="5">Mark lesson as done</button></p>
+    </section>
+  </main>
+</div>
+
+<nav class="pagebar" aria-label="Move between parts">
+  <div class="inner">
+    <button data-page-back>← Previous</button>
+    <span data-page-label></span>
+    <button class="primary" data-page-next>Next →</button>
+  </div>
+</nav>
+
+<script src="../assets/course.js"></script>
+<script src="../assets/practice.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/common.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/pen.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/guide.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/codewalk.js"></script>
+<script>
+const { esc, line } = AG;
+
+// ---------- Part 1: hide a line, see what the LLM writes next ----------
+(function hideLines() {
+  const LINES = [
+    ["prog", "TOOLS: weather(city) - the weather right now in a city"],
+    ["you", "Is it warm in Kochi right now?"],
+    ["llm", "THINK: I need today's weather."],
+    ["llm", 'ACT: weather("Kochi")'],
+    ["prog", "LOOK: 29°C, sunny"],
+  ];
+  const tx = document.getElementById("m1Tx"), next = document.getElementById("m1Next"), why = document.getElementById("m1Why");
+  let hidden = new Set();
+  function outcome() {
+    if (hidden.has(1)) return ["THINK: There's no question here. What should I do?", "It doesn't know what was asked."];
+    if (hidden.has(4) && hidden.has(0)) return ["ANSWER: It's probably warm and sunny.", "No result, and no tool list to ask with: it guesses."];
+    if (hidden.has(4)) return ['ACT: weather("Kochi")', "It asks again: it can't see that it already looked."];
+    return ["ANSWER: Yes! 29°C and sunny.", "It can see everything it needs."];
+  }
+  function draw() {
+    tx.innerHTML = LINES.map((l, i) => `<button type="button" class="ln${hidden.has(i) ? " faded cut" : ""}" data-i="${i}" aria-pressed="${hidden.has(i)}" aria-label="${hidden.has(i) ? "Hidden" : "Shown"}: ${esc(l[1])}. Tap to ${hidden.has(i) ? "show" : "hide"} it.">${line(l).replace(/^<div class="ln">|<\/div>$/g, "")}</button>`).join("");
+    tx.querySelectorAll("button.ln").forEach(b => b.onclick = () => { const i = +b.dataset.i; hidden.has(i) ? hidden.delete(i) : hidden.add(i); draw(); });
+    const [w, y] = outcome();
+    next.innerHTML = `The LLM's next write: <b>${esc(w)}</b>`;
+    why.textContent = hidden.size ? y : "Nothing hidden yet. " + y;
+  }
+  addReset(tx, () => { hidden = new Set(); draw(); });
+  draw();
+})();
+
+// ---------- Part 2: the context window fills up ----------
+(function windowDemo() {
+  const LIMIT = 300, START = [["prog", "Tool list", 60], ["you", "Question: plan my week", 10]], ROUND = 50;
+  const box = document.querySelector("#m2Tx").closest(".activity");
+  const tx = document.getElementById("m2Tx"), range = document.getElementById("m2Rounds"), n = document.getElementById("m2N");
+  const fill = document.getElementById("m2Fill"), v = document.getElementById("m2V"), say = document.getElementById("m2Say");
+  let mode = "front";
+  function draw() {
+    const rounds = +range.value; n.textContent = rounds;
+    const blocks = START.map(([w, t, words]) => ({ w, t, words, start: true }));
+    for (let r = 1; r <= rounds; r++) blocks.push({ w: "llm", t: `Round ${r}: think, act, look`, words: ROUND });
+    const total = blocks.reduce((a, b) => a + b.words, 0);
+    let over = total - LIMIT;
+    // decide what falls out
+    const order = mode === "front" ? blocks.map((b, i) => i) : blocks.map((b, i) => i).filter(i => !blocks[i].start);
+    const cut = new Set();
+    for (const i of order) { if (over <= 0) break; cut.add(i); over -= blocks[i].words; }
+    const kept = blocks.filter((b, i) => !cut.has(i)).reduce((a, b) => a + b.words, 0);
+    tx.innerHTML = blocks.map((b, i) => line([b.w, `${b.t} (${b.words} words)`], { cls: cut.has(i) ? "faded cut" : "" })).join("");
+    fill.style.width = Math.min(100, kept / LIMIT * 100) + "%";
+    v.textContent = `${kept} / ${LIMIT}`;
+    say.classList.toggle("good", total <= LIMIT || mode === "keep");
+    if (total <= LIMIT) say.textContent = `✓ ${total} words fits in the window. Nothing is cut.`;
+    else if (mode === "front") say.textContent = `✗ ${total} words is too long, so the top is cut: ${[...cut].map(i => blocks[i].t.split(":")[0]).join(", ")}. It's lost ${cut.has(0) ? "the tool list" : ""}${cut.has(0) && cut.has(1) ? " and " : ""}${cut.has(1) ? "the question" : ""}!`;
+    else say.textContent = `✓ ${total} words is too long, so the oldest ${cut.size === 1 ? "round is" : cut.size + " rounds are"} cut. It still has the tool list and the question. Now ${kept} words.`;
+  }
+  const setMode = AG.modes(box, "cut", m => { mode = m; draw(); });
+  range.oninput = draw;
+  addReset(tx, () => { mode = "front"; setMode("front"); range.value = 3; draw(); });
+  draw();
+})();
+
+// ---------- Part 3: summarize old rounds ----------
+(function summarize() {
+  const START = [["you", "What do rice, dal and oil cost together?"]];
+  const ROUNDS = [
+    ["llm", "THINK: First the price of rice."], ["llm", 'ACT: search("rice price 1 kg")'], ["prog", "LOOK: Rice costs ₹60 for 1 kg at most shops this week."],
+    ["llm", "THINK: Now dal."], ["llm", 'ACT: search("dal price 1 kg")'], ["prog", "LOOK: Dal is about ₹120 per kg in local markets."],
+    ["llm", "THINK: And oil."], ["llm", 'ACT: search("cooking oil price 1 litre")'], ["prog", "LOOK: A 1 litre bottle of cooking oil is around ₹180."],
+  ];
+  const SUMMARY = ["summary", "Prices found: rice ₹60, dal ₹120, oil ₹180."];
+  const tx = document.getElementById("m4Tx"), next = document.getElementById("m4Next"), go = document.getElementById("m4Go");
+  const fill = document.getElementById("m4Fill"), v = document.getElementById("m4V");
+  const words = ls => ls.reduce((a, [, t]) => a + t.split(/\s+/).length, 0);
+  const before = words(START) + words(ROUNDS);
+  function draw(done) {
+    const ls = done ? START.concat([SUMMARY]) : START.concat(ROUNDS);
+    tx.innerHTML = ls.map(l => line(l, { isNew: done && l === SUMMARY })).join("");
+    const w = words(ls);
+    fill.style.width = (w / before * 100) + "%"; v.textContent = done ? `${w} (was ${before})` : `${w}`;
+    next.innerHTML = `The LLM's next write: <b>ACT: calculator(60 + 120 + 180)</b>` + (done ? " — the same as before." : "");
+    go.hidden = done;
+  }
+  go.onclick = () => draw(true);
+  addReset(tx, () => draw(false));
+  draw(false);
+})();
+
+// ---------- Part 4: notes at the top of a new text (replies from the real Python run) ----------
+(function notesDemo() {
+  const box = document.querySelector("#m5Tx").closest(".activity");
+  const tx = document.getElementById("m5Tx"), say = document.getElementById("m5Say");
+  function draw(mode) {
+    const ls = [["prog", "TOOLS: save_note(note) - remember something for next time"]];
+    ls.push(["notes", mode === "on" ? "NOTES from earlier tasks: - The person is vegetarian." : "NOTES from earlier tasks: (none)"]);
+    ls.push(["you", "Suggest a dinner for me."]);
+    ls.push(["llm", mode === "on" ? "ANSWER: How about paneer tikka? It's vegetarian, like you." : "ANSWER: How about butter chicken?"]);
+    tx.innerHTML = ls.map((l, i) => line(l, { isNew: i === 1 && mode === "on" })).join("");
+    say.classList.toggle("good", mode === "on");
+    say.textContent = mode === "on" ? "✓ The note is in the text, so it remembers." : "✗ A new text, with no notes: it forgot.";
+  }
+  const setMode = AG.modes(box, "notes", draw);
+  addReset(tx, () => { setMode("off"); draw("off"); });
+  draw("off");
+})();
+</script>
+</body>
+</html>

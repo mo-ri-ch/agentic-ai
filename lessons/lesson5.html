@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planning</title>
+<meta name="description" content="Lesson 5 of Build an AI Agent: planning. Write the steps down first, tick them off, plan again when a step fails, and keep steps the right size.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Kalam:wght@400&family=Patrick+Hand&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem("notebook-theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
+<link rel="stylesheet" href="https://mo-ri-ch.github.io/study-notebook-design/v1/style.css">
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body data-pen="blue">
+<div class="wrap">
+  <header class="topbar">
+    <a class="home" href="../">← Build an AI Agent</a>
+    <span class="where">Lesson 5 of 8</span>
+  </header>
+
+  <main data-paged>
+    <div class="paged-head">
+      <h1>Planning</h1>
+      <div class="progress" aria-label="Lesson parts"></div>
+    </div>
+
+    <!-- 1 -->
+    <section class="part" data-title="Make a plan first">
+      <h2>Make a plan first</h2>
+      <p class="agent-say">A cake and snacks for 10 people, under ₹5,000. I'll just start… or should I?</p>
+      <div class="activity">
+        <div class="do"><span data-peek="A made-up example, written out for you. Real agents do lose track like this on long tasks.">Same goal, two ways.</span> Switch between them.</div>
+        <div class="modes" role="tablist" aria-label="How it starts">
+          <button class="mode on" data-way="none" role="tab" aria-selected="true">Just start</button>
+          <button class="mode" data-way="plan" role="tab" aria-selected="false">Plan first</button>
+        </div>
+        <div class="tx" id="p1Tx"></div>
+        <p class="redcheck" id="p1Say"></p>
+      </div>
+      <p class="say">With a big goal, it's easy to stop after the first thing works. So the LLM first writes a <mark>plan</mark>: every step, before it acts.<br><b class="eqbox">plan = the steps, written down first</b><br>Cake, snacks, add up: nothing gets forgotten.</p>
+      <p class="hook">A plan is written. How does the agent follow it?</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="part" data-title="Tick off the steps">
+      <h2>Tick off the steps</h2>
+      <div class="activity">
+        <div class="do">Step through. Watch the plan get ticked off.</div>
+        <ul class="checklist" id="p2Plan" aria-label="The plan"></ul>
+        <div class="tx" id="p2Tx"></div>
+        <div class="count" id="p2Say" style="margin-top:8px"></div>
+        <div class="btnrow">
+          <button class="primary" id="p2Next">Next step →</button>
+          <button id="p2Back" hidden>← Back</button>
+          <button id="p2Again" hidden>↺ Start again</button>
+        </div>
+      </div>
+      <p class="say">The plan stays in the text, so every round the LLM sees what's done and what's next. Writing the plan is one more write:<br><b class="eqbox">times the LLM writes = plans + rounds + 1</b><br>1 plan + 3 rounds + 1 answer = 5 writes.</p>
+      <p class="hook">Try it on new numbers.</p>
+    </section>
+
+    <section class="part" data-nonum data-title="✏️ Practice 5.1">
+      <h2>✏️ Practice 5.1</h2>
+      <p class="say">New numbers, same ideas.<br>Remember: one round = think, act, look. Each round uses one tool.<br><b class="eqbox">times the LLM writes = plans + rounds + 1</b></p>
+      <div class="activity">
+        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
+        <div class="pq" data-ans="4" data-tol="0.1" data-hint="Each step needs one tool, and each tool use is one round." data-work="4 steps × 1 tool = 4 rounds.">
+          <div class="pq-q">A plan has <b>4</b> steps, each needing one tool. Nothing fails. How many rounds?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="6" data-tol="0.1" data-hint="Use the box: plans + rounds + 1." data-work="1 plan + 4 rounds + 1 = 6 writes.">
+          <div class="pq-q">Same task. How many times does the LLM write?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="13" data-tol="0.01" data-hint="Count the writes first (plans + rounds + 1), then the tools (one per round). Add both times." data-work="Writes: 1 + 3 + 1 = 5. 5 × 2 s = 10 s.<br>Tools: 3 × 1 s = 3 s.<br>10 + 3 = 13 seconds.">
+          <div class="pq-q">A <b>3</b>-step plan, one tool per step, nothing fails. Each write takes <b>2 s</b>, each tool <b>1 s</b>. How many seconds in total?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="hook">Plans assume every step works. What if one doesn't?</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="part" data-title="When a step fails, plan again">
+      <h2>When a step fails, plan again</h2>
+      <div class="activity">
+        <div class="do">Step through. Step 1 is going to fail.</div>
+        <ul class="checklist" id="p4Plan" aria-label="The plan"></ul>
+        <div class="tx" id="p4Tx"></div>
+        <div class="count" id="p4Say" style="margin-top:8px"></div>
+        <div class="btnrow">
+          <button class="primary" id="p4Next">Next step →</button>
+          <button id="p4Back" hidden>← Back</button>
+          <button id="p4Again" hidden>↺ Start again</button>
+        </div>
+      </div>
+      <p class="say">The shop is closed, so the old plan can't work. The LLM reads the error and writes a new <code>PLAN:</code>. The program starts counting from step 1 again.<br><b class="eqbox">a failed step → a new plan</b><br>2 plans + 4 rounds + 1 = 7 writes.</p>
+      <p class="hook">Some plans fail because a step was too big. What size is right?</p>
+    </section>
+
+    <!-- 4 -->
+    <section class="part" data-title="Steps the right size">
+      <h2>Steps the right size</h2>
+      <div class="activity">
+        <div class="do">Sort each step. Then press Check.</div>
+        <div id="p5Rows"></div>
+        <p class="redcheck" id="p5Say" hidden></p>
+        <div class="btnrow"><button class="primary" id="p5Check" hidden>✓ Check</button><button id="p5Again" hidden>↺ Try again</button></div>
+      </div>
+      <p class="say near" style="position:relative">A good step needs about one tool use. “Sort out the food” is too big: split it into “find a cake”, “find snacks”, and so on.<br><b class="eqbox">one step ≈ one tool use</b><button class="doubt" type="button" data-peek-from="pePeek" aria-label="Do all agents plan first?">🤔</button></p>
+      <div hidden id="pePeek"><b>🤔 Do all agents plan first?</b>
+        <div style="margin-top:6px">No. Deciding one step at a time (think, act, look, repeat) suits tasks where you can't know the steps in advance. Planning first, often called plan-and-execute, suits long tasks with clear steps. Many agents mix them: plan, then plan again when something fails.</div>
+      </div>
+      <p class="hook">Try it on new numbers.</p>
+    </section>
+
+    <section class="part" data-nonum data-title="✏️ Practice 5.2">
+      <h2>✏️ Practice 5.2</h2>
+      <p class="say">New numbers, same ideas.<br>Remember: <b class="eqbox">times the LLM writes = plans + rounds + 1</b><br>A failed tool use still takes a round, and leads to a new plan.<br><b class="eqbox">one step ≈ one tool use</b></p>
+      <div class="activity">
+        <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
+        <div class="pq" data-ans="4" data-tol="0.1" data-hint="Count every tool use: the 3 steps, plus the one that failed." data-work="Steps 1, 2, 3: 3 rounds that work.<br>The failed try at step 2: 1 more round.<br>4 rounds.">
+          <div class="pq-q">A <b>3</b>-step plan. Step 2 fails once, a new plan fixes it, then everything works. How many rounds?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="7" data-tol="0.1" data-hint="How many plans were written? Then use the box." data-work="The first plan, and the new one: 2 plans.<br>2 + 4 rounds + 1 = 7 writes.">
+          <div class="pq-q">Same task. How many times does the LLM write?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+        <div class="pq" data-ans="3" data-tol="0.1" data-hint="Split it so each step needs one tool use: one booking each." data-work="Book the hall. Order the food. Book the music.<br>3 steps.">
+          <div class="pq-q">A step says “Book the hall, order the food and book the music.” Each booking or order is one tool use. Split it the right size: how many steps?</div>
+          <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
+          <div class="pq-fb" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="hook">Here's planning in Python.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="part" data-title="The code">
+      <h2>The code</h2>
+      <p class="say">The program reads the plan's numbered lines and counts the steps done. Guess what each <code>print</code> shows. Then press <b>▶ Run</b>.</p>
+<pre><code>import re
+
+<span class="c"># Tools: a pretend shop, and the calculator</span>
+def shop(item):
+    prices = {"cake for 10 at cake house": "₹1800", "snacks for 10": "₹1500"}
+    if "sweet spot" in item.lower():
+        return "Error: Sweet Spot is closed today"
+    return prices.get(item.lower(), f"Error: no price found for {item}")
+
+def calculator(math):
+    if not re.fullmatch(r"[0-9+\-*/(). ]+", math) or "**" in math:
+        return "Error: the calculator only takes numbers and + - * / ( )"
+    try:
+        return str(eval(math))
+    except Exception:
+        return "Error: that math doesn't work out"
+
+TOOLS = {"shop": shop, "calculator": calculator}
+
+INSTRUCTIONS = """You are an agent. TOOLS you can use:
+shop(item) - the price of an item at a shop. Give it the item and the shop.
+calculator(math) - works out math exactly.
+First write PLAN: and your steps, one per line, numbered.
+Then do one step at a time: ACT: tool(input)
+If a step fails, write a new PLAN:.
+When you're done, write: ANSWER: your answer"""
+
+<span class="c"># Read the numbered steps out of a plan</span>
+def read_plan(reply):
+    return re.findall(r"^\d+\. (.+)$", reply, re.MULTILINE)
+
+<span class="c"># A fake LLM with a plan, a failed step and a new plan</span>
+fake_replies = [
+    "PLAN:\n1. Find a cake for 10 at Sweet Spot\n2. Find snacks for 10\n3. Add up the cost",
+    "ACT: shop(cake for 10 at Sweet Spot)",
+    "THINK: Step 1 failed. A new plan.\nPLAN:\n1. Find a cake for 10 at Cake House\n2. Find snacks for 10\n3. Add up the cost",
+    "ACT: shop(cake for 10 at Cake House)",
+    "ACT: shop(snacks for 10)",
+    "ACT: calculator(1800 + 1500)",
+    "ANSWER: A Cake House cake and snacks: ₹3300 in all, under ₹5000.",
+]
+def fake_llm(text):
+    return fake_replies.pop(0)
+
+<span class="c"># The loop, now keeping track of the plan</span>
+def run_agent(question, llm, step_limit=8):
+    text = INSTRUCTIONS + "\n\nQuestion: " + question + "\n"
+    plan, done = [], 0
+    for step in range(step_limit):
+        reply = llm(text)
+        print(reply)
+        text += reply + "\n"
+        if "PLAN:" in reply:
+            plan, done = read_plan(reply), 0
+            print(f"(a plan with {len(plan)} steps)")
+        if "ANSWER:" in reply:
+            return reply.split("ANSWER:")[1].strip()
+        act = re.search(r"ACT: (\w+)\((.*)\)", reply)
+        if act is None:
+            continue
+        elif act.group(1) not in TOOLS:
+            look = f"Error: no tool called {act.group(1)}"
+        else:
+            look = TOOLS[act.group(1)](act.group(2).strip('"'))
+        if not look.startswith("Error"):
+            done += 1
+        print("LOOK:", look, f"(done {done} of {len(plan)})")
+        text += "LOOK: " + look + "\n"
+    return "Stopped: the step limit was reached."
+
+print(run_agent("Order a cake and snacks for 10 people, under ₹5000.", fake_llm))</code></pre>
+      <div class="run-area">
+        <button class="run-code" type="button" aria-expanded="false">▶ Run</button>
+        <div class="terminal" hidden><div class="term-bar">Terminal</div><pre class="term-out"><span class="prompt">$ python lesson5.py</span>
+PLAN:
+1. Find a cake for 10 at Sweet Spot
+2. Find snacks for 10
+3. Add up the cost
+(a plan with 3 steps)
+ACT: shop(cake for 10 at Sweet Spot)
+LOOK: Error: Sweet Spot is closed today (done 0 of 3)
+THINK: Step 1 failed. A new plan.
+PLAN:
+1. Find a cake for 10 at Cake House
+2. Find snacks for 10
+3. Add up the cost
+(a plan with 3 steps)
+ACT: shop(cake for 10 at Cake House)
+LOOK: ₹1800 (done 1 of 3)
+ACT: shop(snacks for 10)
+LOOK: ₹1500 (done 2 of 3)
+ACT: calculator(1800 + 1500)
+LOOK: 3300 (done 3 of 3)
+ANSWER: A Cake House cake and snacks: ₹3300 in all, under ₹5000.
+A Cake House cake and snacks: ₹3300 in all, under ₹5000.</pre></div>
+      </div>
+      <p class="run-links">
+        <a class="btn primary" href="https://colab.research.google.com/github/mo-ri-ch/agentic-ai/blob/main/notebooks/lesson5.ipynb" target="_blank" rel="noopener">▶ Run it in Google Colab</a>
+      </p>
+      <p class="muted-note">The notebook has all of this, then the same with the real LLM from Lesson 3. Its first run downloads the model (about 3 GB).</p>
+      <p class="hook">Quick check: did it all make sense?</p>
+    </section>
+
+    <!-- 6 -->
+    <section class="part" data-title="Lesson test">
+      <h2>Lesson 5 test</h2>
+      <p class="say">5 questions, one for each idea in this lesson. Answer them all right to pass. A wrong answer tells you why, and which page to look at again.</p>
+      <div class="test" data-test="6">
+        <div class="quiz" data-page="lesson5.html#1" data-topic="Make a plan first" data-right="Right. Written steps mean nothing gets forgotten.">
+          <div class="q"><small>1. Why</small>Why does the LLM write a plan before acting on a big goal?</div>
+          <div class="options">
+            <button data-why="A plan is one extra write, so it isn't faster to write. It saves wandering later.">To use fewer words</button>
+            <button data-right>So no step gets forgotten</button>
+            <button data-why="The program still runs every tool. The plan only lists the steps.">So the program can skip tools</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson5.html#2" data-topic="Tick off the steps" data-right="Right. 1 plan + 2 rounds + 1 = 4 writes.">
+          <div class="q"><small>2. Count</small>A <b>2</b>-step plan, one tool per step, nothing fails. How many times does the LLM write?</div>
+          <div class="options">
+            <button data-why="Don't forget the plan itself is a write.">3</button>
+            <button data-right>4</button>
+            <button data-why="The LOOK: lines come from the program, not the LLM.">6</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson5.html#4" data-topic="When a step fails, plan again" data-right="Right. It reads the error and writes a new plan.">
+          <div class="q"><small>3. Predict</small>Step 1 says “buy a cake at Sweet Spot”. The <code>LOOK:</code> line says the shop is closed. What does the LLM write next?</div>
+          <div class="options">
+            <button data-why="An error doesn't end the loop. Only ANSWER: or the step limit do.">ANSWER: Sorry, no cake</button>
+            <button data-right>A new PLAN:, with another shop</button>
+            <button data-why="Asking again won't open the shop. It needs a different step.">The same ACT: line again</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson5.html#5" data-topic="Steps the right size" data-right="Right. One shop lookup: one tool use.">
+          <div class="q"><small>4. Apply</small>Which step is the right size?</div>
+          <div class="options">
+            <button data-why="That's the whole goal, not a step.">Plan the whole party</button>
+            <button data-right>Find a cake's price at Cake House</button>
+            <button data-why="No tool can do that. Split it into real steps.">Make the party great</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+        <div class="quiz" data-page="lesson5.html#7" data-topic="The code" data-right="Right. It keeps the words after each “1.”, “2.”, …">
+          <div class="q"><small>5. Code</small>What does <code>read_plan</code> find in the LLM's reply?</div>
+          <div class="options">
+            <button data-why="It looks for numbered lines, not ACT: lines.">The ACT: lines</button>
+            <button data-right>The numbered lines: the steps</button>
+            <button data-why="It doesn't count words. It finds the plan's steps.">How many words there are</button>
+          </div>
+          <div class="feedback"></div>
+        </div>
+      </div>
+      <p class="hook">What your agent still does all alone.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="part" data-title="All by itself">
+      <h2>All by itself</h2>
+      <p class="say">Your agent plans, acts, remembers. But it does every job itself: finding facts, writing, checking its own work.</p>
+      <p class="agent-say">I'm doing everything. Could I get some help?</p>
+      <div class="open-question">
+        <div>This leaves a question</div>
+        <div class="big">One agent does everything. Could a team do better?</div>
+        <div><a href="lesson6.html">Lesson 6 answers it.</a></div>
+      </div>
+      <p><button class="done-toggle" data-done="6">Mark lesson as done</button></p>
+    </section>
+  </main>
+</div>
+
+<nav class="pagebar" aria-label="Move between parts">
+  <div class="inner">
+    <button data-page-back>← Previous</button>
+    <span data-page-label></span>
+    <button class="primary" data-page-next>Next →</button>
+  </div>
+</nav>
+
+<script src="../assets/course.js"></script>
+<script src="../assets/practice.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/common.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/pen.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/guide.js"></script>
+<script src="https://mo-ri-ch.github.io/study-notebook-design/v1/codewalk.js"></script>
+<script>
+const { esc, line } = AG;
+const GOAL = ["you", "Order a cake and snacks for 10 people, under ₹5000."];
+const PLAN_OK = "PLAN: 1. Find a cake for 10 at Cake House  2. Find snacks for 10  3. Add up the cost";
+
+// Draw a plan as a checklist. steps: [text], state: { done, now, changed: Set }
+function drawPlan(ul, steps, done, changed = new Set()) {
+  ul.innerHTML = steps.map((s, i) => {
+    const cls = i < done ? "done" : (i === done ? "now" : "");
+    const mark = i < done ? "✓" : (i === done ? "→" : "○");
+    return `<li class="${cls}${changed.has(i) ? " changed" : ""}"><span>${mark}</span><span>${i + 1}. ${esc(s)}${changed.has(i) ? " (new)" : ""}</span></li>`;
+  }).join("");
+}
+
+// ---------- Part 1: just start, or plan first ----------
+(function planOrNot() {
+  const WAYS = {
+    none: [GOAL, ["llm", "THINK: A cake first."], ["llm", "ACT: shop(cake for 10 at Cake House)"], ["prog", "LOOK: ₹1800"], ["llm", "ANSWER: I found a cake for 10 people: ₹1800."]],
+    plan: [GOAL, ["llm", PLAN_OK], ["llm", "ACT: shop(cake for 10 at Cake House)"], ["prog", "LOOK: ₹1800"], ["llm", "ACT: shop(snacks for 10)"], ["prog", "LOOK: ₹1500"], ["llm", "ACT: calculator(1800 + 1500)"], ["prog", "LOOK: 3300"], ["llm", "ANSWER: A cake and snacks: ₹3300, under ₹5000."]],
+  };
+  const SAY = { none: ["✗ It stopped after the cake. It forgot the snacks.", false], plan: ["✓ Every step done: cake, snacks, total.", true] };
+  const box = document.querySelector("#p1Tx").closest(".activity"), tx = document.getElementById("p1Tx"), say = document.getElementById("p1Say");
+  function draw(w) {
+    tx.innerHTML = WAYS[w].map((l, i) => line(l, { isNew: w === "plan" && i === 1 })).join("");
+    say.textContent = SAY[w][0]; say.classList.toggle("good", SAY[w][1]);
+  }
+  const set = AG.modes(box, "way", draw);
+  addReset(tx, () => { set("none"); draw("none"); });
+  draw("none");
+})();
+
+// ---------- Part 2: tick off the steps ----------
+(function tickOff() {
+  const STEPS_TEXT = ["Find a cake for 10 at Cake House", "Find snacks for 10", "Add up the cost"];
+  const ul = document.getElementById("p2Plan");
+  const steps = [
+    { add: [GOAL], say: "The goal. Press Next step.", plan: null },
+    { add: [["llm", PLAN_OK]], say: "Write 1: the plan. Nothing done yet.", plan: 0 },
+    { add: [["llm", "ACT: shop(cake for 10 at Cake House)"], ["prog", "LOOK: ₹1800"]], say: "Write 2, round 1: step 1 done.", plan: 1 },
+    { add: [["llm", "ACT: shop(snacks for 10)"], ["prog", "LOOK: ₹1500"]], say: "Write 3, round 2: step 2 done.", plan: 2 },
+    { add: [["llm", "ACT: calculator(1800 + 1500)"], ["prog", "LOOK: 3300"]], say: "Write 4, round 3: step 3 done.", plan: 3 },
+    { add: [["llm", "ANSWER: A cake and snacks: ₹3300, under ₹5000."]], say: "Write 5: the answer. 1 plan + 3 rounds + 1 = 5 writes.", plan: 3 },
+  ];
+  AG.stepper({
+    tx: document.getElementById("p2Tx"), say: document.getElementById("p2Say"),
+    next: document.getElementById("p2Next"), back: document.getElementById("p2Back"), again: document.getElementById("p2Again"),
+    steps, onStep: (i, s) => { if (s.plan === null) ul.innerHTML = '<li><span>○</span><span>No plan yet.</span></li>'; else drawPlan(ul, STEPS_TEXT, s.plan); },
+  });
+})();
+
+// ---------- Part 3: a step fails, a new plan (lines from the real Python run) ----------
+(function replan() {
+  const OLD = ["Find a cake for 10 at Sweet Spot", "Find snacks for 10", "Add up the cost"];
+  const NEW = ["Find a cake for 10 at Cake House", "Find snacks for 10", "Add up the cost"];
+  const ul = document.getElementById("p4Plan");
+  const steps = [
+    { add: [GOAL], say: "The goal. Press Next step.", plan: null },
+    { add: [["llm", "PLAN: 1. Find a cake for 10 at Sweet Spot  2. Find snacks for 10  3. Add up the cost"]], say: "Plan 1.", plan: [OLD, 0] },
+    { add: [["llm", "ACT: shop(cake for 10 at Sweet Spot)"], ["prog", "LOOK: Error: Sweet Spot is closed today"]], say: "Round 1: step 1 fails. The shop is closed.", plan: [OLD, 0] },
+    { add: [["llm", "THINK: Step 1 failed. A new plan."], ["llm", "PLAN: 1. Find a cake for 10 at Cake House  2. Find snacks for 10  3. Add up the cost"]], say: "Plan 2: a different shop for step 1. Counting starts again.", plan: [NEW, 0, true] },
+    { add: [["llm", "ACT: shop(cake for 10 at Cake House)"], ["prog", "LOOK: ₹1800"]], say: "Round 2: step 1 done.", plan: [NEW, 1, true] },
+    { add: [["llm", "ACT: shop(snacks for 10)"], ["prog", "LOOK: ₹1500"]], say: "Round 3: step 2 done.", plan: [NEW, 2, true] },
+    { add: [["llm", "ACT: calculator(1800 + 1500)"], ["prog", "LOOK: 3300"]], say: "Round 4: step 3 done.", plan: [NEW, 3, true] },
+    { add: [["llm", "ANSWER: A Cake House cake and snacks: ₹3300 in all, under ₹5000."]], say: "The answer. 2 plans + 4 rounds + 1 = 7 writes.", plan: [NEW, 3, true] },
+  ];
+  AG.stepper({
+    tx: document.getElementById("p4Tx"), say: document.getElementById("p4Say"),
+    next: document.getElementById("p4Next"), back: document.getElementById("p4Back"), again: document.getElementById("p4Again"),
+    steps, onStep: (i, s) => {
+      if (!s.plan) { ul.innerHTML = '<li><span>○</span><span>No plan yet.</span></li>'; return; }
+      drawPlan(ul, s.plan[0], s.plan[1], s.plan[2] ? new Set([0]) : new Set());
+    },
+  });
+})();
+
+// ---------- Part 4: one tool use, or too big? ----------
+(function sortSteps() {
+  const STEPS = [
+    ["Find a cake's price at Cake House", "one", "One shop lookup."],
+    ["Sort out all the food", "big", "Which food? Many lookups. Split it."],
+    ["Add up the cost", "one", "One calculator use."],
+    ["Make the party great", "big", "No tool can do that. Split it into real steps."],
+    ["Check Saturday's weather", "one", "One weather lookup."],
+    ["Plan the whole party", "big", "That's the goal itself, not a step."],
+  ];
+  const rows = document.getElementById("p5Rows"), say = document.getElementById("p5Say");
+  const check = document.getElementById("p5Check"), again = document.getElementById("p5Again");
+  let choice = {}, checked = false;
+  function draw() {
+    rows.innerHTML = STEPS.map(([t, kind, why], i) => {
+      const cls = checked ? (choice[i] === kind ? " right" : " wrong") : "";
+      const b = (k, label) => `<button type="button" data-i="${i}" data-k="${k}" class="${choice[i] === k ? "on" : ""}" aria-pressed="${choice[i] === k}">${label}</button>`;
+      return `<div class="sortrow two${cls}"><span>${esc(t)}</span><span class="seg">${b("one", "🔧 one tool")}${b("big", "🧱 too big")}</span>${checked ? `<span class="why">${choice[i] === kind ? "✓" : "✗"} ${why}</span>` : ""}</div>`;
+    }).join("");
+    rows.querySelectorAll("button").forEach(b => b.onclick = () => { if (checked) return; choice[b.dataset.i] = b.dataset.k; draw(); });
+    check.hidden = checked || Object.keys(choice).length < STEPS.length;
+    again.hidden = !checked;
+  }
+  check.onclick = () => {
+    checked = true;
+    const n = STEPS.filter(([, kind], i) => choice[i] === kind).length;
+    say.classList.toggle("good", n === STEPS.length);
+    say.textContent = n === STEPS.length ? "✓ All 6 right." : `${n} of 6 right. Read the note under each step.`;
+    say.hidden = false; draw();
+  };
+  const restart = () => { choice = {}; checked = false; say.hidden = true; draw(); };
+  again.onclick = restart;
+  addReset(rows, restart);
+  draw();
+})();
+</script>
+</body>
+</html>

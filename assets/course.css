@@ -113,3 +113,22 @@ pre.mapcode code .cl.dim { opacity: 0.45; }
 .tryrow input { font: inherit; width: 11em; padding: 4px 8px; border: 2px solid var(--ink); border-radius: var(--radius, 8px); background: var(--paper); color: var(--ink); }
 .tryrow input.wide { width: min(100%, 24em); }
 .tx .ln.cut .txt { text-decoration: line-through; opacity: 0.5; }
+.who.a-orange { background: var(--note-orange); }
+.who.a-pink { background: var(--note-pink); }
+.checklist { list-style: none; padding: 0; margin: 0 0 10px; display: grid; gap: 4px; font-size: 0.95rem; }
+.checklist li { display: grid; grid-template-columns: 1.6em 1fr; align-items: baseline; }
+.checklist li.done { color: var(--pencil); text-decoration: line-through; }
+.checklist li.now { font-weight: 700; }
+.checklist li.changed:not(.done) { color: var(--redpen); }
+.meter { display: grid; grid-template-columns: 5em 1fr 7.5em; gap: 10px; align-items: center; font-size: 0.92rem; margin: 4px 0; }
+.meter .track { height: 16px; border: 1px solid var(--rule); border-radius: 3px; background: var(--paper); overflow: hidden; }
+.meter .fill { display: block; height: 100%; background: var(--hl-yellow); transition: width .3s; }
+.meter .fill.over { background: var(--hl-pink); }
+.meter .v { text-align: right; font-family: var(--mono); font-size: 0.85rem; }
+@media (prefers-reduced-motion: reduce) { .meter .fill { transition: none; } }
+.ask-box { margin: 10px 0 0; padding: 10px 12px; border: 2px dashed var(--ink); border-radius: 8px; background: var(--card); }
+.ask-box .q { font-family: var(--mono); font-size: 0.9rem; margin-bottom: 8px; }
+.tx .ln.faded { opacity: 0.3; }
+.tx .ln.danger .txt { background: color-mix(in srgb, var(--hl-pink) 55%, transparent); border-radius: 3px; padding: 0 3px; }
+.sortrow.two { grid-template-columns: 1fr auto; }
+@media (max-width: 520px) { .sortrow.two { grid-template-columns: 1fr; } }

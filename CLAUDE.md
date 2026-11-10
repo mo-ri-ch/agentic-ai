@@ -12,7 +12,8 @@
 - Activities that show an agent before Lesson 3 are illustrations; say so where it matters.
 - Check pages with `python3 ../build-an-llm-from-scratch/tools/check_pages.py` (run from this repo) before pushing.
 - Code lessons: code/lessonN.py is the source for the "The code" page, its terminal output, the Step through
-  trace and the Colab notebook. After changing it: run it, paste its output into the page, then
+  trace and the Colab notebook. After changing it: `python3 tools/fill_code.py N` (puts the code and its real output into the page), then
   `python3 tools/make_traces.py code/lessonN.py` and `python3 tools/make_notebooks.py`.
   code/lessonN_real.py (real LLM) only goes into the notebook. Line explanations live in tools/explanations.py.
-- Lesson 3's real model (Qwen2.5 1.5B in Colab) has not been run by Claude: check it in Colab after changes.
+- The real-model parts (code/lessonN_real.py, Qwen2.5 1.5B in Colab) have not been run by Claude: check them in Colab after changes.
+- Lessons 4–8 use the shared helpers in assets/course.js (AG.line, AG.stepper, AG.modes, AG.chips).

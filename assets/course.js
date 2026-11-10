@@ -16,19 +16,19 @@ const COURSE_LESSONS = [
   { n: 4, label: "3", step: "build it", title: "Build the loop", file: "lesson3.html", ready: true, test: 9,
     summary: "Write your own agent in about 50 lines of Python. No framework.",
     leaves: "Your agent forgets everything when the task ends. How can it remember?" },
-  { n: 5, label: "4", step: "memory", title: "Memory", file: "lesson4.html", ready: false,
+  { n: 5, label: "4", step: "memory", title: "Memory", file: "lesson4.html", ready: true, test: 8,
     summary: "What the agent keeps in mind during a task, and what it saves for later.",
     leaves: "Big goals need many steps. How does an agent plan them?" },
-  { n: 6, label: "5", step: "planning", title: "Planning", file: "lesson5.html", ready: false,
+  { n: 6, label: "5", step: "planning", title: "Planning", file: "lesson5.html", ready: true, test: 8,
     summary: "Split a big goal into small steps, and fix the plan when a step fails.",
     leaves: "One agent does everything. Could a team do better?" },
-  { n: 7, label: "6", step: "teams", title: "Teams of agents", file: "lesson6.html", ready: false,
+  { n: 7, label: "6", step: "teams", title: "Teams of agents", file: "lesson6.html", ready: true, test: 8,
     summary: "A planner, a worker and a checker, each with one job.",
     leaves: "Agents now act on their own. How do we keep them safe?" },
-  { n: 8, label: "7", step: "safety", title: "Keeping agents safe", file: "lesson7.html", ready: false,
+  { n: 8, label: "7", step: "safety", title: "Keeping agents safe", file: "lesson7.html", ready: true, test: 8,
     summary: "Limits, mistakes, and asking a human before anything risky.",
     leaves: "You know every piece now. What will your agent do?" },
-  { n: 9, label: "8", step: "your agent", title: "Your agent project", file: "lesson8.html", ready: false,
+  { n: 9, label: "8", step: "your agent", title: "Your agent project", file: "lesson8.html", ready: true, test: 7,
     summary: "Build an agent that does a real job, from start to finish.",
     leaves: null },
 ];
@@ -67,6 +67,65 @@ function drawBars(el, rows, picked) {
       <span>${w}</span><span class="track"><span class="fill" style="width:${p}%"></span></span><span class="pct">${p}%</span>
     </div>`).join("");
 }
+
+
+// ---------- Shared helpers for activities (Lessons 4 on). Everything lives under AG, so lesson scripts can't clash. ----------
+window.AG = (function () {
+  const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  // Who wrote a line: the tag's colour class and its label
+  const WHO = {
+    you: ["you", "you"], llm: ["llm", "LLM"], prog: ["prog", "program"], human: ["you", "person"],
+    manager: ["llm", "manager"], researcher: ["a-orange", "researcher"], writer: ["a-pink", "writer"], checker: ["prog", "checker"],
+    notes: ["you", "notes"], summary: ["a-orange", "summary"],
+  };
+  // One transcript line. who: a key of WHO. opts: { isNew, cls, html (text is already HTML) }
+  function line([who, text], opts = {}) {
+    const [cls, label] = WHO[who] || ["llm", who];
+    const body = opts.html ? text : esc(text);
+    return `<div class="ln${opts.isNew ? " new" : ""}${opts.cls ? " " + opts.cls : ""}"><span class="who ${cls}">${label}</span><span class="txt">${body}</span></div>`;
+  }
+  // A step-through: each step adds lines and says one sentence. Buttons: next (required), back, again, play.
+  function stepper({ tx, say, next, back, again, play, steps, onStep }) {
+    let at = 0, timer = null;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function draw() {
+      let html = "";
+      steps.slice(0, at + 1).forEach((s, i) => (s.add || []).forEach(l => html += line(l, { isNew: i === at && at > 0 })));
+      tx.innerHTML = html;
+      if (say) say.textContent = steps[at].say || "";
+      const end = at === steps.length - 1;
+      next.hidden = end;
+      if (back) back.hidden = at === 0 || end;
+      if (again) again.hidden = !end;
+      if (play) { play.hidden = end; play.textContent = timer ? "⏸ Pause" : "▶ Play"; }
+      if (onStep) onStep(at, steps[at]);
+    }
+    const stop = () => { clearInterval(timer); timer = null; };
+    const step = () => { at = Math.min(steps.length - 1, at + 1); if (at === steps.length - 1) stop(); draw(); };
+    next.onclick = () => { stop(); step(); };
+    if (back) back.onclick = () => { stop(); at = Math.max(0, at - 1); draw(); };
+    if (play) play.onclick = () => { if (timer) { stop(); draw(); return; } timer = setInterval(step, reduce ? 500 : 1400); step(); };
+    const restart = () => { stop(); at = 0; draw(); };
+    if (again) again.onclick = restart;
+    addReset(next, restart);
+    draw();
+    return { restart, go: i => { stop(); at = i; draw(); } };
+  }
+  // A two- or three-way switch: buttons with class "mode" and data-<attr>
+  function modes(box, attr, onChange) {
+    const btns = box.querySelectorAll(`.mode[data-${attr}]`);
+    const set = v => btns.forEach(x => { const on = x.dataset[attr] === v; x.classList.toggle("on", on); x.setAttribute("aria-selected", on); });
+    btns.forEach(b => b.onclick = () => { set(b.dataset[attr]); onChange(b.dataset[attr]); });
+    return set;
+  }
+  // Make a row of choice chips; onPick(index)
+  function chips(box, labels, onPick) {
+    box.innerHTML = labels.map((l, i) => `<button type="button" class="chip" data-i="${i}">${esc(l)}</button>`).join("");
+    box.querySelectorAll(".chip").forEach(b => b.onclick = () => onPick(+b.dataset.i));
+    return i => box.querySelectorAll(".chip").forEach((c, j) => c.classList.toggle("on", j === i));
+  }
+  return { esc, line, stepper, modes, chips, WHO };
+})();
 
 window.COURSE = {
   id: "agentic-ai",                // prefix for everything saved in this browser (progress, notes). Never change it.
