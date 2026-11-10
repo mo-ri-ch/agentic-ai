@@ -70,17 +70,18 @@
         <div class="do">Step through. Watch the loop go round twice.</div>
         <div class="loopwrap">
           <div class="loop" aria-hidden="true">
-            <svg viewBox="0 0 210 210">
+            <svg viewBox="0 0 280 150">
               <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--pencil)"/></marker></defs>
-              <path class="arr" d="M142,28 Q172,36 172,90" marker-end="url(#ah)"/>
-              <path class="arr" d="M135,122 Q105,142 79,122" marker-end="url(#ah)"/>
-              <path class="arr" d="M38,94 Q36,38 66,28" marker-end="url(#ah)"/>
-              <g class="node" id="nThink"><rect x="70" y="10" width="70" height="34" rx="8"/><text x="105" y="27">💭 Think</text></g>
-              <g class="node" id="nAct"><rect x="135" y="96" width="70" height="34" rx="8"/><text x="170" y="113">🔧 Act</text></g>
-              <g class="node" id="nLook"><rect x="5" y="96" width="70" height="34" rx="8"/><text x="40" y="113">👀 Look</text></g>
-              <text class="round" id="nRound" x="140" y="76"></text>
-              <g class="node" id="nAnswer"><rect x="60" y="168" width="90" height="34" rx="8"/><text x="105" y="185">💬 Answer</text></g>
-              <path class="arr out" d="M105,46 L105,164" marker-end="url(#ah)"/>
+              <path class="arr" id="pTA" d="M151,32 Q190,40 190,96" marker-end="url(#ah)"/>
+              <path class="arr" id="pAL" d="M150,126 Q113,150 78,126" marker-end="url(#ah)"/>
+              <path class="arr" id="pLT" d="M36,98 Q34,38 73,28" marker-end="url(#ah)"/>
+              <path class="arr out" id="pTX" d="M152,22 L188,22" marker-end="url(#ah)"/>
+              <g class="node" id="nThink"><rect x="75" y="10" width="76" height="34" rx="8"/><text x="113" y="27">💭 Think</text></g>
+              <g class="node" id="nAct"><rect x="150" y="100" width="76" height="34" rx="8"/><text x="188" y="117">🔧 Act</text></g>
+              <g class="node" id="nLook"><rect x="2" y="100" width="76" height="34" rx="8"/><text x="40" y="117">👀 Look</text></g>
+              <g class="node" id="nAnswer"><rect x="190" y="5" width="88" height="34" rx="8"/><text x="234" y="22">💬 Answer</text></g>
+              <text class="round" id="nRound" x="113" y="80"></text>
+              <circle class="loop-dot" id="loopDot" r="6" cx="0" cy="0" hidden/>
             </svg>
           </div>
           <div>
@@ -305,8 +306,34 @@ const line = ([who, text], opts = {}) =>
   const tx = document.getElementById("p3Tx"), say = document.getElementById("p3Say"), roundLabel = document.getElementById("nRound");
   const next = document.getElementById("p3Next"), play = document.getElementById("p3Play");
   const back = document.getElementById("p3Back"), again = document.getElementById("p3Again");
-  let at = 0, timer = null;
+  let at = 0, timer = null, shown = 0, anim = null;
+  // The dot moves along the arrows between boxes. Routes: which arrows to follow from one box to the next.
+  const dot = document.getElementById("loopDot");
+  const ROUTE = { "nThink>nAct": ["pTA"], "nAct>nLook": ["pAL"], "nLook>nThink": ["pLT"], "nLook>nAnswer": ["pLT", "pTX"] };
+  const REST = { nThink: ["pLT", 1], nAct: ["pTA", 1], nLook: ["pAL", 1], nAnswer: ["pTX", 1] };
+  const P = id => document.getElementById(id);
+  const put = (path, t) => { if (!path) return; const L = path.getTotalLength(), pt = path.getPointAtLength(L * t); dot.setAttribute("cx", pt.x); dot.setAttribute("cy", pt.y); };
+  function moveDot(from, to) {
+    cancelAnimationFrame(anim);
+    document.querySelectorAll(".loop .arr").forEach(a => a.classList.remove("on"));
+    if (!to) { dot.setAttribute("hidden", ""); return; }
+    dot.removeAttribute("hidden");
+    let route = ROUTE[from + ">" + to], back = false;
+    if (!route && ROUTE[to + ">" + from]) { route = ROUTE[to + ">" + from].slice().reverse(); back = true; }
+    if (!route || reduceMotion) { const [id, t] = REST[to]; put(P(id), t); (route || []).forEach(id => P(id) && P(id).classList.add("on")); return; }
+    route.forEach(id => P(id) && P(id).classList.add("on"));
+    const per = 650, start = performance.now();
+    const frame = now => {
+      const k = Math.min(1, (now - start) / (per * route.length));
+      const leg = Math.min(route.length - 1, Math.floor(k * route.length));
+      let t = k * route.length - leg; t = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;   // ease in-out
+      put(P(route[leg]), back ? 1 - t : t);
+      if (k < 1) anim = requestAnimationFrame(frame); else { const [id, r] = REST[to]; put(P(id), r); }
+    };
+    anim = requestAnimationFrame(frame);
+  }
   function draw() {
+    moveDot(STEPS[shown].node, STEPS[at].node); shown = at;
     tx.innerHTML = STEPS.slice(0, at + 1).map((s, i) => line(s.add, { isNew: i === at && at > 0 })).join("");
     ["nThink", "nAct", "nLook", "nAnswer"].forEach(id => document.getElementById(id).classList.toggle("on", STEPS[at].node === id));
     roundLabel.textContent = STEPS[at].round && STEPS[at].node !== "nAnswer" ? `round ${STEPS[at].round}` : "";
