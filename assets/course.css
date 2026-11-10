@@ -132,3 +132,4 @@ pre.mapcode code .cl.dim { opacity: 0.45; }
 .tx .ln.danger .txt { background: color-mix(in srgb, var(--hl-pink) 55%, transparent); border-radius: 3px; padding: 0 3px; }
 .sortrow.two { grid-template-columns: 1fr auto; }
 @media (max-width: 520px) { .sortrow.two { grid-template-columns: 1fr; } }
+.tool-run.bad { border-left-color: var(--redpen); }
