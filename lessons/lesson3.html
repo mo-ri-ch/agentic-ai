@@ -175,12 +175,16 @@ When you know the answer, write: ANSWER: your answer</pre>
     <section class="part" data-title="A real LLM">
       <h2>A real LLM</h2>
       <div class="activity">
-        <div class="do">A real reply. Something's wrong with it. Cut it.</div>
+        <div class="do">A reply like the ones a real LLM writes. Tap the first line the program should throw away.</div>
         <div class="tx" id="p5Tx"></div>
-        <p class="redcheck" id="p5Say">The LLM kept writing after its ACT: line, and made up a LOOK: line itself.</p>
-        <div class="btnrow"><button class="primary" id="p5Cut">✂️ Cut at the ACT: line</button></div>
+        <p class="redcheck" id="p5Say" hidden></p>
+<pre id="p5Code" hidden><code>kept = []
+for line in reply.split("\n"):
+    kept.append(line)
+    if line.startswith("ACT:") or line.startswith("ANSWER:"):
+        break   # stop here</code></pre>
       </div>
-      <p class="say near" style="position:relative">Swap <code>fake_llm</code> for <code>real_llm</code> (it's in the Colab notebook). The loop stays the same. But a real LLM sometimes keeps going and makes up its own result. So the program keeps its reply only up to the first <code>ACT:</code> or <code>ANSWER:</code> line, and writes the real <code>LOOK:</code> itself.<button class="doubt" type="button" data-peek-from="smallPeek" aria-label="Which real LLM do we use?">🤔</button></p>
+      <p class="say near" style="position:relative">Swap <code>fake_llm</code> for <code>real_llm</code> (it's in the Colab notebook). The loop stays the same. But a real LLM sometimes keeps going and makes up its own result. So the program keeps its reply only up to the first <code>ACT:</code> or <code>ANSWER:</code> line, and writes the real <code>LOOK:</code> itself.<br><b class="eqbox">keep the reply up to the first ACT: or ANSWER: line</b><button class="doubt" type="button" data-peek-from="smallPeek" aria-label="Which real LLM do we use?">🤔</button></p>
       <div hidden id="smallPeek"><b>🤔 Which real LLM do we use?</b>
         <div style="margin-top:6px">A small, free model, Qwen2.5 1.5B, that runs inside Colab. No account or key needed. Small models make more mistakes than big ones, so expect the odd error. Errors go back on <code>LOOK:</code> lines, so it can often fix them.</div>
       </div>
@@ -494,7 +498,7 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
   show();
 })();
 
-// ---------- Part 5: cut a real reply at its ACT: line ----------
+// ---------- Part 5: tap where a real reply should be cut ----------
 (function cutReply() {
   const RAW = [
     "THINK: I need today's weather in Kochi.",
@@ -502,19 +506,31 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
     "LOOK: 31°C, cloudy",
     "ANSWER: It's 31°C and cloudy in Kochi.",
   ];
-  const tx = document.getElementById("p5Tx"), say = document.getElementById("p5Say"), cut = document.getElementById("p5Cut");
-  function draw(isCut) {
-    const end = RAW.findIndex(l => l.startsWith("ACT:") || l.startsWith("ANSWER:"));
-    tx.innerHTML = RAW.map((l, i) => line(["llm", l], isCut && i > end ? "cut" : (i > end ? "new" : ""))).join("");
-    say.classList.toggle("good", isCut);
-    say.textContent = isCut
-      ? "✓ Kept up to the ACT: line. The program runs the real weather tool and writes the real LOOK: 29°C, sunny."
-      : "The LLM kept writing after its ACT: line, and made up a LOOK: line itself. Its weather is wrong.";
-    cut.hidden = isCut;
+  const WHY = [
+    "Keep THINK: it's the LLM's own thinking, before it picks a tool.",
+    "Keep the ACT: line: it tells the program which tool to run. The cut comes after it.",
+    "",
+    "Close, but the LOOK: line before it is made up too. The program writes LOOK: lines, not the LLM.",
+  ];
+  const tx = document.getElementById("p5Tx"), say = document.getElementById("p5Say"), code = document.getElementById("p5Code");
+  function draw() {
+    tx.innerHTML = RAW.map((l, i) => `<button class="ln" type="button" data-i="${i}"><span class="who llm">${WHO.llm}</span><span class="txt">${esc(l)}</span></button>`).join("");
+    tx.querySelectorAll("button.ln").forEach(b => b.onclick = () => pick(+b.dataset.i));
+    say.hidden = true; say.classList.remove("good"); code.hidden = true;
   }
-  cut.onclick = () => draw(true);
-  addReset(tx, () => draw(false));
-  draw(false);
+  function pick(i) {
+    tx.querySelectorAll("button.ln").forEach(b => b.classList.remove("wrong"));
+    if (i !== 2) {
+      tx.querySelector(`[data-i="${i}"]`).classList.add("wrong");
+      say.textContent = WHY[i]; say.hidden = false; return;
+    }
+    tx.innerHTML = RAW.map((l, k) => line(["llm", l], k >= 2 ? "cut just-cut" : "")).join("") + line(["prog", "LOOK: 29°C, sunny"], "new");
+    say.classList.add("good");
+    say.textContent = "✓ Right. The program runs the real tool and writes the real LOOK: line. This code makes the cut:";
+    say.hidden = false; code.hidden = false;
+  }
+  addReset(tx, draw);
+  draw();
 })();
 </script>
 </body>
