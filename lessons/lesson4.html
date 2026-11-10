@@ -349,7 +349,7 @@ const { esc, line } = AG;
   const box = document.querySelector("#m2Tx").closest(".activity");
   const tx = document.getElementById("m2Tx"), range = document.getElementById("m2Rounds"), n = document.getElementById("m2N");
   const fill = document.getElementById("m2Fill"), v = document.getElementById("m2V"), say = document.getElementById("m2Say");
-  let mode = "front";
+  let mode = "front", wasCut = new Set();
   function draw() {
     const rounds = +range.value; n.textContent = rounds;
     const blocks = START.map(([w, t, words]) => ({ w, t, words, start: true }));
@@ -361,7 +361,9 @@ const { esc, line } = AG;
     const cut = new Set();
     for (const i of order) { if (over <= 0) break; cut.add(i); over -= blocks[i].words; }
     const kept = blocks.filter((b, i) => !cut.has(i)).reduce((a, b) => a + b.words, 0);
-    tx.innerHTML = blocks.map((b, i) => line([b.w, `${b.t} (${b.words} words)`], { cls: cut.has(i) ? "faded cut" : "" })).join("");
+    const key = i => blocks[i].t;
+    tx.innerHTML = blocks.map((b, i) => line([b.w, `${b.t} (${b.words} words)`], { cls: cut.has(i) ? "faded cut" + (wasCut.has(key(i)) ? "" : " just-cut") : "", isNew: !cut.has(i) && b.t.startsWith("Round " + rounds + ":") && rounds > 1 })).join("");
+    wasCut = new Set([...cut].map(key));
     fill.style.width = Math.min(100, kept / LIMIT * 100) + "%";
     v.textContent = `${kept} / ${LIMIT}`;
     say.classList.toggle("good", total <= LIMIT || mode === "keep");
@@ -371,7 +373,7 @@ const { esc, line } = AG;
   }
   const setMode = AG.modes(box, "cut", m => { mode = m; draw(); });
   range.oninput = draw;
-  addReset(tx, () => { mode = "front"; setMode("front"); range.value = 3; draw(); });
+  addReset(tx, () => { mode = "front"; setMode("front"); range.value = 3; wasCut = new Set(); draw(); });
   draw();
 })();
 
@@ -396,7 +398,12 @@ const { esc, line } = AG;
     next.innerHTML = `The LLM's next write: <b>ACT: calculator(60 + 120 + 180)</b>` + (done ? " — the same as before." : "");
     go.hidden = done;
   }
-  go.onclick = () => draw(true);
+  go.onclick = () => {
+    go.hidden = true;
+    if (AG.reduceMotion) { draw(true); return; }
+    tx.querySelectorAll(".ln").forEach((l, i) => { if (i > 0) l.classList.add("folding"); });
+    setTimeout(() => draw(true), 450);
+  };
   addReset(tx, () => draw(false));
   draw(false);
 })();

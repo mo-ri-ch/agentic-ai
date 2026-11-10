@@ -49,8 +49,13 @@
       <h2>A manager hands out work</h2>
       <div class="activity">
         <div class="do"><span data-peek="The lines come from a real run of this lesson's Python code, with fake LLMs.">Step through.</span> Watch the manager ask for help.</div>
-        <div class="tx" id="t2Tx"></div>
-        <div class="count" id="t2Say" style="margin-top:8px"></div>
+        <div class="loopwrap">
+          <div class="team" id="t2Team" aria-hidden="true"></div>
+          <div>
+            <div class="tx" id="t2Tx"></div>
+            <div class="count" id="t2Say" style="margin-top:8px"></div>
+          </div>
+        </div>
         <div class="btnrow">
           <button class="primary" id="t2Next">Next step →</button>
           <button id="t2Back" hidden>← Back</button>
@@ -93,8 +98,13 @@
       <h2>A checker catches mistakes</h2>
       <div class="activity">
         <div class="do">Step through. The draft has a mistake.</div>
-        <div class="tx" id="t4Tx"></div>
-        <div class="count" id="t4Say" style="margin-top:8px"></div>
+        <div class="loopwrap">
+          <div class="team" id="t4Team" aria-hidden="true"></div>
+          <div>
+            <div class="tx" id="t4Tx"></div>
+            <div class="count" id="t4Say" style="margin-top:8px"></div>
+          </div>
+        </div>
         <div class="btnrow">
           <button class="primary" id="t4Next">Next step →</button>
           <button id="t4Back" hidden>← Back</button>
@@ -359,18 +369,47 @@ const DRAFT2 = "Cherai Beach is the best beach near Kochi: calm, and only 25 km 
   draw();
 })();
 
+// ---------- The team picture: manager on top, three workers below. A dot carries the work down and the answer back up. ----------
+function team(boxId) {
+  const box = document.getElementById(boxId);
+  box.innerHTML = `<svg viewBox="0 0 280 130">
+    <path class="arr" data-to="researcher" d="M140,40 L45,92"/>
+    <path class="arr" data-to="writer" d="M140,40 L140,92"/>
+    <path class="arr" data-to="checker" d="M140,40 L235,92"/>
+    <g class="node" data-n="manager"><rect x="95" y="6" width="90" height="34" rx="8"/><text x="140" y="23">🧭 manager</text></g>
+    <g class="node" data-n="researcher"><rect x="2" y="92" width="86" height="34" rx="8"/><text x="45" y="109">🔎 researcher</text></g>
+    <g class="node" data-n="writer"><rect x="97" y="92" width="86" height="34" rx="8"/><text x="140" y="109">✍️ writer</text></g>
+    <g class="node" data-n="checker"><rect x="192" y="92" width="86" height="34" rx="8"/><text x="235" y="109">✅ checker</text></g>
+    <circle class="loop-dot" r="6" cx="140" cy="40"/>
+  </svg>`;
+  const dot = box.querySelector("circle"), path = w => box.querySelector(`.arr[data-to="${w}"]`);
+  let cancel = () => {};
+  // s.on: which box glows. s.go: [worker, "down" | "up" | "downup"]. Going backwards just jumps.
+  return (s, forward) => {
+    cancel();
+    box.querySelectorAll(".node").forEach(n => n.classList.toggle("on", n.dataset.n === s.on));
+    box.querySelectorAll(".arr").forEach(a => a.classList.toggle("on", !!s.go && a.dataset.to === s.go[0]));
+    if (!s.go) { AG.putDot(dot, path("writer"), s.on && s.on !== "manager" ? 1 : 0); if (s.on && s.on !== "manager") AG.putDot(dot, path(s.on), 1); return; }
+    const [w, dir] = s.go, p = path(w);
+    const legs = dir === "down" ? [[p, false]] : dir === "up" ? [[p, true]] : [[p, false], [p, true]];
+    if (forward) cancel = AG.travel(dot, legs);
+    else AG.putDot(dot, p, dir === "down" ? 1 : 0);
+  };
+}
+
 // ---------- Part 2: the manager asks the researcher and the writer (from the real run) ----------
 AG.stepper({
   tx: document.getElementById("t2Tx"), say: document.getElementById("t2Say"),
   next: document.getElementById("t2Next"), back: document.getElementById("t2Back"), again: document.getElementById("t2Again"),
+  onStep: (() => { const pic = team("t2Team"); return (i, s, prev) => pic(s, i > prev); })(),
   steps: [
-    { add: [JOB], say: "The manager gets the job. Press Next step." },
-    { add: [["manager", "ACT: ask_researcher(Find the best beach near Kochi)"]], say: "Round 1: the manager asks the researcher, like any tool." },
-    { add: [["researcher", "ACT: search(beaches near Kochi) … ANSWER: Cherai Beach is best: calm water, 25 km from Kochi."]], say: "The researcher runs its own loop: a search, then its answer." },
-    { add: [["prog", "LOOK: Cherai Beach is best: calm water, 25 km from Kochi."]], say: "The researcher's answer comes back to the manager on a LOOK: line." },
-    { add: [["manager", "ACT: ask_writer(Write one sentence: Cherai Beach, calm water, 25 km from Kochi)"]], say: "Round 2: the manager asks the writer." },
-    { add: [["writer", "ANSWER: " + DRAFT1]], say: "The writer runs its own loop: no tools, it just writes." },
-    { add: [["prog", "LOOK: " + DRAFT1]], say: "The draft comes back to the manager. Look closely at it…" },
+    { add: [JOB], say: "The manager gets the job. Press Next step.", on: "manager" },
+    { add: [["manager", "ACT: ask_researcher(Find the best beach near Kochi)"]], say: "Round 1: the manager asks the researcher, like any tool.", on: "researcher", go: ["researcher", "down"] },
+    { add: [["researcher", "ACT: search(beaches near Kochi) … ANSWER: Cherai Beach is best: calm water, 25 km from Kochi."]], say: "The researcher runs its own loop: a search, then its answer.", on: "researcher" },
+    { add: [["prog", "LOOK: Cherai Beach is best: calm water, 25 km from Kochi."]], say: "The researcher's answer comes back to the manager on a LOOK: line.", on: "manager", go: ["researcher", "up"] },
+    { add: [["manager", "ACT: ask_writer(Write one sentence: Cherai Beach, calm water, 25 km from Kochi)"]], say: "Round 2: the manager asks the writer.", on: "writer", go: ["writer", "down"] },
+    { add: [["writer", "ANSWER: " + DRAFT1]], say: "The writer runs its own loop: no tools, it just writes.", on: "writer" },
+    { add: [["prog", "LOOK: " + DRAFT1]], say: "The draft comes back to the manager. Look closely at it…", on: "manager", go: ["writer", "up"] },
   ],
 });
 
@@ -378,13 +417,14 @@ AG.stepper({
 AG.stepper({
   tx: document.getElementById("t4Tx"), say: document.getElementById("t4Say"),
   next: document.getElementById("t4Next"), back: document.getElementById("t4Back"), again: document.getElementById("t4Again"),
+  onStep: (() => { const pic = team("t4Team"); return (i, s, prev) => pic(s, i > prev); })(),
   steps: [
-    { add: [["writer", "ANSWER: …calm, and only 40 km away."]], say: "The writer's draft. Each worker's answer goes back to the manager on a LOOK: line, as before." },
-    { add: [["manager", "ACT: ask_checker(Facts: 25 km from Kochi. Draft: …only 40 km away.)"]], say: "Round 3: the manager asks the checker." },
-    { add: [["checker", "ANSWER: FIX: the facts say 25 km, not 40 km."]], say: "The checker catches the slip." },
-    { add: [["manager", "ACT: ask_writer(Fix it: the beach is 25 km away, not 40 km)"], ["writer", "ANSWER: …calm, and only 25 km away."]], say: "Round 4: the writer fixes it." },
-    { add: [["manager", "ACT: ask_checker(Facts: 25 km from Kochi. Draft: …only 25 km away.)"], ["checker", "ANSWER: OK"]], say: "Round 5: checked again. OK." },
-    { add: [["manager", "ANSWER: " + DRAFT2]], say: "The manager answers. 5 rounds: 6 writes for the manager, 6 for the workers, 12 in all." },
+    { add: [["writer", "ANSWER: …calm, and only 40 km away."]], say: "The writer's draft. Each worker's answer goes back to the manager on a LOOK: line, as before.", on: "manager" },
+    { add: [["manager", "ACT: ask_checker(Facts: 25 km from Kochi. Draft: …only 40 km away.)"]], say: "Round 3: the manager asks the checker.", on: "checker", go: ["checker", "down"] },
+    { add: [["checker", "ANSWER: FIX: the facts say 25 km, not 40 km."]], say: "The checker catches the slip, and sends FIX back.", on: "manager", go: ["checker", "up"] },
+    { add: [["manager", "ACT: ask_writer(Fix it: the beach is 25 km away, not 40 km)"], ["writer", "ANSWER: …calm, and only 25 km away."]], say: "Round 4: the writer fixes it, and sends it back.", on: "manager", go: ["writer", "downup"] },
+    { add: [["manager", "ACT: ask_checker(Facts: 25 km from Kochi. Draft: …only 25 km away.)"], ["checker", "ANSWER: OK"]], say: "Round 5: checked again. OK.", on: "manager", go: ["checker", "downup"] },
+    { add: [["manager", "ANSWER: " + DRAFT2]], say: "The manager answers. 5 rounds: 6 writes for the manager, 6 for the workers, 12 in all.", on: "manager" },
   ],
 });
 

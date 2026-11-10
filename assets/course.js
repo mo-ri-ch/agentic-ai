@@ -86,7 +86,7 @@ window.AG = (function () {
   }
   // A step-through: each step adds lines and says one sentence. Buttons: next (required), back, again, play.
   function stepper({ tx, say, next, back, again, play, steps, onStep }) {
-    let at = 0, timer = null;
+    let at = 0, timer = null, prev = 0;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     function draw() {
       let html = "";
@@ -98,7 +98,8 @@ window.AG = (function () {
       if (back) back.hidden = at === 0 || end;
       if (again) again.hidden = !end;
       if (play) { play.hidden = end; play.textContent = timer ? "⏸ Pause" : "▶ Play"; }
-      if (onStep) onStep(at, steps[at]);
+      if (onStep) onStep(at, steps[at], prev);
+      prev = at;
     }
     const stop = () => { clearInterval(timer); timer = null; };
     const step = () => { at = Math.min(steps.length - 1, at + 1); if (at === steps.length - 1) stop(); draw(); };
@@ -124,7 +125,29 @@ window.AG = (function () {
     box.querySelectorAll(".chip").forEach(b => b.onclick = () => onPick(+b.dataset.i));
     return i => box.querySelectorAll(".chip").forEach((c, j) => c.classList.toggle("on", j === i));
   }
-  return { esc, line, stepper, modes, chips, WHO };
+  // Move a dot along SVG paths, one leg after another. legs: [[pathEl, reverse?], …]. Reduced motion: jump to the end.
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function putDot(dot, path, t) { if (!dot || !path) return; const L = path.getTotalLength(), p = path.getPointAtLength(L * t); dot.setAttribute("cx", p.x); dot.setAttribute("cy", p.y); }
+  function travel(dot, legs, per = 600) {
+    if (!dot) return () => {};
+    legs = legs.filter(([p]) => p);
+    let raf = 0;
+    if (!legs.length) return () => {};
+    dot.removeAttribute("hidden");
+    const end = () => { const [p, r] = legs[legs.length - 1]; putDot(dot, p, r ? 0 : 1); };
+    if (reduceMotion) { end(); return () => {}; }
+    const start = performance.now();
+    const frame = now => {
+      const k = Math.min(1, (now - start) / (per * legs.length));
+      const i = Math.min(legs.length - 1, Math.floor(k * legs.length));
+      let t = k * legs.length - i; t = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      const [p, r] = legs[i]; putDot(dot, p, r ? 1 - t : t);
+      if (k < 1) raf = requestAnimationFrame(frame); else end();
+    };
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }
+  return { esc, line, stepper, modes, chips, WHO, travel, putDot, reduceMotion };
 })();
 
 window.COURSE = {

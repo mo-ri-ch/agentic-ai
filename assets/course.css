@@ -135,3 +135,31 @@ pre.mapcode code .cl.dim { opacity: 0.45; }
 .tool-run.bad { border-left-color: var(--redpen); }
 .loop .arr.on { stroke: var(--pen); stroke-width: 3; }
 .loop-dot { fill: var(--pen); stroke: var(--paper); stroke-width: 2; }
+
+/* Gentle motion: new lines slide in, ticks pop, cut lines fade. Off for reduced motion. */
+@keyframes ln-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@keyframes tick-pop { 0% { transform: scale(0.4); } 70% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.tx .ln.new { animation: ln-in .35s ease-out; }
+.checklist li.done span:first-child { display: inline-block; animation: tick-pop .35s ease-out; color: var(--good); }
+.tx .ln { transition: opacity .35s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .tx .ln.new, .checklist li.done span:first-child { animation: none; }
+  .tx .ln { transition: none; }
+}
+
+/* Team picture: a manager and three workers, with a dot carrying the work */
+.team svg { width: 100%; height: auto; overflow: visible; }
+.team .node rect { fill: var(--card); stroke: var(--ink); stroke-width: 2; }
+.team .node text { font-family: var(--head); font-size: 14px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+.team .node.on rect { fill: var(--hl-yellow); }
+.team .node.on text { fill: var(--on-hl); }
+.team .arr { fill: none; stroke: var(--pencil); stroke-width: 2; stroke-dasharray: 4 4; }
+.team .arr.on { stroke: var(--pen); stroke-width: 3; stroke-dasharray: none; }
+@keyframes cut-fade { from { opacity: 1; } to { opacity: 0.3; } }
+@keyframes fold-away { to { opacity: 0; transform: scaleY(0.6); max-height: 0; } }
+.tx .ln.just-cut { animation: cut-fade .45s ease-out; }
+.tx .ln.folding { animation: fold-away .45s ease-in forwards; transform-origin: top; overflow: hidden; max-height: 3em; }
+@media (prefers-reduced-motion: reduce) { .tx .ln.just-cut, .tx .ln.folding { animation: none; } }
+@keyframes word-in { from { opacity: 0; } to { opacity: 1; } }
+.written .new, .steps li.new { animation: word-in .35s ease-out; }
+@media (prefers-reduced-motion: reduce) { .written .new, .steps li.new { animation: none; } }
