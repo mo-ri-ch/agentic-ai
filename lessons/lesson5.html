@@ -159,7 +159,7 @@ def calculator(math):
     for ch in math:
         if ch not in "0123456789+-*/(). ":
             return "Error: the calculator only takes numbers and + - * / ( )"
-    if "**" in math:   # ** is power: 9 ** 999999 would never finish
+    if "**" in math:   <span class="c"># ** is power: 9 ** 999999 would never finish</span>
         return "Error: the calculator only takes numbers and + - * / ( )"
     try:
         return str(eval(math))
@@ -180,7 +180,7 @@ When you're done, write: ANSWER: your answer"""
 def read_plan(reply):
     steps = []
     for line in reply.split("\n"):
-        if line != "" and line[0] in "0123456789":   # not empty, starts with a number
+        if line != "" and line[0] in "0123456789":   <span class="c"># not empty, starts with a number</span>
             steps.append(line)
     return steps
 

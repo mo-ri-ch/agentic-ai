@@ -9,7 +9,14 @@ import html, re, subprocess, sys
 n = sys.argv[1]
 code = open(f"code/lesson{n}.py", encoding="utf-8").read().rstrip("\n")
 out = subprocess.run([sys.executable, "-I", f"code/lesson{n}.py"], capture_output=True, text=True, check=True).stdout.rstrip("\n")
-fmt = lambda l: f'<span class="c">{html.escape(l, quote=False)}</span>' if l.strip().startswith("#") else html.escape(l, quote=False)
+def fmt(l):
+    e = lambda t: html.escape(t, quote=False)
+    if l.strip().startswith("#"):
+        return f'<span class="c">{e(l)}</span>'
+    m = re.search(r"\s{2,}#", l)   # an inline comment: two or more spaces, then #
+    if m:
+        return e(l[:m.start()]) + l[m.start():m.end() - 1] + f'<span class="c">{e(l[m.end() - 1:])}</span>'
+    return e(l)
 block = "<pre><code>" + "\n".join(fmt(l) for l in code.split("\n")) + "</code></pre>"
 p = f"lessons/lesson{n}.html"
 s = open(p, encoding="utf-8").read()

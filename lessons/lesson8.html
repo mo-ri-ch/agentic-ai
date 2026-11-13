@@ -150,7 +150,7 @@ NOTES from earlier tasks:"""
 
 <span class="c"># 3. Safety: ask a person before anything that changes something</span>
 def ask_person(name, details):
-    answer = "y"   # in Colab: answer = input(f"Allow {name}({details})? y or n: ")
+    answer = "y"   <span class="c"># in Colab: answer = input(f"Allow {name}({details})? y or n: ")</span>
     print(f"  Ask the person: allow {name}({details})? {answer}")
     return answer == "y"
 
@@ -317,13 +317,13 @@ const { esc, line } = AG;
 (function pickJob() {
   const IDEAS = [
     { name: "Trip planner", job: "Plans a weekend away, and books it if the price is right.",
-      tools: [["weather(city)", "👀"], ["flight_price(city)", "👀"], ["book_flight(city)", "✍️ asks first"]],
+      tools: [["weather(city)", "👀 only looks"], ["flight_price(city)", "👀 only looks"], ["book_flight(city)", "✍️ asks first"]],
       memory: "Notes: places the person loves.", plan: "Weather → price → book.", safety: "Asks before booking. Budget ₹4." },
     { name: "Study buddy", job: "Quizzes you from your own notes, and tracks your scores.",
-      tools: [["read_notes(topic)", "👀"], ["save_score(topic, score)", "✍️ asks first"]],
+      tools: [["read_notes(topic)", "👀 only looks"], ["save_score(topic, score)", "✍️ asks first"]],
       memory: "Notes: topics you find hard.", plan: "Pick a topic → ask → score.", safety: "Only your notes: no web, no email." },
     { name: "Spending tracker", job: "Adds up what you spend, and warns you near your limit.",
-      tools: [["add_expense(item, amount)", "✍️ asks first"], ["calculator(math)", "👀"], ["monthly_total()", "👀"]],
+      tools: [["add_expense(item, amount)", "✍️ asks first"], ["calculator(math)", "👀 only looks"], ["monthly_total()", "👀 only looks"]],
       memory: "Notes: your monthly limit.", plan: "Add → total → compare.", safety: "Can't spend money: no payment tools at all." },
   ];
   const chips = document.getElementById("j1Chips"), card = document.getElementById("j1Card");

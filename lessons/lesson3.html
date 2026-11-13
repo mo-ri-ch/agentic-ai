@@ -275,7 +275,7 @@ def calculator(math):
     for ch in math:
         if ch not in "0123456789+-*/(). ":
             return "Error: the calculator only takes numbers and + - * / ( )"
-    if "**" in math:   # ** is power: 9 ** 999999 would never finish
+    if "**" in math:   <span class="c"># ** is power: 9 ** 999999 would never finish</span>
         return "Error: the calculator only takes numbers and + - * / ( )"
     try:
         return str(eval(math))

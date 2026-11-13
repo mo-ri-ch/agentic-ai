@@ -186,7 +186,7 @@ def run_agent(instructions, question, tools, llm, step_limit=6):
 <span class="c"># make_agent makes a new function for each agent and hands it back.</span>
 <span class="c"># That function remembers its own name, instructions, tools and replies.</span>
 def make_agent(name, instructions, tools, replies):
-    def fake_llm(text):        # this agent's fake LLM: hands back its next reply
+    def fake_llm(text):        <span class="c"># this agent's fake LLM: hands back its next reply</span>
         return replies.pop(0)
     def agent(task):
         print(f"  {name} gets: {task}")

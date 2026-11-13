@@ -53,7 +53,7 @@
         <div class="tx" id="m2Tx"></div>
         <p class="redcheck" id="m2Say"></p>
       </div>
-      <p class="say near" style="position:relative">An LLM can only read so much text at once: its <mark>context window</mark>. Here it's 300 words. 60 (tool list) + 10 (question) + 4 rounds × 50 = 270 fits. A 5th round makes 320: something must go. Keep the start, and drop the oldest rounds.<button class="doubt" type="button" data-peek-from="ctxPeek" aria-label="How big are real context windows?">🤔</button></p>
+      <p class="say near" style="position:relative">An LLM can only read so much text at once: its <mark>context window</mark>. Here it's 300 words. 60 (tool list) + 10 (question) + 4 rounds × 50 = 270 fits. A 5th round makes 320: something must go. Keep the start, and drop the oldest rounds.<br><b class="eqbox">text = start + rounds × words per round</b><button class="doubt" type="button" data-peek-from="ctxPeek" aria-label="How big are real context windows?">🤔</button></p>
       <div hidden id="ctxPeek"><b>🤔 How big are real context windows?</b>
         <div style="margin-top:6px">They're counted in tokens (pieces of words), not words. The small model in our Colab notebooks reads up to 32,768 tokens. Big models read hundreds of thousands. Long tasks can still fill them.</div>
       </div>
