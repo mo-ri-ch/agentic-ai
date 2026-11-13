@@ -181,3 +181,5 @@ pre.mapcode code .cl.dim { opacity: 0.45; }
 @media (max-width: 600px) { .tx { font-size: 0.82rem; padding: 6px 6px; } .tx .ln { grid-template-columns: 4.4em 1fr; gap: 6px; } }
 /* A whole round (LLM's THINK and ACT, and the program's LOOK) */
 .who.round { background: none; border: 1px solid var(--pencil); color: var(--pencil); }
+.keep-tag { font-family: var(--body); font-size: 0.75em; color: var(--good); margin-left: 6px; white-space: nowrap; }
+.keep-tag.no { color: var(--pencil); }

@@ -262,16 +262,15 @@ When you know the answer, write: ANSWER: your answer</pre>
         <div class="do">A reply like the ones a real LLM writes. Tap the first line the program should throw away.</div>
         <div class="tx" id="p5Tx"></div>
         <p class="redcheck" id="p5Say" hidden></p>
-<pre id="p5Code" hidden><code>kept = []
-<span class="c"># 1. split into lines</span>
-for line in reply.split("\n"):
-    <span class="c"># 2. keep this line</span>
-    kept.append(line)
-    <span class="c"># 3. at ACT: or ANSWER:, stop</span>
-    if line.startswith("ACT:") or line.startswith("ANSWER:"):
-        break
-<span class="c"># 4. join the kept lines</span>
-reply = "\n".join(kept)</code></pre>
+<div id="p5Cut" hidden>
+<pre class="mapcode"><code id="p5Code"></code></pre>
+          <div class="count" id="p5StepSay" style="margin-top:6px"></div>
+          <div class="btnrow">
+            <button class="primary" id="p5Next">Next step →</button>
+            <button id="p5Back" hidden>← Back</button>
+            <button id="p5Again" hidden>↺ Start again</button>
+          </div>
+        </div>
       </div>
       <p class="say near" style="position:relative">In code, <code>fake_llm</code> becomes <code>real_llm</code>, in the Colab notebook (Colab runs Python free in your browser). The loop stays the same. But an LLM guesses the next words, and in its text a <code>LOOK:</code> line always follows an <code>ACT:</code> line. So it sometimes guesses one. So the program keeps its reply only up to the first <code>ACT:</code> or <code>ANSWER:</code> line, and writes the real <code>LOOK:</code> itself.<br><b class="eqbox">keep the reply up to the first ACT: or ANSWER: line</b><button class="doubt" type="button" data-peek-from="smallPeek" aria-label="Which real LLM do we use?">🤔</button></p>
       <div hidden id="smallPeek"><b>🤔 Which real LLM do we use?</b>
@@ -633,7 +632,7 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
   show();
 })();
 
-// ---------- Part 5: tap where a real reply should be cut ----------
+// ---------- Part 5: tap where a real reply should be cut, then step through the cut ----------
 (function cutReply() {
   const RAW = [
     "THINK: I need today's weather in Kochi.",
@@ -647,11 +646,48 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
     "",
     "Close, but the LOOK: line before it is made up too. The program writes LOOK: lines, not the LLM.",
   ];
-  const tx = document.getElementById("p5Tx"), say = document.getElementById("p5Say"), code = document.getElementById("p5Code");
+  // The code, one entry per line: [key, text]. Keys say which line to light up.
+  const CODE = [
+    ["start", "kept = []"],
+    ["", '<span class="c"># 1. split into lines</span>'],
+    ["split", 'for line in reply.split("\\n"):'],
+    ["", '    <span class="c"># 2. keep this line</span>'],
+    ["keep", "    kept.append(line)"],
+    ["", '    <span class="c"># 3. at ACT: or ANSWER:, stop</span>'],
+    ["check", '    if line.startswith("ACT:") or line.startswith("ANSWER:"):'],
+    ["stop", "        break"],
+    ["", '<span class="c"># 4. join the kept lines</span>'],
+    ["join", 'reply = "\\n".join(kept)'],
+  ];
+  // state: which reply lines are kept / dropped, what's lit, what the step says
+  const STEPS = [
+    { on: ["start"], kept: 0, say: "reply holds the LLM's whole reply. kept starts as an empty list: nothing kept yet." },
+    { on: ["split", "keep"], kept: 1, at: 0, say: "Take the first line, THINK:, and keep it." },
+    { on: ["check"], kept: 1, at: 0, say: "Does it start with ACT: or ANSWER:? No. So go on to the next line." },
+    { on: ["split", "keep"], kept: 2, at: 1, say: "Take the next line, ACT:, and keep it. It's kept first, checked second: that's why the ACT: line stays." },
+    { on: ["check", "stop"], kept: 2, at: 1, dropped: true, say: "It starts with ACT:, so break: stop. The made-up lines after it are never read." },
+    { on: ["join"], kept: 2, dropped: true, say: "Join the kept lines back into one text. That's the new reply." },
+    { on: [], kept: 2, dropped: true, look: true, say: "Separately, the program runs weather(Kochi) itself and writes the real LOOK: line." },
+  ];
+  const $ = id => document.getElementById(id);
+  const tx = $("p5Tx"), say = $("p5Say"), cut = $("p5Cut"), code = $("p5Code"), stepSay = $("p5StepSay");
+  const next = $("p5Next"), back = $("p5Back"), again = $("p5Again");
+  let at = 0;
+  function drawCut() {
+    const st = STEPS[at];
+    code.innerHTML = CODE.map(([k, t]) => `<span class="cl${k && st.on.includes(k) ? " on" : ""}">${k ? t.replace(/[<>&]/g, c => ({"<":"&lt;",">":"&gt;","&":"&amp;"}[c])) : t}</span>`).join("");
+    tx.innerHTML = RAW.map((l, i) => {
+      const tag = i < st.kept ? ' <b class="keep-tag">kept ✓</b>' : (st.dropped && i >= 2 ? ' <b class="keep-tag no">never read</b>' : "");
+      const cls = st.dropped && i >= 2 ? " faded" : (i === st.at ? " new" : "");
+      return `<div class="ln${cls}"><span class="who llm">${WHO.llm}</span><span class="txt">${esc(l)}${tag}</span></div>`;
+    }).join("") + (st.look ? `<div class="ln new"><span class="who prog">${WHO.prog}</span><span class="txt">LOOK: 29°C, sunny</span></div>` : "");
+    stepSay.textContent = st.say;
+    next.hidden = at === STEPS.length - 1; back.hidden = at === 0 || at === STEPS.length - 1; again.hidden = at !== STEPS.length - 1;
+  }
   function draw() {
     tx.innerHTML = RAW.map((l, i) => `<button class="ln" type="button" data-i="${i}"><span class="who llm">${WHO.llm}</span><span class="txt">${esc(l)}</span></button>`).join("");
     tx.querySelectorAll("button.ln").forEach(b => b.onclick = () => pick(+b.dataset.i));
-    say.hidden = true; say.classList.remove("good"); code.hidden = true;
+    say.hidden = true; say.classList.remove("good"); cut.hidden = true;
   }
   function pick(i) {
     tx.querySelectorAll("button.ln").forEach(b => b.classList.remove("wrong"));
@@ -659,11 +695,13 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
       tx.querySelector(`[data-i="${i}"]`).classList.add("wrong");
       say.textContent = WHY[i]; say.hidden = false; return;
     }
-    tx.innerHTML = RAW.map((l, k) => line(["llm", l], k >= 2 ? "cut just-cut" : "")).join("") + line(["prog", "LOOK: 29°C, sunny"], "new");
     say.classList.add("good");
-    say.textContent = "✓ Right. The program runs the real tool and writes the real LOOK: line. It cuts the reply in 4 steps, each written above its code:";
-    say.hidden = false; code.hidden = false;
+    say.textContent = "✓ Right: from that LOOK: on, it's made up. Step through how the program cuts it.";
+    say.hidden = false; cut.hidden = false; at = 0; drawCut();
   }
+  next.onclick = () => { at = Math.min(STEPS.length - 1, at + 1); drawCut(); };
+  back.onclick = () => { at = Math.max(0, at - 1); drawCut(); };
+  again.onclick = () => { at = 0; drawCut(); };
   addReset(tx, draw);
   draw();
 })();
