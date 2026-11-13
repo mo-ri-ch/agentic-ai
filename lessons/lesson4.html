@@ -111,8 +111,10 @@
         <div class="tx" id="m5Tx"></div>
         <p class="redcheck" id="m5Say"></p>
       </div>
-      <p class="say near" style="position:relative">A new task starts a new text, so the old one is gone. <mark>Notes</mark> are saved outside the text, in a list. The program puts them at the top of every new text.<br><b class="eqbox">notes = memory between tasks</b><br>The note “The person is vegetarian.” → paneer tikka, not butter chicken.<button class="doubt" type="button" data-peek-from="ragPeek" aria-label="What if there are hundreds of notes?">🤔</button></p>
-      <div hidden id="ragPeek"><b>🤔 What if there are hundreds of notes?</b>
+      <p class="say near" style="position:relative">A new task starts a new text, so the old one is gone. <mark>Notes</mark> are saved outside the text, in a list. The program puts them at the top of every new text.<br><b class="eqbox">notes = memory between tasks</b><br>The note “The person is vegetarian.” → paneer tikka, not butter chicken.<button class="doubt" type="button" data-peek-from="ragPeek" aria-label="Where do the notes live?">🤔</button></p>
+      <div hidden id="ragPeek"><b>🤔 What if the program stops?</b>
+        <div style="margin:6px 0 10px">A list is gone when the program ends. So a real agent saves its notes to a file (or a database), and loads them back when it starts.</div>
+        <b>🤔 What if there are hundreds of notes?</b>
         <div style="margin-top:6px">They won't all fit in the context window. So the program searches the notes and puts in only the ones that match the question. This is often called retrieval, or RAG.</div>
       </div>
       <p class="hook">Try it on new numbers.</p>
@@ -164,7 +166,9 @@ save_note(note) - remember something for next time. Give it the note.
 To use a tool, write one line: ACT: tool(input)
 When you know the answer, write: ANSWER: your answer
 NOTES from earlier tasks:"""
-    return rules + "\n" + "\n".join("- " + note for note in notes)
+    for note in notes:
+        rules += "\n- " + note
+    return rules
 
 <span class="c"># A fake LLM that reads the text, so you can see the notes matter</span>
 def fake_llm(text):

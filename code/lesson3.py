@@ -20,6 +20,7 @@ TOOLS = {"calculator": calculator, "weather": weather}
 print(TOOLS["weather"]("Kochi"))
 
 # The tool list, at the top of the text, every time
+# (""" … """ is a string over several lines)
 INSTRUCTIONS = """You are an agent. TOOLS you can use:
 calculator(math) - works out math exactly. Give it the math, like 12 * 7.
 weather(city) - the weather right now in a city. Give it the city name.

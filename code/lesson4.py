@@ -16,7 +16,9 @@ save_note(note) - remember something for next time. Give it the note.
 To use a tool, write one line: ACT: tool(input)
 When you know the answer, write: ANSWER: your answer
 NOTES from earlier tasks:"""
-    return rules + "\n" + "\n".join("- " + note for note in notes)
+    for note in notes:
+        rules += "\n- " + note
+    return rules
 
 # A fake LLM that reads the text, so you can see the notes matter
 def fake_llm(text):

@@ -19,7 +19,7 @@ window.PYWORDS_EXTRA = {
   "eval": { what: "Works out a piece of text as Python. Only safe on checked input, so the calculator checks first.", ex: "print(eval(\"6 * 7\"))", out: "42" },
   "get": { what: "Looks a key up in a dictionary. If it isn't there, you get the second value instead.", ex: "today = {\"pune\": \"24°C\"}\nprint(today.get(\"pune\", \"?\"))\nprint(today.get(\"goa\", \"?\"))", out: "24°C\n?" },
   "lower": { what: "The same text in small letters.", ex: "print(\"Kochi\".lower())", out: "kochi" },
-  "split": { what: "Cuts text into a list of pieces, at every place the given text appears.", ex: "print(\"THINK: hi\\nACT: go\".split(\"\\n\"))\nprint(\"a ANSWER: 7\".split(\"ANSWER:\")[1])", out: "['THINK: hi', 'ACT: go']\n 7" },
+  "split": { what: "Cuts text into a list of pieces, at every place the given text appears. With nothing in the brackets, it cuts at spaces.", ex: "print(\"THINK: hi\\nACT: go\".split(\"\\n\"))\nprint(\"a ANSWER: 7\".split(\"ANSWER:\")[1])", out: "['THINK: hi', 'ACT: go']\n 7" },
   "strip": { what: "Takes spaces (or the characters you give) off both ends.", ex: "print(\"  7 \".strip())\nprint('\"Kochi\"'.strip('\"'))", out: "7\nKochi" },
   "startswith": { what: "True if the text begins with the given text.", ex: "print(\"ACT: weather\".startswith(\"ACT:\"))", out: "True" },
   "join": { what: "Glues a list of texts into one text, with the given text between them.", ex: "print(\"\\n\".join([\"a\", \"b\"]))", out: "a\nb" },
