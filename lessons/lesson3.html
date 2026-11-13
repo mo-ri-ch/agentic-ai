@@ -140,19 +140,21 @@ TOOLS["weather"]("Kochi")   <span class="c"># → same as weather("Kochi") → "
     <!-- 2 -->
     <section class="part" data-title="Find the ACT: line">
       <h2>Find the ACT: line</h2>
+      <p class="say">The LLM only writes text, like <code>ACT: weather("Kochi")</code>. The program must pick out the tool's name and its input.</p>
       <div class="activity">
         <div class="do">Edit the reply, or pick one. See what the program finds.</div>
         <div class="chips" id="p2Chips"></div>
         <div class="tryrow"><input class="wide" id="p2In" aria-label="The LLM's reply" spellcheck="false"></div>
         <div class="out" id="p2Out"></div>
       </div>
-      <p class="say near" style="position:relative">One line of Python finds it. It looks for the pattern <code>ACT: name(input)</code>:<br><b class="eqbox">act = re.search(r"ACT: (\w+)\((.*)\)", reply)</b><br>For <code>ACT: weather("Kochi")</code>, <code>act.group(1)</code> is <code>weather</code> and <code>act.group(2)</code> is <code>"Kochi"</code>. No match? Then <code>act</code> is <code>None</code>.<button class="doubt" type="button" data-peek-from="rePeek" aria-label="What do the symbols in the pattern mean?">🤔</button></p>
+      <p class="say near" style="position:relative">One line of Python finds it. It looks for the pattern <code>ACT: name(input)</code>:<br><b class="eqbox">act = re.search(r"ACT: (\w+)\((.*)\)", reply)</b><br><code>act.group(1)</code> gives blank ①, the name. <code>act.group(2)</code> gives blank ②, the input. No match? Then <code>act</code> is <code>None</code>.<button class="doubt" type="button" data-peek-from="rePeek" aria-label="What do the symbols in the pattern mean?">🤔</button></p>
       <div hidden id="rePeek"><b>🤔 What do the symbols in the pattern mean?</b>
         <ul style="margin:6px 0 0">
           <li>Each pair of round brackets <code>( )</code> is a blank to fill in. <code>act.group(1)</code> gives blank ①, <code>act.group(2)</code> blank ②.</li>
           <li><code>(\w+)</code>: blank ①, one or more letters, digits or _ : the tool's name.</li>
           <li><code>\(</code> and <code>\)</code>: real brackets.</li>
           <li><code>(.*)</code>: blank ②, anything in between: the input.</li>
+          <li><code>re</code> is Python's library for patterns. <code>import re</code> at the top of the code loads it.</li>
           <li><code>r"…"</code>: the <code>r</code> keeps every <code>\</code> exactly as written, so the pattern gets it.</li>
         </ul>
       </div>
@@ -480,15 +482,15 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
     const reply = input.value, m = reply.match(/ACT: (\w+)\((.*)\)/);
     let html = "";
     if (!m) {
-      html = `act = None\n<span class="c"># no ACT: name(input) found</span>\nLOOK: Error: write ACT: tool(input) or ANSWER: your answer`;
+      html = `<span class="c"># no ACT: name(input) found: no blanks to fill in</span>\nLOOK: Error: write ACT: tool(input) or ANSWER: your answer`;
     } else {
       const name = m[1], arg = m[2].replace(/^"+|"+$/g, "");
       const quoted = arg !== m[2];
       const a = m.index + 5, b = a + name.length + 1, e = b + m[2].length;
-      html = `<span class="c"># the pattern's 2 blanks:</span>\n` +
+      html = `<span class="c"># the 2 blanks it fills in:</span>\n` +
         `${esc(reply.slice(0, a))}<span class="g1">${esc(name)}</span><span class="gn">①</span>${esc(reply.slice(a + name.length, b))}<span class="g2">${esc(m[2])}</span><span class="gn">②</span>${esc(reply.slice(e))}\n` +
-        `act.group(1) → <span class="g1">${esc(name)}</span>  <span class="c gc"># the name</span>\n` +
-        `act.group(2) → <span class="g2">${esc(m[2])}</span>  <span class="c gc"># the input</span>\n` +
+        `① the name  → <span class="g1">${esc(name)}</span>\n` +
+        `② the input → <span class="g2">${esc(m[2])}</span>\n` +
         (quoted ? '<span class="c"># quotes come off before it runs</span>\n' : "");
       html += name in TOOLS ? `LOOK: ${esc(TOOLS[name](arg))}` : `<span class="c"># "${esc(name)}" isn't in TOOLS</span>\nLOOK: Error: no tool called ${esc(name)}`;
     }
