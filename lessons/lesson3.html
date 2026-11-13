@@ -106,13 +106,14 @@ print(shout("hi"))</code></pre>
           <button class="mode" data-tool="calculator" role="tab" aria-selected="false">calculator()</button>
         </div>
         <div id="p1W">
+          <p class="count" style="margin:0 0 6px"><code>today</code> is a dictionary: city → weather. <code>.get</code> looks the city up, in small letters (<code>.lower()</code>). If it isn't there, it gives back an error, with the city put into the text (<code>f"…{city}"</code>).</p>
 <pre><code>def weather(city):
     today = {"kochi": "29°C, sunny", "delhi": "18°C, foggy", "pune": "24°C, light rain"}
     return today.get(city.lower(), f"Error: no city called {city}")</code></pre>
-          <p class="count" style="margin:0 0 6px"><code>today</code> is a dictionary: city → weather. <code>today.get(city, …)</code> looks the city up. If it isn't there, you get the error instead.</p>
           <div class="tryrow">weather(" <input id="p1City" value="Kochi" aria-label="City" spellcheck="false"> ") <button id="p1RunW">▶ Run</button></div>
         </div>
         <div id="p1C" hidden>
+          <p class="count" style="margin:0 0 6px">First it checks each character is a number or <code>+ - * / ( )</code>, and blocks <code>**</code>. Then <code>eval</code> works out the math and <code>str</code> turns the answer into text. <code>try</code> catches math that goes wrong, like <code>2 / 0</code>.</p>
 <pre><code>def calculator(math):
     for ch in math:
         if ch not in "0123456789+-*/(). ":
@@ -123,7 +124,6 @@ print(shout("hi"))</code></pre>
         return str(eval(math))
     except Exception:
         return "Error: that math doesn't work out"</code></pre>
-          <p class="count" style="margin:0 0 6px">It checks each character first. <code>try</code> catches math that goes wrong, like <code>2 / 0</code>, and sends back an error.</p>
           <div class="tryrow">calculator(" <input id="p1Math" value="12 * 7" aria-label="Math" spellcheck="false"> ") <button id="p1RunC">▶ Run</button></div>
         </div>
         <div class="out" id="p1Out"><span class="c"># press ▶ Run</span></div>
@@ -263,11 +263,15 @@ When you know the answer, write: ANSWER: your answer</pre>
         <div class="tx" id="p5Tx"></div>
         <p class="redcheck" id="p5Say" hidden></p>
 <pre id="p5Code" hidden><code>kept = []
+<span class="c"># 1. split into lines</span>
 for line in reply.split("\n"):
+    <span class="c"># 2. keep this line</span>
     kept.append(line)
+    <span class="c"># 3. at ACT: or ANSWER:, stop</span>
     if line.startswith("ACT:") or line.startswith("ANSWER:"):
-        break   <span class="c"># stop here</span>
-reply = "\n".join(kept)   <span class="c"># the kept lines, as one text again</span></code></pre>
+        break
+<span class="c"># 4. join the kept lines</span>
+reply = "\n".join(kept)</code></pre>
       </div>
       <p class="say near" style="position:relative">In code, <code>fake_llm</code> becomes <code>real_llm</code>, in the Colab notebook (Colab runs Python free in your browser). The loop stays the same. But an LLM guesses the next words, and in its text a <code>LOOK:</code> line always follows an <code>ACT:</code> line. So it sometimes guesses one. So the program keeps its reply only up to the first <code>ACT:</code> or <code>ANSWER:</code> line, and writes the real <code>LOOK:</code> itself.<br><b class="eqbox">keep the reply up to the first ACT: or ANSWER: line</b><button class="doubt" type="button" data-peek-from="smallPeek" aria-label="Which real LLM do we use?">🤔</button></p>
       <div hidden id="smallPeek"><b>🤔 Which real LLM do we use?</b>
@@ -657,7 +661,7 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
     }
     tx.innerHTML = RAW.map((l, k) => line(["llm", l], k >= 2 ? "cut just-cut" : "")).join("") + line(["prog", "LOOK: 29°C, sunny"], "new");
     say.classList.add("good");
-    say.textContent = "✓ Right. The program runs the real tool and writes the real LOOK: line. This code makes the cut:";
+    say.textContent = "✓ Right. The program runs the real tool and writes the real LOOK: line. It cuts the reply in 4 steps, each written above its code:";
     say.hidden = false; code.hidden = false;
   }
   addReset(tx, draw);
