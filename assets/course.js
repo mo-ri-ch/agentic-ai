@@ -106,6 +106,7 @@ window.AG = (function () {
     you: ["you", "you"], llm: ["llm", "LLM"], prog: ["prog", "program"], human: ["you", "person"],
     manager: ["llm", "manager"], researcher: ["a-orange", "researcher"], writer: ["a-pink", "writer"], checker: ["prog", "checker"],
     notes: ["you", "notes"], summary: ["a-orange", "summary"],
+    round: ["round", "round"],
   };
   // One transcript line. who: a key of WHO. opts: { isNew, cls, html (text is already HTML) }
   function line([who, text], opts = {}) {

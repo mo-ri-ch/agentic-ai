@@ -179,3 +179,5 @@ pre.mapcode code .cl.dim { opacity: 0.45; }
 .tx .ln.waiting { opacity: 0.4; }
 /* Phones: a little smaller, so conversation lines wrap less */
 @media (max-width: 600px) { .tx { font-size: 0.82rem; padding: 6px 6px; } .tx .ln { grid-template-columns: 4.4em 1fr; gap: 6px; } }
+/* A whole round (LLM's THINK and ACT, and the program's LOOK) */
+.who.round { background: none; border: 1px solid var(--pencil); color: var(--pencil); }

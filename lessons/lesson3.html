@@ -141,7 +141,7 @@ TOOLS["weather"]("Kochi")   <span class="c"># → same as weather("Kochi") → "
     <section class="part" data-title="Find the ACT: line">
       <h2>Find the ACT: line</h2>
       <p class="say near" style="position:relative">The LLM only writes text, like <code>ACT: weather(Kochi)</code>. It's text, not Python, so it needs no quotes. The program must pick out the tool's name and its input.<button class="doubt" type="button" data-peek-from="jsonPeek" aria-label="Is this how real agents do it?">🤔</button></p>
-      <div hidden id="jsonPeek"><b>🤔 Is this how real agents do it?</b> Small models, like the one in Colab, are often used this way. Big model APIs (Claude, OpenAI, Gemini) send a tool call as JSON instead: <code>{"name": "weather", "input": {"city": "Kochi"}}</code>. There, text is in quotes, as in Python, and the program reads it without a pattern. The loop stays the same.</div>
+      <div hidden id="jsonPeek"><b>🤔 Is this how real agents do it?</b> Small models, like the one we run in Colab (Google's free tool that runs Python in your browser), are often used this way. Big model APIs (Claude, OpenAI, Gemini) send a tool call as JSON instead: <code>{"name": "weather", "input": {"city": "Kochi"}}</code>. There, text is in quotes, as in Python, and the program reads it without a pattern. The loop stays the same.</div>
       <div class="activity">
         <div class="do">Edit the reply, or pick one. See what the program finds.</div>
         <div class="chips" id="p2Chips"></div>
@@ -266,11 +266,12 @@ When you know the answer, write: ANSWER: your answer</pre>
 for line in reply.split("\n"):
     kept.append(line)
     if line.startswith("ACT:") or line.startswith("ANSWER:"):
-        break   # stop here</code></pre>
+        break   <span class="c"># stop here</span>
+reply = "\n".join(kept)   <span class="c"># the kept lines, as one text again</span></code></pre>
       </div>
-      <p class="say near" style="position:relative">In code, <code>fake_llm</code> becomes <code>real_llm</code> (it's in the Colab notebook). The loop stays the same. But a real LLM sometimes keeps going and makes up its own result. So the program keeps its reply only up to the first <code>ACT:</code> or <code>ANSWER:</code> line, and writes the real <code>LOOK:</code> itself.<br><b class="eqbox">keep the reply up to the first ACT: or ANSWER: line</b><button class="doubt" type="button" data-peek-from="smallPeek" aria-label="Which real LLM do we use?">🤔</button></p>
+      <p class="say near" style="position:relative">In code, <code>fake_llm</code> becomes <code>real_llm</code>, in the Colab notebook (Colab runs Python free in your browser). The loop stays the same. But an LLM guesses the next words, and in its text a <code>LOOK:</code> line always follows an <code>ACT:</code> line. So it sometimes guesses one. So the program keeps its reply only up to the first <code>ACT:</code> or <code>ANSWER:</code> line, and writes the real <code>LOOK:</code> itself.<br><b class="eqbox">keep the reply up to the first ACT: or ANSWER: line</b><button class="doubt" type="button" data-peek-from="smallPeek" aria-label="Which real LLM do we use?">🤔</button></p>
       <div hidden id="smallPeek"><b>🤔 Which real LLM do we use?</b>
-        <div style="margin-top:6px">A small, free model, Qwen2.5 1.5B, that runs inside Colab. No account or key needed. Small models make more mistakes than big ones, so expect the odd error. Errors go back on <code>LOOK:</code> lines, so it can often fix them.</div>
+        <div style="margin-top:6px">A small, free model, Qwen2.5 1.5B (1.5 billion learned numbers: small for an LLM), that runs inside Colab. No API key or payment needed, just a Google account for Colab. Small models make more mistakes than big ones, so expect the odd error. Errors go back on <code>LOOK:</code> lines, so it can often fix them.</div>
       </div>
       <p class="hook">Here's all of it in Python.</p>
     </section>

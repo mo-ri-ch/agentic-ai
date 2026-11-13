@@ -42,6 +42,7 @@
     <!-- 2 -->
     <section class="part" data-title="The text has a limit">
       <h2>The text has a limit</h2>
+      <p class="say">Every round makes the text longer. But an LLM can only read so much text at once.</p>
       <div class="activity">
         <div class="do">Add rounds. Then switch how the program makes room.</div>
         <div class="modes" role="tablist" aria-label="How to make room">
@@ -53,7 +54,7 @@
         <div class="tx" id="m2Tx"></div>
         <p class="redcheck" id="m2Say"></p>
       </div>
-      <p class="say near" style="position:relative">An LLM can only read so much text at once: its <mark>context window</mark>. Here it's 300 words. 60 (tool list) + 10 (question) + 4 rounds × 50 = 270 fits. A 5th round makes 320: something must go. Keep the start, and drop the oldest rounds.<br><b class="eqbox">text = start + rounds × words per round</b><button class="doubt" type="button" data-peek-from="ctxPeek" aria-label="How big are real context windows?">🤔</button></p>
+      <p class="say near" style="position:relative">That limit is its <mark>context window</mark>. Here it's 300 words. 60 (tool list) + 10 (question) + 4 rounds × 50 = 270 fits. A 5th round makes 320: something must go. Keep the start, and drop the oldest rounds.<br><b class="eqbox">text = start + rounds × words per round</b><button class="doubt" type="button" data-peek-from="ctxPeek" aria-label="How big are real context windows?">🤔</button></p>
       <div hidden id="ctxPeek"><b>🤔 How big are real context windows?</b>
         <div style="margin-top:6px">They're counted in tokens (pieces of words), not words. The small model in our Colab notebooks reads up to 32,768 tokens. Big models read hundreds of thousands. Long tasks can still fill them.</div>
       </div>
@@ -357,7 +358,7 @@ const { esc, line } = AG;
   function draw() {
     const rounds = +range.value; n.textContent = rounds;
     const blocks = START.map(([w, t, words]) => ({ w, t, words, start: true }));
-    for (let r = 1; r <= rounds; r++) blocks.push({ w: "llm", t: `Round ${r}: think, act, look`, words: ROUND });
+    for (let r = 1; r <= rounds; r++) blocks.push({ w: "round", t: `Round ${r}: think, act, look`, words: ROUND });
     const total = blocks.reduce((a, b) => a + b.words, 0);
     let over = total - LIMIT;
     // decide what falls out
@@ -371,7 +372,7 @@ const { esc, line } = AG;
     fill.style.width = Math.min(100, kept / LIMIT * 100) + "%";
     v.textContent = `${kept} / ${LIMIT}`;
     say.classList.toggle("good", total <= LIMIT || mode === "keep");
-    if (total <= LIMIT) say.textContent = `✓ ${total} words fits in the window. Nothing is cut.`;
+    if (total <= LIMIT) say.textContent = `✓ ${total} words: the LLM can read it all (up to ${LIMIT}). Nothing is cut.`;
     else if (mode === "front") say.textContent = `✗ ${total} words is too long, so the top is cut: ${[...cut].map(i => blocks[i].t.split(":")[0]).join(", ")}. It's lost ${cut.has(0) ? "the tool list" : ""}${cut.has(0) && cut.has(1) ? " and " : ""}${cut.has(1) ? "the question" : ""}!`;
     else say.textContent = `✓ ${total} words is too long, so the oldest ${cut.size === 1 ? "round is" : cut.size + " rounds are"} cut. It still has the tool list and the question. Now ${kept} words.`;
   }
