@@ -164,21 +164,21 @@ TOOLS["weather"]("Kochi")   <span class="c"># → same as weather("Kochi") → "
 
     <section class="part" data-nonum data-title="✏️ Practice 3.1">
       <h2>✏️ Practice 3.1</h2>
-      <p class="say">New examples, same ideas.<br>Remember: a tool is a function: text in, text out.<br><b class="eqbox">TOOLS[name](input)</b> calls the tool with that name.<br><code>act.group(1)</code> is the name, <code>act.group(2)</code> the input.</p>
+      <p class="say">New examples, same ideas.<br>Remember: in Python, text needs quotes: <code>weather("Pune")</code>. In an <code>ACT:</code> line, no quotes: <code>ACT: weather(Pune)</code>. The program takes the input out of the brackets as text.<br><b class="eqbox">TOOLS[name](input)</b> calls the tool with that name.<br>No <code>ACT:</code> line, or a name not in TOOLS → an error, and no tool runs.</p>
       <div class="activity">
         <div class="do"><span data-peek="Take a pen and paper, or use the ✎ pen on this page, and write each step. It sticks better than guessing.">Work each one out.</span> Type the answer, press Check.</div>
-        <div class="pq" data-ans="60" data-tol="0.01" data-hint="The calculator works out the math and hands back the answer, as text." data-work="15 × 4 = 60. It comes back as the text &quot;60&quot;.">
-          <div class="pq-q">What does <code>calculator("15 * 4")</code> give back?</div>
+        <div class="pq" data-ans="24" data-tol="0.1" data-hint="Look at the weather tool's code: what does city.lower() do to &quot;PUNE&quot;?" data-work="city.lower() turns &quot;PUNE&quot; into &quot;pune&quot;, which is in the dictionary.<br>weather(&quot;PUNE&quot;) → &quot;24°C, light rain&quot;. 24°C.">
+          <div class="pq-q">What temperature, in °C, does <code>weather("PUNE")</code> give back? (The weather tool's code is on the Tools are functions page.)</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
-        <div class="pq" data-ans="25" data-tol="0.01" data-hint="The program finds calculator and 100 / 4, then calls calculator(&quot;100 / 4&quot;)." data-work="act.group(1) = calculator, act.group(2) = 100 / 4.<br>100 / 4 = 25. (Python writes it as 25.0: / always gives a decimal.)">
-          <div class="pq-q">The reply is <code>ACT: calculator(100 / 4)</code>. What number ends up on the <code>LOOK:</code> line?</div>
+        <div class="pq" data-ans="84" data-tol="0.01" data-hint="Find the two blanks: the name, and the input. Then run that tool on that input." data-work="Blank 1 is calculator. Blank 2 is 12 * 7.<br>The program calls calculator(&quot;12 * 7&quot;) → &quot;84&quot;. LOOK: 84.">
+          <div class="pq-q">The reply is <code>ACT: calculator(12 * 7)</code>. What number ends up on the <code>LOOK:</code> line?</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
-        <div class="pq" data-ans="18" data-tol="0.1" data-hint="Find the name and the input. Then look the city up in the weather tool's dictionary." data-work="act.group(1) = weather, act.group(2) = Delhi.<br>TOOLS[&quot;weather&quot;](&quot;Delhi&quot;) → &quot;18°C, foggy&quot;.<br>18°C.">
-          <div class="pq-q">The reply is <code>ACT: weather(Delhi)</code>. What temperature, in °C, ends up on the <code>LOOK:</code> line? (The weather tool's code is on the Tools are functions page.)</div>
+        <div class="pq" data-ans="2" data-tol="0.01" data-hint="For each reply: is there an ACT: line? Is its name in TOOLS?" data-work="ACT: weather(Delhi): runs. ACT: calculator(2 + 2): runs.<br>ACT: wether(Delhi): wether isn't in TOOLS → an error. I'll check the weather.: no ACT: line → an error.<br>2 run a tool.">
+          <div class="pq-q">Four replies: <code>ACT: weather(Delhi)</code> · <code>ACT: wether(Delhi)</code> · <code>I'll check the weather.</code> · <code>ACT: calculator(2 + 2)</code>. How many make the program run a tool?</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
