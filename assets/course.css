@@ -176,3 +176,6 @@ pre.mapcode code .cl.dim { opacity: 0.45; }
 /* Lesson 3: which fake replies have been used */
 .rep { display: inline-block; border: 1px solid var(--pencil); border-radius: 999px; padding: 0 8px; font-size: 0.85em; margin-right: 2px; }
 .rep.done { background: var(--hl-blue); color: var(--on-hl); border-color: transparent; }
+.tx .ln.waiting { opacity: 0.4; }
+/* Phones: a little smaller, so conversation lines wrap less */
+@media (max-width: 600px) { .tx { font-size: 0.82rem; padding: 6px 6px; } .tx .ln { grid-template-columns: 4.4em 1fr; gap: 6px; } }
