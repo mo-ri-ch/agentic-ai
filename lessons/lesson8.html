@@ -79,9 +79,11 @@
         <div class="tx" id="j4Tx"></div>
         <p class="redcheck" id="j4Say"></p>
       </div>
-      <p class="say near" style="position:relative">A real LLM will make mistakes. Read the errors on its <code>LOOK:</code> lines, then improve what it reads: a clearer description, and an example of the right way.<br><b class="eqbox">LLM gets it wrong → improve what it reads</b><button class="doubt" type="button" data-peek-from="aciPeek" aria-label="Do real builders do this?">🤔</button></p>
+      <p class="say near" style="position:relative">A real LLM will make mistakes. Read the errors on its <code>LOOK:</code> lines, then improve what it reads: a clearer description, and an example of the right way.<br><b class="eqbox">LLM gets it wrong → improve what it reads</b><button class="doubt" type="button" data-peek-from="aciPeek" aria-label="Questions about real LLMs">🤔</button></p>
       <div hidden id="aciPeek"><b>🤔 Do real builders do this?</b>
         <div style="margin-top:6px">All the time. Anthropic's guide, Building Effective Agents, advises putting as much care into tool descriptions as into the instructions, and testing how the model really uses them.</div>
+        <b style="display:block;margin-top:10px">🤔 What if I build with a model API?</b>
+        <div style="margin-top:6px">Claude, OpenAI and Gemini send tool calls as JSON, like <code>{"name": "weather", "input": {"city": "Goa"}}</code>, instead of an <code>ACT:</code> line. Your loop stays the same: call the model, run the tool, send the result back.</div>
       </div>
       <p class="hook">Try it on new numbers.</p>
     </section>

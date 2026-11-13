@@ -413,7 +413,7 @@ AG.stepper({
   const fill = document.getElementById("s5Fill"), v = document.getElementById("s5V");
   const LIMIT = 4, COST = 0.5;
   const steps = [{ add: [["you", "What's the price of gold today?"]], say: "Step limit: 4 rounds. Press Next step.", r: 0 }];
-  for (let r = 1; r <= LIMIT; r++) steps.push({ add: [["llm", 'ACT: search("gold price today")'], ["prog", "LOOK: Error: the site is down"]], say: `Round ${r}: the same search, the same error. Log line ${r}.`, r });
+  for (let r = 1; r <= LIMIT; r++) steps.push({ add: [["llm", 'ACT: search(gold price today)'], ["prog", "LOOK: Error: the site is down"]], say: `Round ${r}: the same search, the same error. Log line ${r}.`, r });
   steps.push({ add: [["prog", "Stopped: the step limit was reached."]], say: "4 rounds used: the program stops it. The log shows a person all 4 tries.", r: LIMIT });
   AG.stepper({
     tx: document.getElementById("s5Tx"), say: document.getElementById("s5Say"),

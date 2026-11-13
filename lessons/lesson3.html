@@ -140,7 +140,8 @@ TOOLS["weather"]("Kochi")   <span class="c"># → same as weather("Kochi") → "
     <!-- 2 -->
     <section class="part" data-title="Find the ACT: line">
       <h2>Find the ACT: line</h2>
-      <p class="say">The LLM only writes text, like <code>ACT: weather("Kochi")</code>. The program must pick out the tool's name and its input.</p>
+      <p class="say near" style="position:relative">The LLM only writes text, like <code>ACT: weather(Kochi)</code>. It's text, not Python, so it needs no quotes. The program must pick out the tool's name and its input.<button class="doubt" type="button" data-peek-from="jsonPeek" aria-label="Is this how real agents do it?">🤔</button></p>
+      <div hidden id="jsonPeek"><b>🤔 Is this how real agents do it?</b> Small models, like the one in Colab, are often used this way. Big model APIs (Claude, OpenAI, Gemini) send a tool call as JSON instead: <code>{"name": "weather", "input": {"city": "Kochi"}}</code>. There, text is in quotes, as in Python, and the program reads it without a pattern. The loop stays the same.</div>
       <div class="activity">
         <div class="do">Edit the reply, or pick one. See what the program finds.</div>
         <div class="chips" id="p2Chips"></div>
@@ -176,8 +177,8 @@ TOOLS["weather"]("Kochi")   <span class="c"># → same as weather("Kochi") → "
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
-        <div class="pq" data-ans="18" data-tol="0.1" data-hint="Find the name and the input. Then look the city up in the weather tool's dictionary." data-work="act.group(1) = weather, act.group(2) = &quot;Delhi&quot;.<br>TOOLS[&quot;weather&quot;](&quot;Delhi&quot;) → &quot;18°C, foggy&quot;.<br>18°C.">
-          <div class="pq-q">The reply is <code>ACT: weather("Delhi")</code>. What temperature, in °C, ends up on the <code>LOOK:</code> line? (The weather tool's code is on the Tools are functions page.)</div>
+        <div class="pq" data-ans="18" data-tol="0.1" data-hint="Find the name and the input. Then look the city up in the weather tool's dictionary." data-work="act.group(1) = weather, act.group(2) = Delhi.<br>TOOLS[&quot;weather&quot;](&quot;Delhi&quot;) → &quot;18°C, foggy&quot;.<br>18°C.">
+          <div class="pq-q">The reply is <code>ACT: weather(Delhi)</code>. What temperature, in °C, ends up on the <code>LOOK:</code> line? (The weather tool's code is on the Tools are functions page.)</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
@@ -188,6 +189,7 @@ TOOLS["weather"]("Kochi")   <span class="c"># → same as weather("Kochi") → "
     <!-- 3 -->
     <section class="part" data-title="The loop in code">
       <h2>The loop in code</h2>
+      <p class="say">Here is the whole loop as one Python function, <code>run_agent</code>. Each part of the loop is a few of its lines.</p>
       <div class="activity">
         <div class="do">Press a part of the loop. See which lines do it.</div>
         <div class="chips" id="p3Parts"></div>
@@ -209,16 +211,17 @@ When you know the answer, write: ANSWER: your answer</pre>
     <!-- 4 -->
     <section class="part" data-title="A fake LLM first">
       <h2>A fake LLM first</h2>
+      <p class="say">A real LLM is slow, and its replies change from run to run. So test the loop first with a <mark>fake LLM</mark>: it hands back replies you wrote yourself.</p>
       <div class="activity">
         <div class="do">Pick a test. Run the loop with a fake LLM.</div>
 <pre><code>def fake_llm(text):
-    return fake_replies.pop(0)   # hand back the next reply, ignore the text</code></pre>
+    return fake_replies.pop(0)   <span class="c"># hand back the next reply, ignore the text</span></code></pre>
         <div class="chips" id="p4Chips"></div>
         <div class="tx" id="p4Replies"></div>
         <div class="btnrow"><button class="primary" id="p4Run">▶ Run the loop</button></div>
         <div class="out" id="p4Out" hidden></div>
       </div>
-      <p class="say">The <mark>fake LLM</mark> hands back the next reply from a list, written by hand. No model needed, so you can test every part of the loop first: tools, errors, the step limit.<br><b class="eqbox">fake_llm(text) → the next reply in the list</b></p>
+      <p class="say">No model needed, so you can test every part of the loop first: tools, errors, the step limit.<br><b class="eqbox">fake_llm(text) → the next reply in the list</b></p>
       <p class="hook">Try it on new numbers.</p>
     </section>
 
@@ -249,6 +252,7 @@ When you know the answer, write: ANSWER: your answer</pre>
     <!-- 5 -->
     <section class="part" data-title="A real LLM">
       <h2>A real LLM</h2>
+      <p class="say">Now swap the fake LLM for a real one. Its replies aren't always this tidy.</p>
       <div class="activity">
         <div class="do">A reply like the ones a real LLM writes. Tap the first line the program should throw away.</div>
         <div class="tx" id="p5Tx"></div>
@@ -259,7 +263,7 @@ for line in reply.split("\n"):
     if line.startswith("ACT:") or line.startswith("ANSWER:"):
         break   # stop here</code></pre>
       </div>
-      <p class="say near" style="position:relative">Swap <code>fake_llm</code> for <code>real_llm</code> (it's in the Colab notebook). The loop stays the same. But a real LLM sometimes keeps going and makes up its own result. So the program keeps its reply only up to the first <code>ACT:</code> or <code>ANSWER:</code> line, and writes the real <code>LOOK:</code> itself.<br><b class="eqbox">keep the reply up to the first ACT: or ANSWER: line</b><button class="doubt" type="button" data-peek-from="smallPeek" aria-label="Which real LLM do we use?">🤔</button></p>
+      <p class="say near" style="position:relative">In code, <code>fake_llm</code> becomes <code>real_llm</code> (it's in the Colab notebook). The loop stays the same. But a real LLM sometimes keeps going and makes up its own result. So the program keeps its reply only up to the first <code>ACT:</code> or <code>ANSWER:</code> line, and writes the real <code>LOOK:</code> itself.<br><b class="eqbox">keep the reply up to the first ACT: or ANSWER: line</b><button class="doubt" type="button" data-peek-from="smallPeek" aria-label="Which real LLM do we use?">🤔</button></p>
       <div hidden id="smallPeek"><b>🤔 Which real LLM do we use?</b>
         <div style="margin-top:6px">A small, free model, Qwen2.5 1.5B, that runs inside Colab. No account or key needed. Small models make more mistakes than big ones, so expect the odd error. Errors go back on <code>LOOK:</code> lines, so it can often fix them.</div>
       </div>
@@ -361,7 +365,7 @@ ANSWER: 4,817 × 263 = 1,266,871.
           <div class="feedback"></div>
         </div>
         <div class="quiz" data-page="lesson3.html#3" data-topic="Find the ACT: line" data-right="Right. act.group(1) is “wether”, which isn't in TOOLS.">
-          <div class="q"><small>2. Predict</small>The reply is <code>ACT: wether("Kochi")</code>. What's on the <code>LOOK:</code> line?</div>
+          <div class="q"><small>2. Predict</small>The reply is <code>ACT: wether(Kochi)</code>. What's on the <code>LOOK:</code> line?</div>
           <div class="options">
             <button data-why="The program doesn't fix spelling. It looks up the exact name in TOOLS.">29°C, sunny</button>
             <button data-right>Error: no tool called wether</button>
@@ -388,7 +392,7 @@ ANSWER: 4,817 × 263 = 1,266,871.
           <div class="feedback"></div>
         </div>
         <div class="quiz" data-page="lesson3.html#8" data-topic="A real LLM" data-right="Right. The program keeps the reply up to the ACT: line, runs the real tool, and writes the real LOOK:.">
-          <div class="q"><small>5. Predict</small>A real LLM writes <code>ACT: weather("Kochi")</code>, then <code>LOOK: 31°C</code>. What does the program do?</div>
+          <div class="q"><small>5. Predict</small>A real LLM writes <code>ACT: weather(Kochi)</code>, then <code>LOOK: 31°C</code>. What does the program do?</div>
           <div class="options">
             <button data-why="That LOOK: was made up by the LLM. The program never trusts it.">Uses 31°C as the result</button>
             <button data-why="Nothing is wrong with the ACT: line. Only what comes after it is cut.">Stops with an error</button>
@@ -472,8 +476,8 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
 // ---------- Part 2: find the ACT: line, like re.search ----------
 (function findAct() {
   const EXAMPLES = [
-    ["A good one", 'ACT: weather("Kochi")'],
-    ["Wrong name", 'ACT: wether("Kochi")'],
+    ["A good one", 'ACT: weather(Kochi)'],
+    ["Wrong name", 'ACT: wether(Kochi)'],
     ["No ACT:", "I'll use the calculator now."],
     ["Math", "ACT: calculator(4817 * 263)"],
   ];
@@ -556,7 +560,7 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
 
 // ---------- Part 4: run the loop with a fake LLM (outputs from the real Python run) ----------
 (function fakeTests() {
-  const TESTS = {"normal": {"replies": ["THINK: Exact math. I'll use the calculator.\nACT: calculator(4817 * 263)", "ANSWER: 4,817 × 263 = 1,266,871."], "q": "What is 4,817 × 263?", "limit": 5, "out": "THINK: Exact math. I'll use the calculator.\nACT: calculator(4817 * 263)\nLOOK: 1266871\nANSWER: 4,817 × 263 = 1,266,871.\n4,817 × 263 = 1,266,871.\n"}, "typo": {"replies": ["THINK: I'll check the weather.\nACT: weather(\"Kochii\")", "THINK: I spelled it wrong.\nACT: weather(\"Kochi\")", "ANSWER: It's 29°C and sunny in Kochi."], "q": "Is it warm in Kochi?", "limit": 5, "out": "THINK: I'll check the weather.\nACT: weather(\"Kochii\")\nLOOK: Error: no city called Kochii\nTHINK: I spelled it wrong.\nACT: weather(\"Kochi\")\nLOOK: 29°C, sunny\nANSWER: It's 29°C and sunny in Kochi.\nIt's 29°C and sunny in Kochi.\n"}, "never": {"replies": ["ACT: weather(\"Pune\")", "ACT: weather(\"Pune\")", "ACT: weather(\"Pune\")", "ACT: weather(\"Pune\")", "ACT: weather(\"Pune\")"], "q": "Is it raining in Pune?", "limit": 3, "out": "ACT: weather(\"Pune\")\nLOOK: 24°C, light rain\nACT: weather(\"Pune\")\nLOOK: 24°C, light rain\nACT: weather(\"Pune\")\nLOOK: 24°C, light rain\nStopped: the step limit was reached.\n"}};
+  const TESTS = {"normal": {"replies": ["THINK: Exact math. I'll use the calculator.\nACT: calculator(4817 * 263)", "ANSWER: 4,817 × 263 = 1,266,871."], "q": "What is 4,817 × 263?", "limit": 5, "out": "THINK: Exact math. I'll use the calculator.\nACT: calculator(4817 * 263)\nLOOK: 1266871\nANSWER: 4,817 × 263 = 1,266,871.\n4,817 × 263 = 1,266,871.\n"}, "typo": {"replies": ["THINK: I'll check the weather.\nACT: weather(Kochii)", "THINK: I spelled it wrong.\nACT: weather(Kochi)", "ANSWER: It's 29°C and sunny in Kochi."], "q": "Is it warm in Kochi?", "limit": 5, "out": "THINK: I'll check the weather.\nACT: weather(Kochii)\nLOOK: Error: no city called Kochii\nTHINK: I spelled it wrong.\nACT: weather(Kochi)\nLOOK: 29°C, sunny\nANSWER: It's 29°C and sunny in Kochi.\nIt's 29°C and sunny in Kochi.\n"}, "never": {"replies": ["ACT: weather(Pune)", "ACT: weather(Pune)", "ACT: weather(Pune)", "ACT: weather(Pune)", "ACT: weather(Pune)"], "q": "Is it raining in Pune?", "limit": 3, "out": "ACT: weather(Pune)\nLOOK: 24°C, light rain\nACT: weather(Pune)\nLOOK: 24°C, light rain\nACT: weather(Pune)\nLOOK: 24°C, light rain\nStopped: the step limit was reached.\n"}};
   const LABELS = { normal: "Normal", typo: "A typo", never: "Never answers" };
   const chips = document.getElementById("p4Chips"), replies = document.getElementById("p4Replies");
   const run = document.getElementById("p4Run"), out = document.getElementById("p4Out");
@@ -577,7 +581,7 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
   run.onclick = () => {
     const t = TESTS[cur];
     const lines = t.out.trimEnd().split("\n"), last = lines.pop();
-    out.innerHTML = `<span class="c">$ run_agent("${esc(t.q)}", fake_llm, step_limit=${t.limit})</span>\n` + esc(lines.join("\n")) +
+    out.innerHTML = `<span class="c">run_agent("${esc(t.q)}", fake_llm, step_limit=${t.limit})</span>\n` + esc(lines.join("\n")) +
       `\n<span class="c"># what run_agent gives back:</span>\n` + esc(last);
     out.hidden = false; run.hidden = true; replies.hidden = true;
   };
@@ -589,7 +593,7 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
 (function cutReply() {
   const RAW = [
     "THINK: I need today's weather in Kochi.",
-    'ACT: weather("Kochi")',
+    'ACT: weather(Kochi)',
     "LOOK: 31°C, cloudy",
     "ANSWER: It's 31°C and cloudy in Kochi.",
   ];

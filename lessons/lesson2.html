@@ -377,8 +377,8 @@ function setupModes(container, attr, onChange) {
   };
   const Q = ["you", "Is it warm in Kochi right now?"];
   const REPLY = {
-    vague: [["llm", "THINK: Which one gives the weather? I can't tell. I'll try tool_c."], ["llm", "ACT: tool_c(\"Kochi\")"], ["prog", "LOOK: Error: tool_c gives word meanings. “Kochi” isn't a word it knows."]],
-    clear: [["llm", "THINK: weather gives the weather in a city."], ["llm", "ACT: weather(\"Kochi\")"], ["prog", "LOOK: 29°C, sunny"]],
+    vague: [["llm", "THINK: Which one gives the weather? I can't tell. I'll try tool_c."], ["llm", "ACT: tool_c(Kochi)"], ["prog", "LOOK: Error: tool_c gives word meanings. “Kochi” isn't a word it knows."]],
+    clear: [["llm", "THINK: weather gives the weather in a city."], ["llm", "ACT: weather(Kochi)"], ["prog", "LOOK: 29°C, sunny"]],
   };
   const CHECK = {
     vague: ["✗ A wasted round. The names and descriptions didn't say what each tool does.", false],
@@ -409,9 +409,9 @@ function setupModes(container, attr, onChange) {
 (function whenItFails() {
   const STEPS = [
     { add: [["you", "What's the weather in Kochi?"]], say: "Press Next step." },
-    { add: [["llm", "THINK: I'll check the weather."], ["llm", "ACT: weather(\"Kochii\")"]], say: "Round 1: the LLM asks for the weather. It spelled Kochi wrong." },
+    { add: [["llm", "THINK: I'll check the weather."], ["llm", "ACT: weather(Kochii)"]], say: "Round 1: the LLM asks for the weather. It spelled Kochi wrong." },
     { add: [["prog", "LOOK: Error: no city called “Kochii”"]], say: "Round 1: the tool fails. The program writes the error on the LOOK: line." },
-    { add: [["llm", "THINK: I spelled it wrong. Try “Kochi”."], ["llm", "ACT: weather(\"Kochi\")"]], say: "Round 2: the LLM reads the error and fixes its mistake." },
+    { add: [["llm", "THINK: I spelled it wrong. Try “Kochi”."], ["llm", "ACT: weather(Kochi)"]], say: "Round 2: the LLM reads the error and fixes its mistake." },
     { add: [["prog", "LOOK: 29°C, sunny"]], say: "Round 2: this time it works." },
     { add: [["llm", "ANSWER: It's 29°C and sunny in Kochi."]], say: "The answer. 2 rounds, 3 LLM writes." },
   ];

@@ -242,7 +242,7 @@ How about paneer tikka? It's vegetarian, like you.</pre></div>
           <div class="q"><small>1. Predict</small>The program forgets to add the <code>LOOK: 29°C, sunny</code> line. What does the LLM write next?</div>
           <div class="options">
             <button data-why="It can only answer from what's in the text. The result isn't there.">ANSWER: 29°C and sunny</button>
-            <button data-right>ACT: weather("Kochi"), again</button>
+            <button data-right>ACT: weather(Kochi), again</button>
             <button data-why="Nothing stops it. It just doesn't know it already asked.">Nothing: the agent stops</button>
           </div>
           <div class="feedback"></div>
@@ -325,7 +325,7 @@ const { esc, line } = AG;
     ["prog", "TOOLS: weather(city) - the weather right now in a city"],
     ["you", "Is it warm in Kochi right now?"],
     ["llm", "THINK: I need today's weather."],
-    ["llm", 'ACT: weather("Kochi")'],
+    ["llm", 'ACT: weather(Kochi)'],
     ["prog", "LOOK: 29°C, sunny"],
   ];
   const tx = document.getElementById("m1Tx"), next = document.getElementById("m1Next"), why = document.getElementById("m1Why");
@@ -333,7 +333,7 @@ const { esc, line } = AG;
   function outcome() {
     if (hidden.has(1)) return ["THINK: There's no question here. What should I do?", "It doesn't know what was asked."];
     if (hidden.has(4) && hidden.has(0)) return ["ANSWER: It's probably warm and sunny.", "No result, and no tool list to ask with: it guesses."];
-    if (hidden.has(4)) return ['ACT: weather("Kochi")', "It asks again: it can't see that it already looked."];
+    if (hidden.has(4)) return ['ACT: weather(Kochi)', "It asks again: it can't see that it already looked."];
     return ["ANSWER: Yes! 29°C and sunny.", "It can see everything it needs."];
   }
   function draw() {
@@ -385,9 +385,9 @@ const { esc, line } = AG;
 (function summarize() {
   const START = [["you", "What do rice, dal and oil cost together?"]];
   const ROUNDS = [
-    ["llm", "THINK: First the price of rice."], ["llm", 'ACT: search("rice price 1 kg")'], ["prog", "LOOK: Rice costs ₹60 for 1 kg at most shops this week."],
-    ["llm", "THINK: Now dal."], ["llm", 'ACT: search("dal price 1 kg")'], ["prog", "LOOK: Dal is about ₹120 per kg in local markets."],
-    ["llm", "THINK: And oil."], ["llm", 'ACT: search("cooking oil price 1 litre")'], ["prog", "LOOK: A 1 litre bottle of cooking oil is around ₹180."],
+    ["llm", "THINK: First the price of rice."], ["llm", 'ACT: search(rice price 1 kg)'], ["prog", "LOOK: Rice costs ₹60 for 1 kg at most shops this week."],
+    ["llm", "THINK: Now dal."], ["llm", 'ACT: search(dal price 1 kg)'], ["prog", "LOOK: Dal is about ₹120 per kg in local markets."],
+    ["llm", "THINK: And oil."], ["llm", 'ACT: search(cooking oil price 1 litre)'], ["prog", "LOOK: A 1 litre bottle of cooking oil is around ₹180."],
   ];
   const SUMMARY = ["summary", "Prices found: rice ₹60, dal ₹120, oil ₹180."];
   const tx = document.getElementById("m4Tx"), next = document.getElementById("m4Next"), go = document.getElementById("m4Go");

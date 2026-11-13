@@ -13,6 +13,7 @@ window.PYWORDS_EXTRA = {
   "None": { what: "Python's word for \"nothing here\". re.search gives None when it finds no match.", ex: "x = None\nprint(x)", out: "None" },
   "elif": { what: "Short for \"else, if\": checked only when the if above was False.", ex: "x = 5\nif x > 10:\n    print(\"big\")\nelif x > 3:\n    print(\"medium\")", out: "medium" },
   "try": { what: "Try the indented lines. If one goes wrong, jump to except instead of crashing.", ex: "try:\n    print(10 / 0)\nexcept Exception:\n    print(\"can't divide by 0\")", out: "can't divide by 0" },
+  "Exception": { what: "Python's name for any error. except Exception: catches them all.", ex: "try:\n    print(10 / 0)\nexcept Exception:\n    print(\"an error\")", out: "an error" },
   "except": { what: "What to do when the lines under try go wrong.", ex: "try:\n    print(int(\"abc\"))\nexcept Exception:\n    print(\"not a number\")", out: "not a number" },
   "break": { what: "Stops the loop right away. The lines after the loop run next.", ex: "for n in [1, 2, 3, 4]:\n    if n == 3:\n        break\n    print(n)", out: "1\n2" },
   "continue": { what: "Skips the rest of this round and goes straight to the next one.", ex: "for n in [1, 2, 3]:\n    if n == 2:\n        continue\n    print(n)", out: "1\n3" },

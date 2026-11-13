@@ -154,7 +154,7 @@
       <p class="say">5 questions, one for each idea in this lesson. Answer them all right to pass. A wrong answer tells you why, and which page to look at again.</p>
       <div class="test" data-test="2">
         <div class="quiz" data-page="lesson1.html#1" data-topic="Words that do things" data-right="Right. The program sees the ACT: line and runs the weather tool.">
-          <div class="q"><small>1. Predict</small>The LLM writes <code>ACT: weather("Delhi")</code>. What happens next?</div>
+          <div class="q"><small>1. Predict</small>The LLM writes <code>ACT: weather(Delhi)</code>. What happens next?</div>
           <div class="options">
             <button data-why="The LLM can't check anything. It only writes text. Someone else has to act.">The LLM checks the weather itself</button>
             <button data-right>The program runs the weather tool</button>
@@ -296,7 +296,7 @@ const line = ([who, text], opts = {}) =>
   const STEPS = [
     { node: null, round: 0, add: ["you", "How much do 3 coffees at Blue Cup cost?"], say: "A task with two steps. Press Next step." },
     { node: "nThink", round: 1, add: ["llm", "THINK: I need the price first."], say: "Round 1 · Think: the LLM decides what it needs." },
-    { node: "nAct", round: 1, add: ["llm", "ACT: search(\"Blue Cup coffee price\")"], say: "Round 1 · Act: in the same write, it asks for a search. Then it stops and waits." },
+    { node: "nAct", round: 1, add: ["llm", "ACT: search(Blue Cup coffee price)"], say: "Round 1 · Act: in the same write, it asks for a search. Then it stops and waits." },
     { node: "nLook", round: 1, add: ["prog", "LOOK: ₹120 a cup"], say: "Round 1 · Look: the program writes what the search found." },
     { node: "nThink", round: 2, add: ["llm", "THINK: Now 3 × 120."], say: "Round 2 · Think: with the price in the text, it plans the next step." },
     { node: "nAct", round: 2, add: ["llm", "ACT: calculator(3 * 120)"], say: "Round 2 · Act: in the same write, it asks for the calculator." },
@@ -367,10 +367,10 @@ const line = ([who, text], opts = {}) =>
   const LINES = [   // [who wrote it, the line, why]
     ["you", "Is it warm enough to swim in Kochi?", "you: you asked the question."],
     ["llm", "THINK: I need today's weather.", "the LLM: it thinks out loud before it acts."],
-    ["llm", "ACT: weather(\"Kochi\")", "the LLM: it asks for the tool. The program only does it."],
+    ["llm", "ACT: weather(Kochi)", "the LLM: it asks for the tool. The program only does it."],
     ["prog", "LOOK: 29°C, sunny", "the program: it writes what the tool gave back."],
     ["llm", "THINK: Warm. Is the sea calm?", "the LLM: thinking is always the LLM."],
-    ["llm", "ACT: search(\"Kochi sea today\")", "the LLM: asking for a tool is always the LLM."],
+    ["llm", "ACT: search(Kochi sea today)", "the LLM: asking for a tool is always the LLM."],
     ["prog", "LOOK: Calm sea, low waves", "the program: a tool's result comes from the program."],
     ["llm", "ANSWER: Yes! 29°C, sunny, and a calm sea.", "the LLM: it writes the answer, from what's in the text."],
   ];
