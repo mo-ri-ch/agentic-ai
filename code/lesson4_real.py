@@ -1,19 +1,29 @@
 # A real LLM: a small, free model that runs inside Colab
 # (faster with a GPU: Runtime → Change runtime type → T4 GPU)
-import torch
-from transformers import pipeline
+import torch                        # the library that does the model's math
+from transformers import pipeline   # a ready-made way to load a model and use it
+
+# Load Qwen2.5 1.5B (about 3 GB, downloaded the first time).
+# device=0 means "use the GPU", -1 means "use the CPU": it picks the GPU if there is one.
 chat = pipeline("text-generation", model="Qwen/Qwen2.5-1.5B-Instruct",
                 device=0 if torch.cuda.is_available() else -1)
 
 def real_llm(text):
+    # The chat gets a list with one message: a dictionary saying who it's from ("role")
+    # and what it says ("content"). Here: all the text so far, from the user.
+    # max_new_tokens=120: write at most 120 tokens (pieces of words).
+    # do_sample=False: always pick the most likely next piece, so every run is the same.
     out = chat([{"role": "user", "content": text}], max_new_tokens=120, do_sample=False)
+    # out[0]["generated_text"] is the whole chat, now with the model's reply at the end.
+    # [-1] counts from the end: the last message. ["content"] is its text.
     reply = out[0]["generated_text"][-1]["content"]
+    # Keep the reply only up to its first ACT: or ANSWER: line
     kept = []
     for line in reply.split("\n"):
         kept.append(line)
         if line.startswith("ACT:") or line.startswith("ANSWER:"):
             break   # cut here: the program writes the LOOK: line, not the LLM
-    return "\n".join(kept)
+    return "\n".join(kept)   # glue the kept lines back together, one per line
 
 # The same memory, now with a real LLM
 print(run_agent("My favourite colour is green. Please remember that.", real_llm))
