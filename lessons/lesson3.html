@@ -456,7 +456,7 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
 // ---------- Part 1: call the tools ----------
 (function callTools() {
   const out = document.getElementById("p1Out"), city = document.getElementById("p1City"), math = document.getElementById("p1Math");
-  const run = (name, input) => { out.innerHTML = `print(TOOLS["${name}"]("${esc(input)}"))\n<span class="c"># ${esc(TOOLS[name](input))}</span>`; };
+  const run = (name, input) => { out.innerHTML = `print(${name}("${esc(input)}"))\n<span class="c"># ${esc(TOOLS[name](input))}</span>`; };
   document.getElementById("p1RunW").onclick = () => run("weather", city.value);
   document.getElementById("p1RunC").onclick = () => run("calculator", math.value);
   city.onkeydown = e => { if (e.key === "Enter") run("weather", city.value); };
