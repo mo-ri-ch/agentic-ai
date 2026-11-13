@@ -25,10 +25,79 @@
       <div class="progress" aria-label="Lesson parts"></div>
     </div>
 
+    <!-- 0 -->
+    <section class="part" data-title="Quick basics: reading Python">
+      <h2>✏️ Quick basics: reading Python</h2>
+      <p class="agent-say">Time to build me for real, in Python. You'll only need to read four things.</p>
+      <div class="activity" id="qbBox">
+        <div class="do">Pick one. Guess what it prints.</div>
+        <div class="modes" role="tablist" aria-label="Which Python idea">
+          <button class="mode on" data-qb="text" role="tab" aria-selected="true">text</button>
+          <button class="mode" data-qb="list" role="tab" aria-selected="false">list</button>
+          <button class="mode" data-qb="dict" role="tab" aria-selected="false">dictionary</button>
+          <button class="mode" data-qb="func" role="tab" aria-selected="false">function</button>
+        </div>
+        <div data-qbp="text">
+<pre><code>text = "THINK: hi" + "\n" + "ACT: go"
+print(text)</code></pre>
+          <div class="quiz" style="margin:8px 0" data-right='Right. + joins the texts, and "\n" starts a new line.'>
+            <div class="options">
+              <button data-right>THINK: hi<br>ACT: go</button>
+              <button data-why='"\n" isn&apos;t printed as it is: it means "new line".'>THINK: hi\nACT: go</button>
+              <button data-why="+ works on text: it joins them, one after the other.">an error</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div data-qbp="list" hidden>
+<pre><code>replies = ["one", "two", "three"]
+print(replies[0])</code></pre>
+          <div class="quiz" style="margin:8px 0" data-right="Right. A list keeps items in order, and Python counts from 0.">
+            <div class="options">
+              <button data-why="Python counts from 0, so [0] is the first item.">two</button>
+              <button data-right>one</button>
+              <button data-why="[0] gives one item, not the list.">["one"]</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div data-qbp="dict" hidden>
+<pre><code>today = {"pune": "24°C"}
+print(today["pune"])
+print(today.get("goa", "no city"))</code></pre>
+          <div class="quiz" style="margin:8px 0" data-right='Right. A dictionary stores pairs, key → value. get gives the second value when the key isn&apos;t there.'>
+            <div class="options">
+              <button data-why="today[key] gives the value, not the key.">pune<br>goa</button>
+              <button data-why='get doesn&apos;t crash: if "goa" isn&apos;t there, it gives "no city".'>24°C<br>an error</button>
+              <button data-right>24°C<br>no city</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div data-qbp="func" hidden>
+<pre><code>def shout(word):
+    return word + "!"
+
+print(shout("hi"))</code></pre>
+          <div class="quiz" style="margin:8px 0" data-right='Right. "hi" goes in as word, and return hands back "hi!".'>
+            <div class="options">
+              <button data-right>hi!</button>
+              <button data-why='word is a name for whatever goes in. Here, that&apos;s "hi".'>word!</button>
+              <button data-why="def only makes the function. shout(&quot;hi&quot;) runs it.">nothing</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+      </div>
+      <p class="say">Text in quotes is a <b>string</b>. <code>[ ]</code> is a <b>list</b>, counted from 0. <code>{ }</code> is a <b>dictionary</b>: key → value. <code>def</code> makes a <b>function</b>: input in, <code>return</code> hands the result back. Tap any dotted word in the code for help.</p>
+      <p class="say"><b class="eqbox">"string" · [list] · {key: value} · def function</b></p>
+      <p class="hook">A tool is one of these functions.</p>
+    </section>
+
     <!-- 1 -->
     <section class="part" data-title="Tools are functions">
       <h2>Tools are functions</h2>
-      <p class="agent-say">Time to build me for real, in Python. First, my tools.</p>
+      <p class="agent-say">First, my tools.</p>
       <p class="say">In code, a tool is a Python <mark>function</mark>: text goes in, text comes out.</p>
       <div class="activity">
         <div class="do">Pick a tool, then call it. Try something that doesn't work, too.</div>
@@ -40,23 +109,26 @@
 <pre><code>def weather(city):
     today = {"kochi": "29°C, sunny", "delhi": "18°C, foggy", "pune": "24°C, light rain"}
     return today.get(city.lower(), f"Error: no city called {city}")</code></pre>
-          <p class="count" style="margin:0 0 6px"><code>today.get(city, …)</code> looks the city up. If it isn't there, you get the error instead.</p>
+          <p class="count" style="margin:0 0 6px"><code>today</code> is a dictionary: city → weather. <code>today.get(city, …)</code> looks the city up. If it isn't there, you get the error instead.</p>
           <div class="tryrow">weather(" <input id="p1City" value="Kochi" aria-label="City" spellcheck="false"> ") <button id="p1RunW">▶ Run</button></div>
         </div>
         <div id="p1C" hidden>
 <pre><code>def calculator(math):
-    if not re.fullmatch(r"[0-9+\-*/(). ]+", math) or "**" in math:
+    for ch in math:
+        if ch not in "0123456789+-*/(). ":
+            return "Error: the calculator only takes numbers and + - * / ( )"
+    if "**" in math:   <span class="c"># ** is power: 9 ** 999999 would never finish</span>
         return "Error: the calculator only takes numbers and + - * / ( )"
     try:
         return str(eval(math))
     except Exception:
         return "Error: that math doesn't work out"</code></pre>
-          <p class="count" style="margin:0 0 6px">First it checks the input is only numbers and <code>+ - * / ( )</code>. <code>try</code> catches math that goes wrong, like dividing by 0, and sends back an error instead of crashing.</p>
+          <p class="count" style="margin:0 0 6px">It checks each character first. <code>try</code> catches math that goes wrong, like <code>2 / 0</code>, and sends back an error.</p>
           <div class="tryrow">calculator(" <input id="p1Math" value="12 * 7" aria-label="Math" spellcheck="false"> ") <button id="p1RunC">▶ Run</button></div>
         </div>
         <div class="out" id="p1Out"><span class="c"># press ▶ Run</span></div>
       </div>
-      <p class="say">The <code>ACT:</code> line only gives the tool's name, as text. So the program keeps every tool in a <span data-peek="A Python dictionary stores pairs: a key and its value. Here the key is the tool's name, and the value is the function.">dictionary</span>, name → function, and finds the tool by its name:</p>
+      <p class="say">The <code>ACT:</code> line only gives the tool's name, as text. So the program keeps every tool in another <span data-peek="A Python dictionary stores pairs: a key and its value. Here the key is the tool's name, and the value is the function.">dictionary</span>, name → function, and finds the tool by its name:</p>
 <pre><code>TOOLS = {"calculator": calculator, "weather": weather}
 
 TOOLS["weather"]            <span class="c"># → the weather function</span>
@@ -81,6 +153,7 @@ TOOLS["weather"]("Kochi")   <span class="c"># → same as weather("Kochi") → "
           <li><code>(\w+)</code>: blank ①, one or more letters, digits or _ : the tool's name.</li>
           <li><code>\(</code> and <code>\)</code>: real brackets.</li>
           <li><code>(.*)</code>: blank ②, anything in between: the input.</li>
+          <li><code>r"…"</code>: the <code>r</code> keeps every <code>\</code> exactly as written, so the pattern gets it.</li>
         </ul>
       </div>
       <p class="hook">Try it on new examples.</p>
@@ -102,7 +175,7 @@ TOOLS["weather"]("Kochi")   <span class="c"># → same as weather("Kochi") → "
           <div class="pq-fb" aria-live="polite"></div>
         </div>
         <div class="pq" data-ans="18" data-tol="0.1" data-hint="Find the name and the input. Then look the city up in the weather tool's dictionary." data-work="act.group(1) = weather, act.group(2) = &quot;Delhi&quot;.<br>TOOLS[&quot;weather&quot;](&quot;Delhi&quot;) → &quot;18°C, foggy&quot;.<br>18°C.">
-          <div class="pq-q">The reply is <code>ACT: weather("Delhi")</code>. What temperature, in °C, ends up on the <code>LOOK:</code> line? (The weather tool's code is on the first page.)</div>
+          <div class="pq-q">The reply is <code>ACT: weather("Delhi")</code>. What temperature, in °C, ends up on the <code>LOOK:</code> line? (The weather tool's code is on the Tools are functions page.)</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
@@ -119,7 +192,7 @@ TOOLS["weather"]("Kochi")   <span class="c"># → same as weather("Kochi") → "
 <pre class="mapcode"><code id="p3Code"></code></pre>
         <div class="count" id="p3Say"></div>
       </div>
-      <p class="say near" style="position:relative">Each pass through the <code>for</code> loop is one round. <code>range(step_limit)</code> runs it at most <code>step_limit</code> times, 5 here. <code>return</code> ends it early: an answer in round 2 means only 2 rounds run.<br><b class="eqbox">The loop ends at ANSWER: (return), or after step_limit rounds.</b><button class="doubt" type="button" data-peek-from="instrPeek" aria-label="What's in INSTRUCTIONS?">🤔</button></p>
+      <p class="say near" style="position:relative">Each pass through the <code>for</code> loop is one round. <code>range(step_limit)</code> runs it at most <code>step_limit</code> times: 5, unless you pass another number. <code>return</code> ends it early: an answer in round 2 means only 2 rounds run.<br><b class="eqbox">The loop ends at ANSWER: (return), or after step_limit rounds.</b><button class="doubt" type="button" data-peek-from="instrPeek" aria-label="What's in INSTRUCTIONS?">🤔</button></p>
       <div hidden id="instrPeek"><b>🤔 What's in INSTRUCTIONS?</b> The tool list and the rules, at the top of the text every round:
 <pre style="margin:6px 0 0;white-space:pre-wrap">You are an agent. TOOLS you can use:
 calculator(math) - works out math exactly. Give it the math, like 12 * 7.
@@ -199,7 +272,10 @@ for line in reply.split("\n"):
 
 <span class="c"># Tools: plain Python functions. Text in, text out.</span>
 def calculator(math):
-    if not re.fullmatch(r"[0-9+\-*/(). ]+", math) or "**" in math:
+    for ch in math:
+        if ch not in "0123456789+-*/(). ":
+            return "Error: the calculator only takes numbers and + - * / ( )"
+    if "**" in math:   # ** is power: 9 ** 999999 would never finish
         return "Error: the calculator only takes numbers and + - * / ( )"
     try:
         return str(eval(math))
@@ -272,7 +348,7 @@ ANSWER: 4,817 × 263 = 1,266,871.
       <h2>Lesson 3 test</h2>
       <p class="say">5 questions, one for each idea in this lesson. Answer them all right to pass. A wrong answer tells you why, and which page to look at again.</p>
       <div class="test" data-test="4">
-        <div class="quiz" data-page="lesson3.html#1" data-topic="Tools are functions" data-right="Right. A tool is a Python function: text in, text out.">
+        <div class="quiz" data-page="lesson3.html#2" data-topic="Tools are functions" data-right="Right. A tool is a Python function: text in, text out.">
           <div class="q"><small>1. Idea</small>In the code, what is a tool?</div>
           <div class="options">
             <button data-right>A Python function: text in, text out</button>
@@ -281,7 +357,7 @@ ANSWER: 4,817 × 263 = 1,266,871.
           </div>
           <div class="feedback"></div>
         </div>
-        <div class="quiz" data-page="lesson3.html#2" data-topic="Find the ACT: line" data-right="Right. act.group(1) is “wether”, which isn't in TOOLS.">
+        <div class="quiz" data-page="lesson3.html#3" data-topic="Find the ACT: line" data-right="Right. act.group(1) is “wether”, which isn't in TOOLS.">
           <div class="q"><small>2. Predict</small>The reply is <code>ACT: wether("Kochi")</code>. What's on the <code>LOOK:</code> line?</div>
           <div class="options">
             <button data-why="The program doesn't fix spelling. It looks up the exact name in TOOLS.">29°C, sunny</button>
@@ -290,7 +366,7 @@ ANSWER: 4,817 × 263 = 1,266,871.
           </div>
           <div class="feedback"></div>
         </div>
-        <div class="quiz" data-page="lesson3.html#4" data-topic="The loop in code" data-right="Right. Round 1 asks for a tool, round 2 answers, and return ends the loop.">
+        <div class="quiz" data-page="lesson3.html#5" data-topic="The loop in code" data-right="Right. Round 1 asks for a tool, round 2 answers, and return ends the loop.">
           <div class="q"><small>3. Count</small><code>step_limit=5</code>. The LLM answers in round 2. How many times is the LLM called?</div>
           <div class="options">
             <button data-right>2</button>
@@ -299,7 +375,7 @@ ANSWER: 4,817 × 263 = 1,266,871.
           </div>
           <div class="feedback"></div>
         </div>
-        <div class="quiz" data-page="lesson3.html#5" data-topic="A fake LLM first" data-right="Right. With replies written by hand, you know what should happen, so any mistake is in the loop.">
+        <div class="quiz" data-page="lesson3.html#6" data-topic="A fake LLM first" data-right="Right. With replies written by hand, you know what should happen, so any mistake is in the loop.">
           <div class="q"><small>4. Why</small>Why test with a fake LLM before a real one?</div>
           <div class="options">
             <button data-why="It can't answer anything new: it only hands back replies written by hand.">It's smarter than a real LLM</button>
@@ -308,7 +384,7 @@ ANSWER: 4,817 × 263 = 1,266,871.
           </div>
           <div class="feedback"></div>
         </div>
-        <div class="quiz" data-page="lesson3.html#7" data-topic="A real LLM" data-right="Right. The program keeps the reply up to the ACT: line, runs the real tool, and writes the real LOOK:.">
+        <div class="quiz" data-page="lesson3.html#8" data-topic="A real LLM" data-right="Right. The program keeps the reply up to the ACT: line, runs the real tool, and writes the real LOOK:.">
           <div class="q"><small>5. Predict</small>A real LLM writes <code>ACT: weather("Kochi")</code>, then <code>LOOK: 31°C</code>. What does the program do?</div>
           <div class="options">
             <button data-why="That LOOK: was made up by the LLM. The program never trusts it.">Uses 31°C as the result</button>
@@ -367,6 +443,14 @@ function pyCalculator(math) {
   } catch (e) { return "Error: that math doesn't work out"; }
 }
 const TOOLS = { calculator: pyCalculator, weather: pyWeather };
+
+// ---------- Part 0: quick basics, four tabs ----------
+(function quickBasics() {
+  const box = document.getElementById("qbBox");
+  const show = v => box.querySelectorAll("[data-qbp]").forEach(p => p.hidden = p.dataset.qbp !== v);
+  const set = AG.modes(box, "qb", show);
+  addReset(box, () => { box.querySelectorAll(".quiz-reset").forEach(b => { if (!b.hidden) b.click(); }); set("text"); show("text"); });
+})();
 
 // ---------- Part 1: call the tools ----------
 (function callTools() {
@@ -444,11 +528,11 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
     ['    return "Stopped: the step limit was reached."', "stop"],
   ];
   const PARTS = [
-    ["start", "📄 Start", "The text starts with INSTRUCTIONS (the tool list and the rules), then the question."],
-    ["think", "💭 Think", "Call the LLM with all the text so far. Its reply joins the text."],
-    ["act", "🔧 Act", "Find the ACT: line, check the tool exists, and run it. Any problem becomes an error message."],
+    ["start", "📄 Start", "text is one long string: INSTRUCTIONS (the tool list and the rules), then the question. + joins strings; \"\\n\" starts a new line."],
+    ["think", "💭 Think", "llm is the LLM function you pass in. It reads all the text so far; text += reply adds its reply to the end."],
+    ["act", "🔧 Act", "Find the ACT: line, check the tool exists, and run it (elif means \"else, if\"). Any problem becomes an error message."],
     ["look", "👀 Look", "The result joins the text on a LOOK: line, for the LLM to read next round."],
-    ["stop", "🛑 Stop", "Two ways out: ANSWER: ends it with return, or the for loop runs out of rounds: the step limit."],
+    ["stop", "🛑 Stop", "Two ways out. ANSWER: ends it with return (split(\"ANSWER:\")[1] is the part after ANSWER:). Or the for loop runs out of rounds: the step limit."],
   ];
   const code = document.getElementById("p3Code"), chips = document.getElementById("p3Parts"), say = document.getElementById("p3Say");
   code.innerHTML = CODE.map(([t, p]) => `<span class="cl" data-p="${p}">${esc(t)}</span>`).join("");

@@ -6,7 +6,9 @@ EXPLAIN = {
     # ---------- Lesson 3 ----------
     "import re": "Load re, Python's tool for finding patterns in text. We'll use it to find ACT: lines.",
     "def calculator(math):": "Define the calculator tool. Nothing runs yet; it only runs when the agent asks for it.",
-    'if not re.fullmatch(r"[0-9+\\-*/(). ]+", math) or "**" in math:': "Check the math holds only numbers and + - * / ( ), so nothing else can sneak in.",
+    'for ch in math:': "Go through the math one character at a time.",
+    'if ch not in "0123456789+-*/(). ":': "Is this character a digit, a space or + - * / ( ) . ? If not, nothing else may sneak in: stop with an error.",
+    'if "**" in math:': "** means power. A huge power could run forever, so it's blocked too.",
     'return "Error: the calculator only takes numbers and + - * / ( )"': "Not plain math: send back an error, as text.",
     "try:": "Try the next line. If it goes wrong (like dividing by 0), jump to except instead of crashing.",
     "return str(eval(math))": "Work out the math, and turn the answer into text.",

@@ -8,7 +8,10 @@ def shop(item):
     return prices.get(item.lower(), f"Error: no price found for {item}")
 
 def calculator(math):
-    if not re.fullmatch(r"[0-9+\-*/(). ]+", math) or "**" in math:
+    for ch in math:
+        if ch not in "0123456789+-*/(). ":
+            return "Error: the calculator only takes numbers and + - * / ( )"
+    if "**" in math:   # ** is power: 9 ** 999999 would never finish
         return "Error: the calculator only takes numbers and + - * / ( )"
     try:
         return str(eval(math))

@@ -2,6 +2,32 @@
 // The shared look and features come from study-notebook-design (loaded after this file),
 // which reads the settings below.
 
+// Extra Python words for this course: tap a dotted word in a code block for a short explanation.
+// (The shared codewalk.js adds these to its own list. "in" replaces the shared one, which only covers for loops.)
+window.PYWORDS_EXTRA = {
+  "in": { what: "With for: go through each item. On its own, a in b asks: is a inside b? True or False.", ex: "print(\"ACT\" in \"ACT: weather\")\nfor ch in \"hi\":\n    print(ch)", out: "True\nh\ni" },
+  "not": { what: "Flips True and False. not in asks: is it missing?", ex: "print(not True)\nprint(\"x\" not in \"abc\")", out: "False\nTrue" },
+  "is": { what: "Checks if two things are the very same thing. Mostly used as is None.", ex: "x = None\nprint(x is None)", out: "True" },
+  "None": { what: "Python's word for \"nothing here\". re.search gives None when it finds no match.", ex: "x = None\nprint(x)", out: "None" },
+  "elif": { what: "Short for \"else, if\": checked only when the if above was False.", ex: "x = 5\nif x > 10:\n    print(\"big\")\nelif x > 3:\n    print(\"medium\")", out: "medium" },
+  "try": { what: "Try the indented lines. If one goes wrong, jump to except instead of crashing.", ex: "try:\n    print(10 / 0)\nexcept Exception:\n    print(\"can't divide by 0\")", out: "can't divide by 0" },
+  "except": { what: "What to do when the lines under try go wrong.", ex: "try:\n    print(int(\"abc\"))\nexcept Exception:\n    print(\"not a number\")", out: "not a number" },
+  "break": { what: "Stops the loop right away. The lines after the loop run next.", ex: "for n in [1, 2, 3, 4]:\n    if n == 3:\n        break\n    print(n)", out: "1\n2" },
+  "continue": { what: "Skips the rest of this round and goes straight to the next one.", ex: "for n in [1, 2, 3]:\n    if n == 2:\n        continue\n    print(n)", out: "1\n3" },
+  "f": { what: "An f-string: the f lets you put a value inside {} in the text.", ex: "city = \"Pune\"\nprint(f\"No city called {city}\")", out: "No city called Pune" },
+  "str": { what: "Turns a value into text (a string).", ex: "print(str(42) + \"!\")", out: "42!" },
+  "eval": { what: "Works out a piece of text as Python. Only safe on checked input, so the calculator checks first.", ex: "print(eval(\"6 * 7\"))", out: "42" },
+  "get": { what: "Looks a key up in a dictionary. If it isn't there, you get the second value instead.", ex: "today = {\"pune\": \"24°C\"}\nprint(today.get(\"pune\", \"?\"))\nprint(today.get(\"goa\", \"?\"))", out: "24°C\n?" },
+  "lower": { what: "The same text in small letters.", ex: "print(\"Kochi\".lower())", out: "kochi" },
+  "split": { what: "Cuts text into a list of pieces, at every place the given text appears.", ex: "print(\"THINK: hi\\nACT: go\".split(\"\\n\"))\nprint(\"a ANSWER: 7\".split(\"ANSWER:\")[1])", out: "['THINK: hi', 'ACT: go']\n 7" },
+  "strip": { what: "Takes spaces (or the characters you give) off both ends.", ex: "print(\"  7 \".strip())\nprint('\"Kochi\"'.strip('\"'))", out: "7\nKochi" },
+  "startswith": { what: "True if the text begins with the given text.", ex: "print(\"ACT: weather\".startswith(\"ACT:\"))", out: "True" },
+  "join": { what: "Glues a list of texts into one text, with the given text between them.", ex: "print(\"\\n\".join([\"a\", \"b\"]))", out: "a\nb" },
+  "pop": { what: "Takes an item out of a list and gives it back. pop(0) takes the first one.", ex: "replies = [\"one\", \"two\"]\nprint(replies.pop(0))\nprint(replies)", out: "one\n['two']" },
+  "search": { what: "Finds the first place a pattern matches in the text, or gives None.", ex: "import re\nm = re.search(r\"ACT: (\\w+)\", \"ACT: weather\")\nprint(m.group(1))", out: "weather" },
+  "findall": { what: "Finds every match of a pattern and gives them back as a list.", ex: "import re\nprint(re.findall(r\"\\d+\", \"2 apples, 15 pears\"))", out: "['2', '15']" },
+};
+
 const COURSE_LESSONS = [
   // n: lesson number used for saved progress (never change it) · label: the number students see
   { n: 1, label: "0", step: "basics", title: "What an LLM does", file: "lesson0.html", ready: true, test: 5,
@@ -13,7 +39,7 @@ const COURSE_LESSONS = [
   { n: 3, label: "2", step: "tools", title: "Tools", file: "lesson2.html", ready: true, test: 8,
     summary: "Give the agent a calculator, a search and more, and let it choose when to use them.",
     leaves: "You've watched an agent work. Can you build one yourself?" },
-  { n: 4, label: "3", step: "build it", title: "Build the loop", file: "lesson3.html", ready: true, test: 9,
+  { n: 4, label: "3", step: "build it", title: "Build the loop", file: "lesson3.html", ready: true, test: 10,
     summary: "Write your own agent in about 50 lines of Python. No framework.",
     leaves: "Your agent forgets everything when the task ends. How can it remember?" },
   { n: 5, label: "4", step: "memory", title: "Memory", file: "lesson4.html", ready: true, test: 8,
