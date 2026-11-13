@@ -240,8 +240,8 @@ When you know the answer, write: ANSWER: your answer</pre>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
-        <div class="pq" data-ans="3" data-tol="0.1" data-hint="With no ANSWER:, the loop runs until the step limit." data-work="No ANSWER:, so all 3 rounds run.<br>1 call per round: 3 calls.">
-          <div class="pq-q"><code>step_limit=3</code>. The fake LLM never writes <code>ANSWER:</code>. How many times is the LLM called?</div>
+        <div class="pq" data-ans="4" data-tol="0.1" data-hint="With no ANSWER:, the loop runs until the step limit. Each ACT: gets one LOOK: line." data-work="No ANSWER:, so all 4 rounds run.<br>Each round: one ACT: → one LOOK:.<br>4 LOOK: lines.">
+          <div class="pq-q"><code>step_limit=4</code>. Every reply in <code>fake_replies</code> has an <code>ACT:</code> line, and none has <code>ANSWER:</code>. How many <code>LOOK:</code> lines does the program write?</div>
           <div class="pq-in"><input type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer"><button class="primary pq-check" type="button" hidden>Check</button></div>
           <div class="pq-fb" aria-live="polite"></div>
         </div>
@@ -257,7 +257,7 @@ When you know the answer, write: ANSWER: your answer</pre>
     <!-- 5 -->
     <section class="part" data-title="A real LLM">
       <h2>A real LLM</h2>
-      <p class="say">Now swap the fake LLM for a real one. Its replies aren't always this tidy.</p>
+      <p class="say">Now swap the fake LLM for a real one. A real LLM writes its own replies, and they aren't always as tidy as the ones you wrote.</p>
       <div class="activity">
         <div class="do">A reply like the ones a real LLM writes. Tap the first line the program should throw away.</div>
         <div class="tx" id="p5Tx"></div>
