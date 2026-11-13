@@ -170,3 +170,6 @@ pre.mapcode code .cl.dim { opacity: 0.45; }
 .g2 { background: var(--hl-pink); }
 .gn { font-size: 0.75em; color: var(--code-comment); vertical-align: super; margin-left: 1px; }
 @media (max-width: 480px) { .gc { display: none; } }
+/* Numbered blanks ① ②: small round badges, so they read the same in every font */
+.gb { display: inline-block; min-width: 1.35em; height: 1.35em; line-height: 1.35em; border-radius: 50%; padding: 0;
+      text-align: center; font-family: var(--body); font-size: 0.72em; font-weight: 700; vertical-align: 0.15em; margin: 0 1px; }
