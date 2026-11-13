@@ -20,5 +20,6 @@ def ask_person(name, details):
     answer = input(f"Allow {name}({details})? y or n: ")
     return answer == "y"
 
-print(run_agent("Find a cheap flight to Goa.", real_llm, allowed={"search", "send_email"}))
-print(log)
+print(run_agent("Find a cheap flight to Goa.", real_llm, allowed=["search", "send_email"]))
+for line in log:
+    print(line)
