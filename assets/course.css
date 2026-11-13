@@ -173,3 +173,6 @@ pre.mapcode code .cl.dim { opacity: 0.45; }
 /* Numbered blanks ① ②: small round badges, so they read the same in every font */
 .gb { display: inline-block; min-width: 1.35em; height: 1.35em; line-height: 1.35em; border-radius: 50%; padding: 0;
       text-align: center; font-family: var(--body); font-size: 0.72em; font-weight: 700; vertical-align: 0.15em; margin: 0 1px; }
+/* Lesson 3: which fake replies have been used */
+.rep { display: inline-block; border: 1px solid var(--pencil); border-radius: 999px; padding: 0 8px; font-size: 0.85em; margin-right: 2px; }
+.rep.done { background: var(--hl-blue); color: var(--on-hl); border-color: transparent; }

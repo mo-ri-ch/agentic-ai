@@ -213,13 +213,22 @@ When you know the answer, write: ANSWER: your answer</pre>
       <h2>A fake LLM first</h2>
       <p class="say">A real LLM is slow, and its replies change from run to run. So test the loop first with a <mark>fake LLM</mark>: it hands back replies you wrote yourself.</p>
       <div class="activity">
-        <div class="do">Pick a test. Run the loop with a fake LLM.</div>
+        <div class="do">Pick a test. Run the loop, one step at a time.</div>
 <pre><code>def fake_llm(text):
     return fake_replies.pop(0)   <span class="c"># hand back the next reply, ignore the text</span></code></pre>
         <div class="chips" id="p4Chips"></div>
         <div class="tx" id="p4Replies"></div>
         <div class="btnrow"><button class="primary" id="p4Run">▶ Run the loop</button></div>
-        <div class="out" id="p4Out" hidden></div>
+        <div id="p4Steps" hidden>
+          <div class="count" id="p4Used"></div>
+          <div class="tx" id="p4Tx"></div>
+          <div class="count" id="p4Say" style="margin-top:8px"></div>
+          <div class="btnrow">
+            <button class="primary" id="p4Next">Next step →</button>
+            <button id="p4Back" hidden>← Back</button>
+            <button id="p4Again" hidden>↺ Start again</button>
+          </div>
+        </div>
       </div>
       <p class="say">No model needed, so you can test every part of the loop first: tools, errors, the step limit.<br><b class="eqbox">fake_llm(text) → the next reply in the list</b></p>
       <p class="hook">Try it on new numbers.</p>
@@ -563,14 +572,14 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
   const TESTS = {"normal": {"replies": ["THINK: Exact math. I'll use the calculator.\nACT: calculator(4817 * 263)", "ANSWER: 4,817 × 263 = 1,266,871."], "q": "What is 4,817 × 263?", "limit": 5, "out": "THINK: Exact math. I'll use the calculator.\nACT: calculator(4817 * 263)\nLOOK: 1266871\nANSWER: 4,817 × 263 = 1,266,871.\n4,817 × 263 = 1,266,871.\n"}, "typo": {"replies": ["THINK: I'll check the weather.\nACT: weather(Kochii)", "THINK: I spelled it wrong.\nACT: weather(Kochi)", "ANSWER: It's 29°C and sunny in Kochi."], "q": "Is it warm in Kochi?", "limit": 5, "out": "THINK: I'll check the weather.\nACT: weather(Kochii)\nLOOK: Error: no city called Kochii\nTHINK: I spelled it wrong.\nACT: weather(Kochi)\nLOOK: 29°C, sunny\nANSWER: It's 29°C and sunny in Kochi.\nIt's 29°C and sunny in Kochi.\n"}, "never": {"replies": ["ACT: weather(Pune)", "ACT: weather(Pune)", "ACT: weather(Pune)", "ACT: weather(Pune)", "ACT: weather(Pune)"], "q": "Is it raining in Pune?", "limit": 3, "out": "ACT: weather(Pune)\nLOOK: 24°C, light rain\nACT: weather(Pune)\nLOOK: 24°C, light rain\nACT: weather(Pune)\nLOOK: 24°C, light rain\nStopped: the step limit was reached.\n"}};
   const LABELS = { normal: "Normal", typo: "A typo", never: "Never answers" };
   const chips = document.getElementById("p4Chips"), replies = document.getElementById("p4Replies");
-  const run = document.getElementById("p4Run"), out = document.getElementById("p4Out");
+  const run = document.getElementById("p4Run");
   let cur = "normal";
   function show() {
     const t = TESTS[cur];
     chips.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.k === cur));
-    replies.innerHTML = `<div class="count">fake_replies = (${t.replies.length} replies) · step_limit=${t.limit}</div>` +
-      t.replies.map((r, i) => line(["llm", `${i + 1}. ${r.replace(/\n/g, "  ⏎  ")}`])).join("");
-    out.hidden = true; run.hidden = false; replies.hidden = false;
+    replies.innerHTML = `<div class="count">The fake LLM's ${t.replies.length} replies, in order. Step limit: ${t.limit}.</div>` +
+      t.replies.map((r, i) => `<div class="ln"><span class="who llm">${WHO.llm}</span><span class="txt">${i + 1}. ${esc(r).replace(/\n/g, "<br>&nbsp;&nbsp;&nbsp;")}</span></div>`).join("");
+    document.getElementById("p4Steps").hidden = true; run.hidden = false; replies.hidden = false;
   }
   Object.keys(LABELS).forEach(k => {
     const b = document.createElement("button");
@@ -578,12 +587,40 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
     b.onclick = () => { cur = k; show(); };
     chips.appendChild(b);
   });
+  // Step through one run. The LOOK: lines and the final answer come from the real Python run (t.out).
+  const box = document.getElementById("p4Steps"), used = document.getElementById("p4Used");
+  const badges = (t, n) => "Replies used: " + t.replies.map((_, i) =>
+    `<span class="rep${i < n ? " done" : ""}">${i + 1}${i < n ? " ✓" : ""}</span>`).join(" ");
+  function makeSteps(t) {
+    const looks = t.out.split("\n").filter(l => l.startsWith("LOOK:"));
+    const back = t.out.trimEnd().split("\n").pop();
+    const steps = [{ add: [["you", t.q]], say: `run_agent starts with the question. The fake LLM holds ${t.replies.length} replies. Press Next step.`, n: 0 }];
+    let li = 0;
+    for (let r = 0; r < t.limit && r < t.replies.length; r++) {
+      const reply = t.replies[r];
+      steps.push({ add: reply.split("\n").map(l => ["llm", l]), n: r + 1,
+        say: `Round ${r + 1}: fake_llm hands back reply ${r + 1}.` });
+      if (reply.includes("ANSWER:")) {
+        steps[steps.length - 1].say += ` It's an ANSWER:, so run_agent gives back: “${back}”`;
+        return steps;
+      }
+      const act = reply.match(/ACT: (\w+)\((.*)\)/);
+      const look = looks[li++];
+      steps.push({ add: [["prog", look]], n: r + 1,
+        say: look.includes("Error") ? `${act[1]}(${act[2]}) fails, so the error goes back on a LOOK: line for the LLM to read.`
+                                    : `The program runs ${act[1]}(${act[2]}) and writes the LOOK: line.` });
+    }
+    const left = t.replies.length - t.limit;
+    steps.push({ add: [], n: t.limit,
+      say: `The step limit stops it after ${t.limit} rounds${left > 0 ? ` (${left} replies never used)` : ""}. It gives back: “${back}”` });
+    return steps;
+  }
   run.onclick = () => {
     const t = TESTS[cur];
-    const lines = t.out.trimEnd().split("\n"), last = lines.pop();
-    out.innerHTML = `<span class="c">run_agent("${esc(t.q)}", fake_llm, step_limit=${t.limit})</span>\n` + esc(lines.join("\n")) +
-      `\n<span class="c"># what run_agent gives back:</span>\n` + esc(last);
-    out.hidden = false; run.hidden = true; replies.hidden = true;
+    replies.hidden = true; run.hidden = true; box.hidden = false;
+    AG.stepper({ tx: document.getElementById("p4Tx"), say: document.getElementById("p4Say"),
+      next: document.getElementById("p4Next"), back: document.getElementById("p4Back"), again: document.getElementById("p4Again"),
+      steps: makeSteps(t), onStep: (i, st) => { used.innerHTML = badges(t, st.n); } });
   };
   addReset(run, () => { cur = "normal"; show(); });
   show();
