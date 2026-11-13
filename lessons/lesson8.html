@@ -116,7 +116,7 @@
       <p class="say">Every lesson in one agent: tools, notes, a plan, asking first, an allowed list, a step limit, a budget and a log. Guess what each <code>print</code> shows. Then press <b>▶ Run</b>.</p>
 <pre><code>import re
 
-<span class="c"># 1. Tools: name → (function, changes something?)</span>
+<span class="c"># 1. Tools: name → function, and a list of the ones that change something</span>
 def weather(city):
     today = {"goa": "31°C, sunny", "ooty": "14°C, misty"}
     return today.get(city.lower(), f"Error: no city called {city}")
@@ -128,7 +128,8 @@ def flight_price(city):
 def book_flight(city):
     return f"Booked a flight to {city}."
 
-TOOLS = {"weather": (weather, False), "flight_price": (flight_price, False), "book_flight": (book_flight, True)}
+TOOLS = {"weather": weather, "flight_price": flight_price, "book_flight": book_flight}
+CHANGES_SOMETHING = ["book_flight"]
 
 <span class="c"># 2. Memory: notes from earlier tasks, and a log for a person to check</span>
 notes = ["The person loves beaches."]
@@ -165,20 +166,19 @@ def run_agent(question, llm, allowed, step_limit=8, budget=4.0, cost=0.5):
         print(reply)
         text += reply + "\n"
         if "ANSWER:" in reply:
-            print(f"(spent ₹{spent:.2f})")
+            print("(spent ₹" + str(spent) + ")")
             return reply.split("ANSWER:")[1].strip()
         act = re.search(r"ACT: (\w+)\((.*)\)", reply)
         if act is None:
             continue
-        name, details = act.group(1), act.group(2).strip('"')
+        name = act.group(1)
+        details = act.group(2).strip('"')
         if name not in allowed:
             look = f"Error: you aren't allowed to use {name}"
+        elif name in CHANGES_SOMETHING and not ask_person(name, details):
+            look = "The person said no."
         else:
-            func, changes = TOOLS[name]
-            if changes and not ask_person(name, details):
-                look = "The person said no."
-            else:
-                look = func(details)
+            look = TOOLS[name](details)
         log.append(f"{name}({details}) → {look}")
         print("LOOK: &lt;&lt;" + look + "&gt;&gt;")
         text += "LOOK: &lt;&lt;" + look + "&gt;&gt;\n"
@@ -196,8 +196,9 @@ def fake_llm(text):
     return fake_replies.pop(0)
 
 print(run_agent("Plan a weekend in Goa. Book the flight if it's under ₹5000.", fake_llm,
-                allowed={"weather", "flight_price", "book_flight"}))
-print(log)</code></pre>
+                allowed=["weather", "flight_price", "book_flight"]))
+for line in log:
+    print(line)</code></pre>
       <div class="run-area">
         <button class="run-code" type="button" aria-expanded="false">▶ Run</button>
         <div class="terminal" hidden><div class="term-bar">Terminal</div><pre class="term-out"><span class="prompt">$ python lesson8.py</span>
@@ -214,9 +215,11 @@ ACT: book_flight(Goa)
   Ask the person: allow book_flight(Goa)? y
 LOOK: &lt;&lt;Booked a flight to Goa.&gt;&gt;
 ANSWER: Goa is sunny (31°C), with beaches, as you love. Flight booked: ₹3200.
-(spent ₹2.50)
+(spent ₹2.5)
 Goa is sunny (31°C), with beaches, as you love. Flight booked: ₹3200.
-['weather(Goa) → 31°C, sunny', 'flight_price(Goa) → ₹3200', 'book_flight(Goa) → Booked a flight to Goa.']</pre></div>
+weather(Goa) → 31°C, sunny
+flight_price(Goa) → ₹3200
+book_flight(Goa) → Booked a flight to Goa.</pre></div>
       </div>
       <p class="run-links">
         <a class="btn primary" href="https://colab.research.google.com/github/mo-ri-ch/agentic-ai/blob/main/notebooks/lesson8.ipynb" target="_blank" rel="noopener">▶ Make it yours in Google Colab</a>
@@ -373,7 +376,7 @@ const { esc, line } = AG;
 
 // ---------- Part 3: run each test (outputs from the real Python run) ----------
 (function tests() {
-  const OUT = {"normal": "PLAN:\n1. Check Goa's weather\n2. Find the flight price\n3. Book it if it's under ₹5000\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: flight_price(Goa)\nLOOK: <<₹3200>>\nACT: book_flight(Goa)\n  Ask the person: allow book_flight(Goa)? y\nLOOK: <<Booked a flight to Goa.>>\nANSWER: Sunny Goa, flight booked: ₹3200.\n(spent ₹2.50)\nSunny Goa, flight booked: ₹3200.\n", "typo": "PLAN:\n1. Check Goa's weather\n2. Answer\nACT: weather(Gao)\nLOOK: <<Error: no city called Gao>>\nTHINK: I spelled it wrong.\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nANSWER: Goa is 31°C and sunny.\n(spent ₹2.00)\nGoa is 31°C and sunny.\n", "no": "PLAN:\n1. Find the flight price\n2. Book it\nACT: flight_price(Goa)\nLOOK: <<₹3200>>\nACT: book_flight(Goa)\n  Ask the person: allow book_flight(Goa)? n\nLOOK: <<The person said no.>>\nANSWER: I didn't book it. The flight is ₹3200 if you change your mind.\n(spent ₹2.00)\nI didn't book it. The flight is ₹3200 if you change your mind.\n", "stuck": "ACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nStopped: the step limit was reached.\n"};
+  const OUT = {"normal": "PLAN:\n1. Check Goa's weather\n2. Find the flight price\n3. Book it if it's under ₹5000\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: flight_price(Goa)\nLOOK: <<₹3200>>\nACT: book_flight(Goa)\n  Ask the person: allow book_flight(Goa)? y\nLOOK: <<Booked a flight to Goa.>>\nANSWER: Sunny Goa, flight booked: ₹3200.\n(spent ₹2.5)\nSunny Goa, flight booked: ₹3200.\n", "typo": "PLAN:\n1. Check Goa's weather\n2. Answer\nACT: weather(Gao)\nLOOK: <<Error: no city called Gao>>\nTHINK: I spelled it wrong.\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nANSWER: Goa is 31°C and sunny.\n(spent ₹2.0)\nGoa is 31°C and sunny.\n", "no": "PLAN:\n1. Find the flight price\n2. Book it\nACT: flight_price(Goa)\nLOOK: <<₹3200>>\nACT: book_flight(Goa)\n  Ask the person: allow book_flight(Goa)? n\nLOOK: <<The person said no.>>\nANSWER: I didn't book it. The flight is ₹3200 if you change your mind.\n(spent ₹2.0)\nI didn't book it. The flight is ₹3200 if you change your mind.\n", "stuck": "ACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nACT: weather(Goa)\nLOOK: <<31°C, sunny>>\nStopped: the step limit was reached.\n"};
   const T = [
     ["normal", "Normal", "Plan, weather, price, ask, book, answer.", "✓ Ends with an answer, and the booking was asked about first."],
     ["typo", "A typo", "The LLM misspells Goa.", "✓ The error came back on a LOOK: line, and the LLM fixed it."],

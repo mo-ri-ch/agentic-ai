@@ -21,7 +21,8 @@ def ask_person(name, details):
     return answer == "y"
 
 print(run_agent("Plan a weekend in Goa. Book the flight if it's under ₹5000.", real_llm,
-                allowed={"weather", "flight_price", "book_flight"}))
-print(log)
+                allowed=["weather", "flight_price", "book_flight"]))
+for line in log:
+    print(line)
 
 # Now make it yours: change the tools, the notes and the instructions above, then run again.
