@@ -667,7 +667,8 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
     { on: ["split", "keep"], kept: 2, at: 1, say: "Take the next line, ACT:, and keep it. It's kept first, checked second: that's why the ACT: line stays." },
     { on: ["check", "stop"], kept: 2, at: 1, dropped: true, say: "It starts with ACT:, so break: stop. The made-up lines after it are never read." },
     { on: ["join"], kept: 2, dropped: true, say: "Join the kept lines back into one text. That's the new reply." },
-    { on: [], kept: 2, dropped: true, look: true, say: "Separately, the program runs weather(Kochi) itself and writes the real LOOK: line." },
+    { on: [], kept: 2, dropped: true, look: true, say: "Separately, the program runs weather(\"Kochi\"). Kochi is in the weather tool's dictionary as \"29°C, sunny\", so that's the real LOOK: line, not the LLM's 31°C." },
+    { on: [], kept: 2, dropped: true, look: true, answer: true, say: "Next round, the LLM reads the text again, now with the real LOOK: line, and answers with 29°C." },
   ];
   const $ = id => document.getElementById(id);
   const tx = $("p5Tx"), say = $("p5Say"), cut = $("p5Cut"), code = $("p5Code"), stepSay = $("p5StepSay");
@@ -680,7 +681,8 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
       const tag = i < st.kept ? ' <b class="keep-tag">kept ✓</b>' : (st.dropped && i >= 2 ? ' <b class="keep-tag no">never read</b>' : "");
       const cls = st.dropped && i >= 2 ? " faded" : (i === st.at ? " new" : "");
       return `<div class="ln${cls}"><span class="who llm">${WHO.llm}</span><span class="txt">${esc(l)}${tag}</span></div>`;
-    }).join("") + (st.look ? `<div class="ln new"><span class="who prog">${WHO.prog}</span><span class="txt">LOOK: 29°C, sunny</span></div>` : "");
+    }).join("") + (st.look ? `<div class="ln${st.answer ? "" : " new"}"><span class="who prog">${WHO.prog}</span><span class="txt">LOOK: 29°C, sunny</span></div>` : "")
+      + (st.answer ? `<div class="ln new"><span class="who llm">${WHO.llm}</span><span class="txt">ANSWER: It's 29°C and sunny in Kochi.</span></div>` : "");
     stepSay.textContent = st.say;
     next.hidden = at === STEPS.length - 1; back.hidden = at === 0 || at === STEPS.length - 1; again.hidden = at !== STEPS.length - 1;
   }
