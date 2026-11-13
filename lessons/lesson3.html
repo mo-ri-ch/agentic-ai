@@ -147,7 +147,7 @@ TOOLS["weather"]("Kochi")   <span class="c"># → same as weather("Kochi") → "
         <div class="tryrow"><input class="wide" id="p2In" aria-label="The LLM's reply" spellcheck="false"></div>
         <div class="out" id="p2Out"></div>
       </div>
-      <p class="say near" style="position:relative">One line of Python finds it. It looks for the pattern <code>ACT: name(input)</code>:<br><b class="eqbox">act = re.search(r"ACT: (\w+)\((.*)\)", reply)</b><br><code>act.group(1)</code> gives blank ①, the name. <code>act.group(2)</code> gives blank ②, the input. No match? Then <code>act</code> is <code>None</code>.<button class="doubt" type="button" data-peek-from="rePeek" aria-label="What do the symbols in the pattern mean?">🤔</button></p>
+      <p class="say near" style="position:relative">The program uses a template with two blanks: <code>ACT: ①(②)</code>. In Python, a template like this is called a <b>pattern</b>. <code>re.search</code> lays the pattern over the reply and hands back what filled the blanks. We call that <code>act</code>. <code>act.group(1)</code> asks for blank ①, the name. <code>act.group(2)</code> asks for blank ②, the input. If the reply doesn't fit, you get <code>None</code>. All of that is one line:<br><b class="eqbox">act = re.search(r"ACT: (\w+)\((.*)\)", reply)</b><button class="doubt" type="button" data-peek-from="rePeek" aria-label="What do the symbols in the pattern mean?">🤔</button></p>
       <div hidden id="rePeek"><b>🤔 What do the symbols in the pattern mean?</b>
         <ul style="margin:6px 0 0">
           <li>Each pair of round brackets <code>( )</code> is a blank to fill in. <code>act.group(1)</code> gives blank ①, <code>act.group(2)</code> blank ②.</li>
