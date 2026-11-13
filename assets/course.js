@@ -7,6 +7,8 @@
 window.PYWORDS_EXTRA = {
   "in": { what: "With for: go through each item. On its own, a in b asks: is a inside b? True or False.", ex: "print(\"ACT\" in \"ACT: weather\")\nfor ch in \"hi\":\n    print(ch)", out: "True\nh\ni" },
   "not": { what: "Flips True and False. not in asks: is it missing?", ex: "print(not True)\nprint(\"x\" not in \"abc\")", out: "False\nTrue" },
+  "and": { what: "True only when both sides are True.", ex: "x = 5\nprint(x > 1 and x < 10)", out: "True" },
+  "or": { what: "True when either side is True (or both).", ex: "x = None\nprint(x is None or x > 3)", out: "True" },
   "is": { what: "Checks if two things are the very same thing. Mostly used as is None.", ex: "x = None\nprint(x is None)", out: "True" },
   "None": { what: "Python's word for \"nothing here\". re.search gives None when it finds no match.", ex: "x = None\nprint(x)", out: "None" },
   "elif": { what: "Short for \"else, if\": checked only when the if above was False.", ex: "x = 5\nif x > 10:\n    print(\"big\")\nelif x > 3:\n    print(\"medium\")", out: "medium" },

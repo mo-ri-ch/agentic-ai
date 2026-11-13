@@ -16,11 +16,15 @@ def run_agent(instructions, question, tools, llm, step_limit=6):
         text += "LOOK: " + look + "\n"
     return "Stopped: the step limit was reached."
 
-# Make an agent: a name, its instructions, its tools, and its (fake) LLM's replies
+# Make an agent: a name, its instructions, its tools, and its (fake) LLM's replies.
+# make_agent makes a new function for each agent and hands it back.
+# That function remembers its own name, instructions, tools and replies.
 def make_agent(name, instructions, tools, replies):
+    def fake_llm(text):        # this agent's fake LLM: hands back its next reply
+        return replies.pop(0)
     def agent(task):
         print(f"  {name} gets: {task}")
-        answer = run_agent(instructions, task, tools, lambda text: replies.pop(0))
+        answer = run_agent(instructions, task, tools, fake_llm)
         print(f"  {name} answers: {answer}")
         return answer
     return agent

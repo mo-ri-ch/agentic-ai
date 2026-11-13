@@ -131,7 +131,7 @@
       </div>
       <p class="say near" style="position:relative">The team's answer was checked, but it took 12 writes instead of 2. More writes take more time and money. Start with one agent, and add a team only when the job needs it.<br><b class="eqbox">a team: better on big jobs, but costs more</b><button class="doubt" type="button" data-peek-from="costPeek" aria-label="How much more do real teams cost?">🤔</button></p>
       <div hidden id="costPeek"><b>🤔 How much more do real teams cost?</b>
-        <div style="margin-top:6px">Anthropic found its agents use about 4 times the tokens of a chat, and its multi-agent research system about 15 times. Worth it for big research jobs, not for small questions.</div>
+        <div style="margin-top:6px">Anthropic found its agents use about 4 times the tokens (pieces of words) of a chat, and its multi-agent research system about 15 times. Worth it for big research jobs, not for small questions.</div>
       </div>
       <p class="hook">Try it on new numbers.</p>
     </section>
@@ -163,7 +163,7 @@
     <!-- 5 -->
     <section class="part" data-title="The code">
       <h2>The code</h2>
-      <p class="say"><code>make_agent</code> builds an agent from its instructions and tools. The manager's tools are the other agents. Guess what each <code>print</code> shows. Then press <b>▶ Run</b>.</p>
+      <p class="say"><code>make_agent</code> makes a new function for each agent and hands it back. That function remembers its own name, instructions, tools and replies. The manager's tools are the other agents. Guess what each <code>print</code> shows. Then press <b>▶ Run</b>.</p>
 <pre><code>import re
 
 <span class="c"># The loop from Lesson 3, but each agent brings its own instructions and tools</span>
@@ -182,11 +182,15 @@ def run_agent(instructions, question, tools, llm, step_limit=6):
         text += "LOOK: " + look + "\n"
     return "Stopped: the step limit was reached."
 
-<span class="c"># Make an agent: a name, its instructions, its tools, and its (fake) LLM's replies</span>
+<span class="c"># Make an agent: a name, its instructions, its tools, and its (fake) LLM's replies.</span>
+<span class="c"># make_agent makes a new function for each agent and hands it back.</span>
+<span class="c"># That function remembers its own name, instructions, tools and replies.</span>
 def make_agent(name, instructions, tools, replies):
+    def fake_llm(text):        # this agent's fake LLM: hands back its next reply
+        return replies.pop(0)
     def agent(task):
         print(f"  {name} gets: {task}")
-        answer = run_agent(instructions, task, tools, lambda text: replies.pop(0))
+        answer = run_agent(instructions, task, tools, fake_llm)
         print(f"  {name} answers: {answer}")
         return answer
     return agent
