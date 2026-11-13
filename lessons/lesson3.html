@@ -216,7 +216,7 @@ When you know the answer, write: ANSWER: your answer</pre>
         <div class="do">Pick a test. Run the loop, one step at a time.</div>
 <pre><code>def fake_llm(text):
     return fake_replies.pop(0)   <span class="c"># hand back the next reply, ignore the text</span></code></pre>
-        <div class="chips" id="p4Chips"></div>
+        <div class="chips" id="p4Chips"><span class="count" style="align-self:center">Test:</span></div>
         <div class="tx" id="p4Replies"></div>
         <div class="btnrow"><button class="primary" id="p4Run">▶ Run the loop</button></div>
         <div id="p4Steps" hidden>
@@ -577,7 +577,7 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
   function show() {
     const t = TESTS[cur];
     chips.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.k === cur));
-    replies.innerHTML = `<div class="count">The fake LLM's ${t.replies.length} replies, in order. Step limit: ${t.limit}.</div>` +
+    replies.innerHTML = `<div class="count"><code>fake_replies</code>: the ${t.replies.length} replies we wrote for this test, in order. Step limit: ${t.limit}.</div>` +
       t.replies.map((r, i) => `<div class="ln"><span class="who llm">${WHO.llm}</span><span class="txt">${i + 1}. ${esc(r).replace(/\n/g, "<br>&nbsp;&nbsp;&nbsp;")}</span></div>`).join("");
     document.getElementById("p4Steps").hidden = true; run.hidden = false; replies.hidden = false;
   }
@@ -599,7 +599,7 @@ const TOOLS = { calculator: pyCalculator, weather: pyWeather };
     for (let r = 0; r < t.limit && r < t.replies.length; r++) {
       const reply = t.replies[r];
       steps.push({ add: reply.split("\n").map(l => ["llm", l]), n: r + 1,
-        say: `Round ${r + 1}: fake_llm hands back reply ${r + 1}.` });
+        say: `Round ${r + 1}: fake_llm hands back reply ${r + 1}.` + (r > 0 && t.out.includes("Error") && reply.includes("ACT:") ? " We wrote it in advance: a real LLM would read the error and fix it." : "") });
       if (reply.includes("ANSWER:")) {
         steps[steps.length - 1].say += ` It's an ANSWER:, so run_agent gives back: “${back}”`;
         return steps;
