@@ -178,7 +178,11 @@ When you're done, write: ANSWER: your answer"""
 
 <span class="c"># Read the numbered steps out of a plan</span>
 def read_plan(reply):
-    return re.findall(r"^\d+\. (.+)$", reply, re.MULTILINE)
+    steps = []
+    for line in reply.split("\n"):
+        if line != "" and line[0] in "0123456789":   # not empty, starts with a number
+            steps.append(line)
+    return steps
 
 <span class="c"># A fake LLM with a plan, a failed step and a new plan</span>
 fake_replies = [
@@ -196,13 +200,15 @@ def fake_llm(text):
 <span class="c"># The loop, now keeping track of the plan</span>
 def run_agent(question, llm, step_limit=8):
     text = INSTRUCTIONS + "\n\nQuestion: " + question + "\n"
-    plan, done = [], 0
+    plan = []
+    done = 0
     for step in range(step_limit):
         reply = llm(text)
         print(reply)
         text += reply + "\n"
         if "PLAN:" in reply:
-            plan, done = read_plan(reply), 0
+            plan = read_plan(reply)
+            done = 0
             print(f"(a plan with {len(plan)} steps)")
         if "ANSWER:" in reply:
             return reply.split("ANSWER:")[1].strip()
