@@ -257,7 +257,7 @@ When you know the answer, write: ANSWER: your answer</pre>
     <!-- 5 -->
     <section class="part" data-title="A real LLM">
       <h2>A real LLM</h2>
-      <p class="say">Now swap the fake LLM for a real one. A real LLM writes its own replies, and they aren't always as tidy as the ones you wrote.</p>
+      <p class="say">Now swap in a real LLM. It writes its own replies, and they aren't always tidy. Here's the kind it can write (an example made for this page).</p>
       <div class="activity">
         <div class="do">The LLM wrote all four lines. Tap the first one it shouldn't have written.</div>
         <div class="tx" id="p5Tx"></div>
@@ -272,7 +272,7 @@ When you know the answer, write: ANSWER: your answer</pre>
           </div>
         </div>
       </div>
-      <p class="say near" style="position:relative">In code, <code>fake_llm</code> becomes <code>real_llm</code>, in the Colab notebook (Colab runs Python free in your browser). The loop stays the same. But an LLM guesses the next words, and in its text a <code>LOOK:</code> line always follows an <code>ACT:</code> line. So it sometimes guesses one. So the program keeps its reply only up to the first <code>ACT:</code> or <code>ANSWER:</code> line, and writes the real <code>LOOK:</code> itself.<br><b class="eqbox">keep the reply up to the first ACT: or ANSWER: line</b><button class="doubt" type="button" data-peek-from="smallPeek" aria-label="Which real LLM do we use?">🤔</button></p>
+      <p class="say near" style="position:relative">In code, <code>fake_llm</code> becomes <code>real_llm</code>, in the Colab notebook (Colab runs Python free in your browser). The loop stays the same. But an LLM guesses the next words, and in its text a <code>LOOK:</code> line always follows an <code>ACT:</code> line. So it sometimes guesses one. So the program cuts the reply there, and writes the real <code>LOOK:</code> itself. In Colab, you'll run a real model and see its own replies.<br><b class="eqbox">keep the reply up to the first ACT: or ANSWER: line</b><button class="doubt" type="button" data-peek-from="smallPeek" aria-label="Which real LLM do we use?">🤔</button></p>
       <div hidden id="smallPeek"><b>🤔 Which real LLM do we use?</b>
         <div style="margin-top:6px">A small, free model, Qwen2.5 1.5B (1.5 billion learned numbers: small for an LLM), that runs inside Colab. No API key or payment needed, just a Google account for Colab. Small models make more mistakes than big ones, so expect the odd error. Errors go back on <code>LOOK:</code> lines, so it can often fix them.</div>
       </div>
